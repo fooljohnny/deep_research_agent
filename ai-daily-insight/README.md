@@ -12,23 +12,62 @@ GitHub Actions (cron 06:00 UTC)
         ▼
    ┌─────────┐     ┌──────────────┐     ┌─────────────┐
    │ fetch.py │────▶│  analyze.py  │────▶│ generate.py │
-   │ RSS pull │     │ Stage-1 LLM  │     │ Stage-2 LLM │
+   │ RSS/API  │     │ Stage-1 LLM  │     │ Stage-2 LLM │
    └─────────┘     └──────────────┘     └─────────────┘
-                          │                     │
-                          └──── llm_client.py ──┘
-                           (Groq / OpenAI / custom)
-                                               │
-                                               ▼
-                                      content/YYYY-MM-DD.md
+        │                 │                     │
+        │                 └──── llm_client.py ──┘
+        │                  (Groq / OpenAI / custom)
+        │                                       │
+        │                                       ▼
+  ┌─────┴──────┐                       content/YYYY-MM-DD.md
+  │  Sources:  │
+  │  RSS       │
+  │  GitHub    │
+  │  HF API   │
+  └────────────┘
 ```
 
 | Step | Script | Purpose |
 |------|--------|---------|
-| 1 | `fetch.py` | Pull fresh articles from 8+ AI RSS feeds; deduplicate via `processed.json` |
+| 1 | `fetch.py` | Pull fresh content from 12+ sources across 4 categories |
 | 2 | `analyze.py` | Stage-1 prompt — extract themes, significance, and executive summary as JSON |
 | 3 | `generate.py` | Stage-2 prompt — convert structured analysis into a polished Markdown post |
 | — | `main.py` | Orchestrator that runs steps 1→2→3 in sequence |
 | — | `llm_client.py` | Shared LLM client factory — supports Groq, OpenAI, or any compatible API |
+
+## Information Sources
+
+### 1. Papers
+
+| Source | Type | Feed |
+|--------|------|------|
+| arXiv cs.AI | RSS | `rss.arxiv.org/rss/cs.AI` |
+| arXiv cs.LG | RSS | `rss.arxiv.org/rss/cs.LG` |
+| arXiv cs.CL | RSS | `rss.arxiv.org/rss/cs.CL` |
+
+### 2. Company Updates
+
+| Source | Type | Feed |
+|--------|------|------|
+| OpenAI Blog | RSS | `openai.com/blog/rss.xml` |
+| Anthropic Blog | RSS | `anthropic.com/rss.xml` |
+| Google DeepMind Blog | RSS | `deepmind.google/blog/rss.xml` |
+| Meta AI Blog | RSS | `ai.meta.com/blog/rss/` |
+
+### 3. Open-Source Ecosystem
+
+| Source | Type | How |
+|--------|------|-----|
+| GitHub Trending (AI/ML) | HTML scrape | Trending Python repos filtered by AI keywords |
+| HuggingFace Trending | API | `huggingface.co/api/models?sort=trending` |
+
+### 4. Capital & Industry
+
+| Source | Type | Feed |
+|--------|------|------|
+| TechCrunch AI | RSS | `techcrunch.com/category/artificial-intelligence/feed/` |
+| VentureBeat AI | RSS | `venturebeat.com/category/ai/feed/` |
+| Crunchbase News | RSS | `news.crunchbase.com/feed/` |
 
 ## Quick Start
 
@@ -83,19 +122,6 @@ export LLM_MODEL="gpt-4o"       # optional, this is the default for openai
 | `gemma2-9b-it` | 8k | Lightweight alternative |
 
 Get your free API key at [console.groq.com](https://console.groq.com).
-
-## RSS Sources
-
-| Source | Feed |
-|--------|------|
-| MIT Technology Review – AI | `technologyreview.com/…/feed` |
-| OpenAI Blog | `openai.com/blog/rss.xml` |
-| Google AI Blog | `blog.google/technology/ai/rss/` |
-| The Batch (deeplearning.ai) | `deeplearning.ai/the-batch/feed/` |
-| Hugging Face Blog | `huggingface.co/blog/feed.xml` |
-| VentureBeat AI | `venturebeat.com/category/ai/feed/` |
-| Towards Data Science | `towardsdatascience.com/feed` |
-| arXiv cs.AI | `rss.arxiv.org/rss/cs.AI` |
 
 ## License
 
