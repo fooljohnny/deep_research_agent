@@ -6,13 +6,12 @@ well-written, engaging Markdown blog post suitable for publication.
 """
 
 import logging
-import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 import json
 
-import openai
+from llm_client import get_client, get_model
 
 logger = logging.getLogger(__name__)
 
@@ -52,17 +51,14 @@ def generate_post(analysis: dict[str, Any]) -> str:
 
     Returns the Markdown string and writes it to content/<date>.md.
     """
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
-        raise EnvironmentError("OPENAI_API_KEY is not set.")
-
-    client = openai.OpenAI(api_key=api_key)
+    client = get_client()
+    model = get_model()
 
     user_prompt = _build_user_prompt(analysis)
-    logger.info("Sending analysis to LLM for Stage-2 generation …")
+    logger.info("Sending analysis to LLM (%s) for Stage-2 generation …", model)
 
     response = client.chat.completions.create(
-        model=os.environ.get("OPENAI_MODEL", "gpt-4o"),
+        model=model,
         temperature=0.6,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},

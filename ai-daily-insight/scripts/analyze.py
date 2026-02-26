@@ -8,10 +8,9 @@ rank significance, and produce a structured JSON analysis that Stage-2
 
 import json
 import logging
-import os
 from typing import Any
 
-import openai
+from llm_client import get_client, get_model
 
 logger = logging.getLogger(__name__)
 
@@ -80,20 +79,14 @@ def analyze_articles(articles: list[dict[str, str]]) -> dict[str, Any]:
             "notable_articles": [],
         }
 
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
-        raise EnvironmentError(
-            "OPENAI_API_KEY is not set. "
-            "Add it as a repository secret and pass it via the workflow."
-        )
-
-    client = openai.OpenAI(api_key=api_key)
+    client = get_client()
+    model = get_model()
 
     user_prompt = _build_user_prompt(articles)
-    logger.info("Sending %d articles to LLM for Stage-1 analysis …", len(articles))
+    logger.info("Sending %d articles to LLM (%s) for Stage-1 analysis …", len(articles), model)
 
     response = client.chat.completions.create(
-        model=os.environ.get("OPENAI_MODEL", "gpt-4o"),
+        model=model,
         temperature=0.4,
         response_format={"type": "json_object"},
         messages=[
