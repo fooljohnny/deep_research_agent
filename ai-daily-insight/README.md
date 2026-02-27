@@ -27,8 +27,10 @@ GitHub Actions (cron 06:00 UTC)
 | 1 | `fetch.py` | Pull fresh content from 12+ sources across 4 categories |
 | 2 | `analyze.py` | Stage-1 — five-dimension structural change analysis + keyword extraction |
 | 3 | `trend.py` | Compare today's topic vectors against 30-day history; detect trend signals |
-| 4 | `generate.py` | Stage-2 — generate Markdown insight post with trend context |
-| — | `main.py` | Orchestrator: fetch → analyze → trend → generate |
+| 4 | `metrics.py` | arXiv 能力曲线、GitHub star 增速、HuggingFace 下载量分析 |
+| 5 | `charts.py` | 自动生成趋势图（arXiv / GitHub / HF） |
+| 6 | `generate.py` | Stage-2 — generate Markdown insight post with trend + metrics + charts |
+| — | `main.py` | Orchestrator: fetch → metrics → analyze → trend → charts → generate |
 | — | `llm_client.py` | Shared LLM client factory (Groq / OpenAI / custom) |
 
 ## Trend Analysis (the "real insight" layer)
@@ -55,6 +57,19 @@ Additionally, **keyword frequency tracking** identifies:
 The trend report is injected into the Stage-2 prompt, so the generated blog post
 naturally includes historical context like "this trend has been building for 5 days"
 or "this is a brand-new direction in the 30-day window."
+
+## Data Insights (每日洞察新增)
+
+每日洞察报告新增以下数据维度：
+
+| 维度 | 说明 | 数据来源 |
+|------|------|----------|
+| **arXiv 摘要对比 — 模型能力提升曲线** | 基于 TF-IDF 语义相似度，对比今日论文摘要与历史，判断能力话题的延续/跃迁/渐进 | `data/metrics/` |
+| **GitHub Star 增速分析** | 同一 repo 跨日 star 数对比，识别增速最快项目及新晋热门 | GitHub Trending |
+| **HuggingFace 模型下载量变化** | 模型下载量跨日对比，反映开源模型采用热度 | HuggingFace API |
+| **自动生成趋势图** | 生成 PNG 趋势图：arXiv 新颖度曲线、GitHub star 总量、HF 下载量 | `content/charts/` |
+
+指标快照每日保存至 `data/metrics/YYYY-MM-DD.json`，用于历史对比与图表生成。
 
 ## Information Sources
 

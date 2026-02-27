@@ -255,6 +255,98 @@ def _fetch_meta_ai_blog() -> list[dict[str, str]]:
 
 
 # ─────────────────────────────────────────────────────────────────────
+# Metrics snapshot (for trend analysis — no dedup)
+# ─────────────────────────────────────────────────────────────────────
+
+def fetch_metrics_snapshot() -> dict[str, Any]:
+    """
+    采集当日指标快照，用于 arXiv 能力曲线、GitHub star 增速、HF 下载量分析。
+
+    返回结构化数据，不做去重（每日全量快照）。
+    """
+    from datetime import datetime, timezone
+
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    arxiv_papers: list[dict[str, Any]] = []
+    github_repos: list[dict[str, Any]] = []
+    hf_models: list[dict[str, Any]] = []
+
+    # arXiv — 从 RSS 获取
+    for feed_meta in RSS_FEEDS:
+        if "arXiv" not in feed_meta["name"]:
+            continue
+        try:
+            parsed = feedparser.parse(feed_meta["url"])
+            for entry in parsed.entries[:15]:
+                title = getattr(entry, "title", "").strip()
+                summary = getattr(entry, "summary", "").strip()[:2000]
+                link = getattr(entry, "link", "").strip()
+                if title:
+                    arxiv_papers.append({
+                        "title": title,
+                        "abstract": summary,
+                        "url": link,
+                        "source": feed_meta["name"],
+                    })
+        except Exception:
+            logger.warning("Failed to fetch arXiv for metrics: %s", feed_meta["name"], exc_info=True)
+
+    # GitHub — 带 star 数
+    try:
+        resp = requests.get(_GH_TRENDING_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for row in soup.select("article.Box-row"):
+            h2 = row.select_one("h2 a")
+            if not h2:
+                continue
+            repo_path = h2.get("href", "").strip("/")
+            stars_tag = row.select_one("span.d-inline-block.float-sm-right")
+            stars = stars_tag.get_text(strip=True) if stars_tag else ""
+            desc_tag = row.select_one("p")
+            desc = desc_tag.get_text(strip=True) if desc_tag else ""
+            if not AI_KEYWORDS.search(f"{repo_path} {desc}"):
+                continue
+            github_repos.append({
+                "repo": repo_path,
+                "stars": stars,
+                "url": f"https://github.com/{repo_path}",
+                "description": desc[:500],
+            })
+    except Exception:
+        logger.warning("Failed to fetch GitHub for metrics", exc_info=True)
+
+    # HuggingFace — 带 downloads
+    try:
+        resp = requests.get(
+            _HF_API_URL,
+            params={"sort": "trendingScore", "direction": "-1", "limit": 20},
+            headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT,
+        )
+        resp.raise_for_status()
+        for m in resp.json():
+            model_id = m.get("id", "")
+            if not model_id:
+                continue
+            hf_models.append({
+                "model_id": model_id,
+                "downloads": m.get("downloads", 0),
+                "likes": m.get("likes", 0),
+                "pipeline_tag": m.get("pipeline_tag", ""),
+                "url": f"https://huggingface.co/{model_id}",
+            })
+    except Exception:
+        logger.warning("Failed to fetch HuggingFace for metrics", exc_info=True)
+
+    return {
+        "date": date,
+        "arxiv_papers": arxiv_papers,
+        "github_repos": github_repos,
+        "hf_models": hf_models,
+    }
+
+
+# ─────────────────────────────────────────────────────────────────────
 # Main entry point
 # ─────────────────────────────────────────────────────────────────────
 
