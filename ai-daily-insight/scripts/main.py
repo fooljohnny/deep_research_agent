@@ -2,9 +2,9 @@
 main.py — Pipeline orchestrator.
 
 Runs the three-step daily insight pipeline:
-  1. fetch   – pull fresh articles from RSS feeds
-  2. analyze – Stage-1 LLM prompt → structured JSON insights
-  3. generate – Stage-2 LLM prompt → polished Markdown blog post
+  1. fetch    – pull fresh content from RSS feeds, GitHub, HuggingFace
+  2. analyze  – Stage-1 LLM → five-dimension structural change JSON
+  3. generate – Stage-2 LLM → Markdown insight blog post
 
 Designed to be called from GitHub Actions or locally.
 """
@@ -26,7 +26,7 @@ def run_pipeline(dry_run: bool = False) -> None:
     logger.info("=== AI Daily Insight Pipeline ===")
 
     # ── Step 1: Fetch ──────────────────────────────────────────────
-    logger.info("[1/3] Fetching articles from RSS feeds …")
+    logger.info("[1/3] Fetching content from all sources …")
     articles = fetch_articles()
     logger.info("Collected %d fresh article(s).", len(articles))
 
@@ -38,10 +38,11 @@ def run_pipeline(dry_run: bool = False) -> None:
         logger.info("Dry-run mode — stopping after fetch.")
         return
 
-    # ── Step 2: Analyse (Stage-1 Prompt) ───────────────────────────
-    logger.info("[2/3] Running Stage-1 analysis …")
+    # ── Step 2: Structural Analysis (Stage-1 Prompt) ────────────────
+    logger.info("[2/3] Running structural change analysis …")
     analysis = analyze_articles(articles)
-    logger.info("Analysis title: %s", analysis.get("title", ""))
+    logger.info("Title: %s", analysis.get("title", ""))
+    logger.info("Core insight: %s", analysis.get("core_insight", ""))
 
     analysis_path = Path(__file__).resolve().parent.parent / "data" / "latest_analysis.json"
     analysis_path.write_text(
@@ -49,8 +50,8 @@ def run_pipeline(dry_run: bool = False) -> None:
     )
     logger.info("Analysis saved to %s", analysis_path)
 
-    # ── Step 3: Generate (Stage-2 Prompt) ──────────────────────────
-    logger.info("[3/3] Generating Markdown blog post …")
+    # ── Step 3: Generate Insight Post (Stage-2 Prompt) ──────────────
+    logger.info("[3/3] Generating Markdown insight post …")
     markdown = generate_post(analysis)
     logger.info("Blog post generated (%d characters).", len(markdown))
 
