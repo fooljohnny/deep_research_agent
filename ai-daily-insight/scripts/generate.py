@@ -97,11 +97,17 @@ tags: [关键标签]
 - 如果趋势报告有 overall_novelty 或 keyword_trends 数据，
   在这里引用作为"坐标感"的依据。
 
+#### # 参考来源
+- 列出今日分析中引用和参考的**所有**文章链接。
+- 按来源类别分组（论文、公司动态、开源生态、资本与行业）。
+- 每条格式：`- [文章标题](URL) — 来源名称`
+- 包含分析JSON中所有维度 evidence 里的文章，不要遗漏。
+- 如果某个来源类别没有引用文章，跳过该类别。
+
 ### 风格要求
-- 总字数：1000-1800字。
+- 总字数：1000-2000字（含参考来源列表）。
 - 有变化的方向重点展开，无变化的方向快速带过。
-- 每个引用的文章用 `[标题](链接)` 格式。
-- 不要在文末单独列链接列表——链接在行文中自然引用即可。
+- 正文中引用文章时仍使用 `[标题](链接)` 格式内嵌引用。
 """
 
 
@@ -128,11 +134,11 @@ def _build_user_prompt(
 def generate_post(
     analysis: dict[str, Any],
     trend_report: dict[str, Any] | None = None,
-) -> str:
+) -> tuple[str, dict[str, Any]]:
     """
     Stage-2 generation: analysis + trends → Markdown insight blog post.
 
-    Returns the Markdown string and writes it to content/<date>.md.
+    Returns (markdown_string, token_usage_dict).
     """
     client = get_client()
     model = get_model()
@@ -151,13 +157,27 @@ def generate_post(
 
     markdown: str = response.choices[0].message.content or ""
 
+    usage = getattr(response, "usage", None)
+    token_usage: dict[str, Any] = {
+        "model": model,
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+    }
+
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     CONTENT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = CONTENT_DIR / f"{today}.md"
     out_path.write_text(markdown, encoding="utf-8")
-    logger.info("Blog post written to %s (%d chars)", out_path, len(markdown))
+    logger.info(
+        "Blog post written to %s (%d chars)  (tokens: %d prompt + %d completion = %d total)",
+        out_path, len(markdown),
+        token_usage["prompt_tokens"],
+        token_usage["completion_tokens"],
+        token_usage["total_tokens"],
+    )
 
-    return markdown
+    return markdown, token_usage
 
 
 if __name__ == "__main__":

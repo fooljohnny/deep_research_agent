@@ -14,6 +14,7 @@ import json
 import hashlib
 import logging
 import re
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -28,51 +29,14 @@ logger = logging.getLogger(__name__)
 # RSS feeds organised by category
 # ─────────────────────────────────────────────────────────────────────
 RSS_FEEDS: list[dict[str, str]] = [
-    # ── 1. 论文 (Papers) ──────────────────────────────────────────
-    {
-        "name": "arXiv cs.AI",
-        "url": "https://rss.arxiv.org/rss/cs.AI",
-        "category": "papers",
-    },
-    {
-        "name": "arXiv cs.LG",
-        "url": "https://rss.arxiv.org/rss/cs.LG",
-        "category": "papers",
-    },
-    {
-        "name": "arXiv cs.CL",
-        "url": "https://rss.arxiv.org/rss/cs.CL",
-        "category": "papers",
-    },
-
-    # ── 2. 公司动态 (Company Updates) ─────────────────────────────
-    {
-        "name": "OpenAI Blog",
-        "url": "https://openai.com/blog/rss.xml",
-        "category": "company",
-    },
-    {
-        "name": "Google DeepMind Blog",
-        "url": "https://deepmind.google/blog/rss.xml",
-        "category": "company",
-    },
-
-    # ── 4. 资本与行业 (Capital & Industry) ────────────────────────
-    {
-        "name": "TechCrunch AI",
-        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
-        "category": "industry",
-    },
-    {
-        "name": "VentureBeat AI",
-        "url": "https://venturebeat.com/category/ai/feed/",
-        "category": "industry",
-    },
-    {
-        "name": "Crunchbase News",
-        "url": "https://news.crunchbase.com/feed/",
-        "category": "industry",
-    },
+    {"name": "arXiv cs.AI",        "url": "https://rss.arxiv.org/rss/cs.AI",        "category": "papers"},
+    {"name": "arXiv cs.LG",        "url": "https://rss.arxiv.org/rss/cs.LG",        "category": "papers"},
+    {"name": "arXiv cs.CL",        "url": "https://rss.arxiv.org/rss/cs.CL",        "category": "papers"},
+    {"name": "OpenAI Blog",        "url": "https://openai.com/blog/rss.xml",        "category": "company"},
+    {"name": "Google DeepMind Blog","url": "https://deepmind.google/blog/rss.xml",   "category": "company"},
+    {"name": "TechCrunch AI",      "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "category": "industry"},
+    {"name": "VentureBeat AI",     "url": "https://venturebeat.com/category/ai/feed/","category": "industry"},
+    {"name": "Crunchbase News",    "url": "https://news.crunchbase.com/feed/",       "category": "industry"},
 ]
 
 PROCESSED_PATH = Path(__file__).resolve().parent.parent / "data" / "processed.json"
@@ -110,7 +74,6 @@ def _save_processed(data: dict[str, Any]) -> None:
 # ─────────────────────────────────────────────────────────────────────
 
 def _parse_feed(feed_meta: dict[str, str]) -> list[dict[str, str]]:
-    """Parse a single RSS feed and return normalised article dicts."""
     articles: list[dict[str, str]] = []
     try:
         parsed = feedparser.parse(feed_meta["url"])
@@ -121,23 +84,21 @@ def _parse_feed(feed_meta: dict[str, str]) -> list[dict[str, str]]:
             published = getattr(entry, "published", "")
             if not title:
                 continue
-            articles.append(
-                {
-                    "source": feed_meta["name"],
-                    "category": feed_meta.get("category", ""),
-                    "title": title.strip(),
-                    "url": link.strip(),
-                    "summary": summary.strip()[:1000],
-                    "published": published,
-                }
-            )
+            articles.append({
+                "source": feed_meta["name"],
+                "category": feed_meta.get("category", ""),
+                "title": title.strip(),
+                "url": link.strip(),
+                "summary": summary.strip()[:1000],
+                "published": published,
+            })
     except Exception:
         logger.warning("Failed to fetch RSS: %s", feed_meta["name"], exc_info=True)
     return articles
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 3a. GitHub Trending (AI/ML repos)
+# GitHub Trending (AI/ML repos)
 # ─────────────────────────────────────────────────────────────────────
 
 _GH_TRENDING_URL = "https://github.com/trending/python?since=daily"
@@ -151,15 +112,11 @@ AI_KEYWORDS = re.compile(
 
 
 def _fetch_github_trending() -> list[dict[str, str]]:
-    """Scrape GitHub Trending for Python repos, filter to AI-related."""
     articles: list[dict[str, str]] = []
     try:
-        resp = requests.get(
-            _GH_TRENDING_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT
-        )
+        resp = requests.get(_GH_TRENDING_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
-
         for row in soup.select("article.Box-row"):
             h2 = row.select_one("h2 a")
             if not h2:
@@ -167,106 +124,76 @@ def _fetch_github_trending() -> list[dict[str, str]]:
             repo_path = h2.get("href", "").strip("/")
             repo_url = f"https://github.com/{repo_path}"
             repo_name = repo_path.replace("/", " / ")
-
             desc_tag = row.select_one("p")
             desc = desc_tag.get_text(strip=True) if desc_tag else ""
-
             stars_tag = row.select_one("span.d-inline-block.float-sm-right")
             stars = stars_tag.get_text(strip=True) if stars_tag else ""
-
-            combined = f"{repo_name} {desc}"
-            if not AI_KEYWORDS.search(combined):
+            if not AI_KEYWORDS.search(f"{repo_name} {desc}"):
                 continue
-
-            summary = desc
-            if stars:
-                summary = f"{desc}  ⭐ {stars}" if desc else f"⭐ {stars}"
-
-            articles.append(
-                {
-                    "source": "GitHub Trending",
-                    "category": "opensource",
-                    "title": repo_name,
-                    "url": repo_url,
-                    "summary": summary[:1000],
-                    "published": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                }
-            )
+            summary = f"{desc}  ⭐ {stars}" if stars else desc
+            articles.append({
+                "source": "GitHub Trending", "category": "opensource",
+                "title": repo_name, "url": repo_url,
+                "summary": summary[:1000],
+                "published": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            })
     except Exception:
         logger.warning("Failed to fetch GitHub Trending", exc_info=True)
-
-    logger.info("GitHub Trending: %d AI-related repo(s) found", len(articles))
     return articles
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 3b. HuggingFace Trending Models
+# HuggingFace Trending Models
 # ─────────────────────────────────────────────────────────────────────
 
 _HF_API_URL = "https://huggingface.co/api/models"
 
 
 def _fetch_huggingface_trending(limit: int = 15) -> list[dict[str, str]]:
-    """Fetch trending models from the HuggingFace API."""
     articles: list[dict[str, str]] = []
     try:
         resp = requests.get(
             _HF_API_URL,
             params={"sort": "trendingScore", "direction": "-1", "limit": limit},
-            headers=HTTP_HEADERS,
-            timeout=HTTP_TIMEOUT,
+            headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT,
         )
         resp.raise_for_status()
-        models = resp.json()
-
-        for m in models:
-            model_id: str = m.get("id", "")
+        for m in resp.json():
+            model_id = m.get("id", "")
             if not model_id:
                 continue
             pipeline = m.get("pipeline_tag", "")
             downloads = m.get("downloads", 0)
             likes = m.get("likes", 0)
-
-            summary_parts = []
+            parts = []
             if pipeline:
-                summary_parts.append(f"Pipeline: {pipeline}")
-            summary_parts.append(f"Downloads: {downloads:,}")
-            summary_parts.append(f"Likes: {likes:,}")
-
-            articles.append(
-                {
-                    "source": "HuggingFace Trending",
-                    "category": "opensource",
-                    "title": model_id,
-                    "url": f"https://huggingface.co/{model_id}",
-                    "summary": "  |  ".join(summary_parts),
-                    "published": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-                }
-            )
+                parts.append(f"Pipeline: {pipeline}")
+            parts.append(f"Downloads: {downloads:,}")
+            parts.append(f"Likes: {likes:,}")
+            articles.append({
+                "source": "HuggingFace Trending", "category": "opensource",
+                "title": model_id, "url": f"https://huggingface.co/{model_id}",
+                "summary": "  |  ".join(parts),
+                "published": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            })
     except Exception:
         logger.warning("Failed to fetch HuggingFace trending", exc_info=True)
-
-    logger.info("HuggingFace Trending: %d model(s) found", len(articles))
     return articles
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 2b. Anthropic Blog (no RSS — HTML scrape)
+# Anthropic Blog (no RSS — HTML scrape)
 # ─────────────────────────────────────────────────────────────────────
 
 _ANTHROPIC_NEWS_URL = "https://www.anthropic.com/news"
 
 
 def _fetch_anthropic_blog() -> list[dict[str, str]]:
-    """Scrape Anthropic's /news page for recent posts."""
     articles: list[dict[str, str]] = []
     try:
-        resp = requests.get(
-            _ANTHROPIC_NEWS_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT
-        )
+        resp = requests.get(_ANTHROPIC_NEWS_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
-
         seen_hrefs: set[str] = set()
         for a_tag in soup.find_all("a", href=True):
             href: str = a_tag["href"]
@@ -275,78 +202,55 @@ def _fetch_anthropic_blog() -> list[dict[str, str]]:
             if href in seen_hrefs:
                 continue
             seen_hrefs.add(href)
-
             title = a_tag.get_text(strip=True)
             if not title or len(title) < 10:
                 continue
-
-            articles.append(
-                {
-                    "source": "Anthropic Blog",
-                    "category": "company",
-                    "title": title[:200],
-                    "url": f"https://www.anthropic.com{href}",
-                    "summary": "",
-                    "published": "",
-                }
-            )
+            articles.append({
+                "source": "Anthropic Blog", "category": "company",
+                "title": title[:200], "url": f"https://www.anthropic.com{href}",
+                "summary": "", "published": "",
+            })
             if len(articles) >= 15:
                 break
     except Exception:
         logger.warning("Failed to fetch Anthropic Blog", exc_info=True)
-
-    logger.info("Anthropic Blog: %d post(s) found", len(articles))
     return articles
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 2c. Meta AI Blog (no RSS — HTML scrape)
+# Meta AI Blog (no RSS — HTML scrape)
 # ─────────────────────────────────────────────────────────────────────
 
 _META_AI_BLOG_URL = "https://ai.meta.com/blog/"
 
 
 def _fetch_meta_ai_blog() -> list[dict[str, str]]:
-    """Scrape Meta AI's /blog/ page for recent posts."""
     articles: list[dict[str, str]] = []
     try:
-        resp = requests.get(
-            _META_AI_BLOG_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT
-        )
+        resp = requests.get(_META_AI_BLOG_URL, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
-
         seen_hrefs: set[str] = set()
         for a_tag in soup.find_all("a", href=True):
             href: str = a_tag["href"]
             if "/blog/" not in href or href.rstrip("/") == "https://ai.meta.com/blog":
                 continue
-
             title = a_tag.get_text(strip=True)
             if not title or len(title) < 10:
                 continue
-
             url = href if href.startswith("http") else f"https://ai.meta.com{href}"
             if url in seen_hrefs:
                 continue
             seen_hrefs.add(url)
-
-            articles.append(
-                {
-                    "source": "Meta AI Blog",
-                    "category": "company",
-                    "title": title[:200],
-                    "url": url,
-                    "summary": "",
-                    "published": "",
-                }
-            )
+            articles.append({
+                "source": "Meta AI Blog", "category": "company",
+                "title": title[:200], "url": url,
+                "summary": "", "published": "",
+            })
             if len(articles) >= 15:
                 break
     except Exception:
         logger.warning("Failed to fetch Meta AI Blog", exc_info=True)
-
-    logger.info("Meta AI Blog: %d post(s) found", len(articles))
     return articles
 
 
@@ -354,19 +258,28 @@ def _fetch_meta_ai_blog() -> list[dict[str, str]]:
 # Main entry point
 # ─────────────────────────────────────────────────────────────────────
 
-def fetch_articles(max_per_source: int = 10) -> list[dict[str, str]]:
+def fetch_articles(
+    max_per_source: int = 10,
+) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
     """
-    Fetch fresh AI content from all sources (RSS + custom).
+    Fetch fresh AI content from all sources.
 
-    Returns a list of article dicts that have not been seen before.
-    Updates the processed.json ledger on disk.
+    Returns:
+      (articles, fetch_stats) — articles list and per-source stats list.
     """
     processed = _load_processed()
     seen: set[str] = set(processed.get("seen_ids", []))
 
     fresh: list[dict[str, str]] = []
+    stats: list[dict[str, Any]] = []
 
-    def _dedupe_and_collect(raw: list[dict[str, str]], label: str) -> None:
+    def _dedupe_and_collect(
+        raw: list[dict[str, str]],
+        label: str,
+        method: str,
+        elapsed: float,
+        ok: bool,
+    ) -> None:
         count = 0
         for art in raw:
             aid = _article_id(art["url"], art["title"])
@@ -378,32 +291,50 @@ def fetch_articles(max_per_source: int = 10) -> list[dict[str, str]]:
             if count >= max_per_source:
                 break
         logger.info("  → %s: %d new item(s)", label, count)
+        stats.append({
+            "source": label,
+            "method": method,
+            "status": "ok" if ok else "fail",
+            "fetched": len(raw),
+            "new": count,
+            "elapsed_s": round(elapsed, 2),
+        })
 
     # ── RSS feeds ──────────────────────────────────────────────────
     for feed_meta in RSS_FEEDS:
         logger.info("Fetching RSS: %s …", feed_meta["name"])
+        t0 = time.monotonic()
         raw = _parse_feed(feed_meta)
-        _dedupe_and_collect(raw, feed_meta["name"])
+        elapsed = time.monotonic() - t0
+        _dedupe_and_collect(raw, feed_meta["name"], "RSS", elapsed, len(raw) > 0)
 
     # ── Anthropic Blog (scrape) ────────────────────────────────────
     logger.info("Fetching Anthropic Blog …")
+    t0 = time.monotonic()
     anthropic_articles = _fetch_anthropic_blog()
-    _dedupe_and_collect(anthropic_articles, "Anthropic Blog")
+    elapsed = time.monotonic() - t0
+    _dedupe_and_collect(anthropic_articles, "Anthropic Blog", "scrape", elapsed, len(anthropic_articles) > 0)
 
     # ── Meta AI Blog (scrape) ──────────────────────────────────────
     logger.info("Fetching Meta AI Blog …")
+    t0 = time.monotonic()
     meta_articles = _fetch_meta_ai_blog()
-    _dedupe_and_collect(meta_articles, "Meta AI Blog")
+    elapsed = time.monotonic() - t0
+    _dedupe_and_collect(meta_articles, "Meta AI Blog", "scrape", elapsed, len(meta_articles) > 0)
 
     # ── GitHub Trending ────────────────────────────────────────────
     logger.info("Fetching GitHub Trending (AI/ML) …")
+    t0 = time.monotonic()
     gh_articles = _fetch_github_trending()
-    _dedupe_and_collect(gh_articles, "GitHub Trending")
+    elapsed = time.monotonic() - t0
+    _dedupe_and_collect(gh_articles, "GitHub Trending", "scrape", elapsed, len(gh_articles) > 0)
 
     # ── HuggingFace Trending ───────────────────────────────────────
     logger.info("Fetching HuggingFace Trending Models …")
+    t0 = time.monotonic()
     hf_articles = _fetch_huggingface_trending()
-    _dedupe_and_collect(hf_articles, "HuggingFace Trending")
+    elapsed = time.monotonic() - t0
+    _dedupe_and_collect(hf_articles, "HuggingFace Trending", "API", elapsed, len(hf_articles) > 0)
 
     # ── Persist ────────────────────────────────────────────────────
     processed["seen_ids"] = list(seen)
@@ -411,12 +342,16 @@ def fetch_articles(max_per_source: int = 10) -> list[dict[str, str]]:
     _save_processed(processed)
 
     logger.info("Total fresh items: %d", len(fresh))
-    return fresh
+    return fresh, stats
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    items = fetch_articles()
+    items, stats = fetch_articles()
     for i, a in enumerate(items, 1):
         print(f"{i}. [{a['source']}] {a['title']}")
         print(f"   {a['url']}\n")
+    print("\n--- Fetch Stats ---")
+    for s in stats:
+        print(f"  {s['source']:25s}  {s['method']:6s}  {s['status']:4s}  "
+              f"fetched={s['fetched']:3d}  new={s['new']:3d}  {s['elapsed_s']:.2f}s")
