@@ -59,6 +59,8 @@ SYSTEM_PROMPT = """\
 - 不要编造不存在的变化——没有信号比虚假信号更有价值。
 - 最后给出一个"今日核心判断"(core_insight)：用一句话概括今天最值得关注的结构性变化。
 - 给出一个适合做标题的 title。
+- 提取 8-15 个关键词(keywords)：反映今日核心话题的关键技术术语、公司名、产品名等。
+  关键词应尽量规范化（如统一使用 "LLM" 而非 "大语言模型"，"RAG" 而非 "检索增强生成"）。
 
 返回严格的JSON（不要 markdown 代码块），schema 如下：
 
@@ -66,6 +68,7 @@ SYSTEM_PROMPT = """\
   "date": "YYYY-MM-DD",
   "title": "string – 博客标题",
   "core_insight": "string – 一句话核心判断",
+  "keywords": ["keyword1", "keyword2", "..."],
   "dimensions": {
     "technology": {
       "has_change": true/false,
@@ -175,6 +178,7 @@ def _empty_analysis() -> dict[str, Any]:
         "date": _today(),
         "title": f"AI产业结构日报 – {_today()}",
         "core_insight": "今日未采集到新信息，无法进行结构性分析。",
+        "keywords": [],
         "dimensions": {
             "technology": {**empty_dim, "model_capability": "", "new_paradigm": ""},
             "infrastructure": {**empty_dim, "inference_cost": "", "compute_trend": ""},

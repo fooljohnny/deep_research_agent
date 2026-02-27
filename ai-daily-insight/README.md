@@ -1,6 +1,6 @@
 # AI Daily Insight
 
-Automated daily blog posts covering the latest developments in artificial intelligence.
+Automated daily AI industry **structural change** analysis — not news summaries.
 
 Powered by **Groq** (default) for blazing-fast LLM inference, with OpenAI as an alternative.
 
@@ -10,30 +10,51 @@ Powered by **Groq** (default) for blazing-fast LLM inference, with OpenAI as an 
 GitHub Actions (cron 06:00 UTC)
         │
         ▼
-   ┌─────────┐     ┌──────────────┐     ┌─────────────┐
-   │ fetch.py │────▶│  analyze.py  │────▶│ generate.py │
-   │ RSS/API  │     │ Stage-1 LLM  │     │ Stage-2 LLM │
-   └─────────┘     └──────────────┘     └─────────────┘
-        │                 │                     │
-        │                 └──── llm_client.py ──┘
-        │                  (Groq / OpenAI / custom)
-        │                                       │
-        │                                       ▼
-  ┌─────┴──────┐                       content/YYYY-MM-DD.md
-  │  Sources:  │
-  │  RSS       │
-  │  GitHub    │
-  │  HF API   │
-  └────────────┘
+  ┌──────────┐    ┌─────────────┐    ┌──────────┐    ┌──────────────┐
+  │ fetch.py  │──▶│ analyze.py  │──▶│ trend.py  │──▶│ generate.py  │
+  │ RSS / API │   │ Stage-1 LLM │   │ TF-IDF    │   │ Stage-2 LLM  │
+  │ Scrape    │   │ 结构分析     │   │ 趋势对比   │   │ Markdown生成  │
+  └──────────┘    └─────────────┘    └──────────┘    └──────────────┘
+       │                │                 │                  │
+       │                │           data/history/            │
+       │                └── llm_client.py ──┘                │
+       │                                                     ▼
+  12+ sources                                      content/YYYY-MM-DD.md
 ```
 
 | Step | Script | Purpose |
 |------|--------|---------|
 | 1 | `fetch.py` | Pull fresh content from 12+ sources across 4 categories |
-| 2 | `analyze.py` | Stage-1 prompt — extract themes, significance, and executive summary as JSON |
-| 3 | `generate.py` | Stage-2 prompt — convert structured analysis into a polished Markdown post |
-| — | `main.py` | Orchestrator that runs steps 1→2→3 in sequence |
-| — | `llm_client.py` | Shared LLM client factory — supports Groq, OpenAI, or any compatible API |
+| 2 | `analyze.py` | Stage-1 — five-dimension structural change analysis + keyword extraction |
+| 3 | `trend.py` | Compare today's topic vectors against 30-day history; detect trend signals |
+| 4 | `generate.py` | Stage-2 — generate Markdown insight post with trend context |
+| — | `main.py` | Orchestrator: fetch → analyze → trend → generate |
+| — | `llm_client.py` | Shared LLM client factory (Groq / OpenAI / custom) |
+
+## Trend Analysis (the "real insight" layer)
+
+The `trend.py` module is what separates this project from a news aggregator.
+Each day after Stage-1 analysis:
+
+1. **Store** — Today's dimension texts and keywords are saved as a daily record in `data/history/`.
+2. **Vectorize** — TF-IDF topic vectors are built across the 30-day corpus (character n-grams for Chinese+English support).
+3. **Compare** — Today's topic vector is compared against the historical average via cosine similarity.
+4. **Detect** three types of signals:
+
+| Signal | Detection Method | Example |
+|--------|-----------------|---------|
+| **Sudden spike** | High similarity to last 3 days, low to older history | "基础设施话题近3天突然升温" |
+| **Continuous trend** | Monotonically increasing similarity over 5-7 days | "资本信号已连续6天增强" |
+| **Emerging topic** | Very low similarity to ALL history | "技术层出现全新话题（novelty 0.99）" |
+
+Additionally, **keyword frequency tracking** identifies:
+- **New keywords** — terms never seen in the 30-day window
+- **Rising keywords** — terms with increasing daily frequency
+- **Fading keywords** — previously common terms that have disappeared
+
+The trend report is injected into the Stage-2 prompt, so the generated blog post
+naturally includes historical context like "this trend has been building for 5 days"
+or "this is a brand-new direction in the 30-day window."
 
 ## Information Sources
 
@@ -47,19 +68,19 @@ GitHub Actions (cron 06:00 UTC)
 
 ### 2. Company Updates
 
-| Source | Type | Feed |
-|--------|------|------|
+| Source | Type | Method |
+|--------|------|--------|
 | OpenAI Blog | RSS | `openai.com/blog/rss.xml` |
-| Anthropic Blog | RSS | `anthropic.com/rss.xml` |
+| Anthropic Blog | Scrape | HTML parse from `/news` |
 | Google DeepMind Blog | RSS | `deepmind.google/blog/rss.xml` |
-| Meta AI Blog | RSS | `ai.meta.com/blog/rss/` |
+| Meta AI Blog | Scrape | HTML parse from `/blog/` |
 
 ### 3. Open-Source Ecosystem
 
-| Source | Type | How |
-|--------|------|-----|
-| GitHub Trending (AI/ML) | HTML scrape | Trending Python repos filtered by AI keywords |
-| HuggingFace Trending | API | `huggingface.co/api/models?sort=trending` |
+| Source | Type | Method |
+|--------|------|--------|
+| GitHub Trending (AI/ML) | Scrape | Trending Python repos filtered by AI keywords |
+| HuggingFace Trending | API | `huggingface.co/api/models?sort=trendingScore` |
 
 ### 4. Capital & Industry
 
@@ -91,7 +112,7 @@ python main.py --dry-run
 ```bash
 export LLM_PROVIDER="openai"
 export LLM_API_KEY="sk-..."
-export LLM_MODEL="gpt-4o"       # optional, this is the default for openai
+export LLM_MODEL="gpt-4o"
 ```
 
 ## Environment Variables
