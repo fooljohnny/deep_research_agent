@@ -97,6 +97,25 @@ tags: [关键标签]
 - 如果趋势报告有 overall_novelty 或 keyword_trends 数据，
   在这里引用作为"坐标感"的依据。
 
+#### # 数据洞察（新增，必写）
+根据提供的 metrics_report 数据，撰写以下四个小节（有数据则分析，无数据则简要说明"今日暂无数据"）：
+
+1. **arXiv 摘要对比 — 模型能力提升曲线**
+   - 若 arxiv_capability 有 capability_score 和 trend，说明今日论文话题与历史的延续/跃迁情况。
+   - 趋势为「跃迁」表示能力相关话题显著更新；「延续」表示在既有方向深化。
+
+2. **GitHub Star 增速分析**
+   - 若 github_stars 有 top_growth，列出增速最快的 2-3 个仓库及增速。
+   - 若有 new_repos，说明今日新晋热门项目。
+
+3. **HuggingFace 模型下载量变化**
+   - 若 huggingface_downloads 有 top_downloads 或 top_growth，说明下载量最高的模型及增速最快的模型。
+   - 反映开源模型采用热度。
+
+4. **趋势图**
+   - 若提供了 chart_paths，在文中引用：`![arXiv能力曲线](charts/YYYY-MM-DD_arxiv_capability.png)` 等。
+   - 若无图表，可省略。
+
 #### # 参考来源
 - 列出今日分析中引用和参考的**所有**文章链接。
 - 按来源类别分组（论文、公司动态、开源生态、资本与行业）。
@@ -114,6 +133,8 @@ tags: [关键标签]
 def _build_user_prompt(
     analysis: dict[str, Any],
     trend_report: dict[str, Any] | None = None,
+    metrics_report: dict[str, Any] | None = None,
+    chart_paths: list[str] | None = None,
 ) -> str:
     parts = [
         "## 今日结构分析\n",
@@ -128,22 +149,36 @@ def _build_user_prompt(
             f"\n\n## 趋势对比\n{trend_report.get('message', '历史数据不足，暂无趋势分析。')}"
         )
 
+    if metrics_report:
+        parts.append("\n\n## 数据洞察报告 (metrics_report)\n")
+        parts.append(json.dumps(metrics_report, indent=2, ensure_ascii=False))
+
+    if chart_paths:
+        parts.append("\n\n## 趋势图路径 (chart_paths)\n")
+        parts.append(json.dumps(chart_paths, ensure_ascii=False))
+
     return "\n".join(parts)
 
 
 def generate_post(
     analysis: dict[str, Any],
     trend_report: dict[str, Any] | None = None,
+    metrics_report: dict[str, Any] | None = None,
+    chart_paths: list[str] | None = None,
 ) -> tuple[str, dict[str, Any]]:
     """
-    Stage-2 generation: analysis + trends → Markdown insight blog post.
+    Stage-2 generation: analysis + trends + metrics → Markdown insight blog post.
 
     Returns (markdown_string, token_usage_dict).
     """
     client = get_client()
     model = get_model()
 
-    user_prompt = _build_user_prompt(analysis, trend_report)
+    user_prompt = _build_user_prompt(
+        analysis, trend_report,
+        metrics_report=metrics_report,
+        chart_paths=chart_paths,
+    )
     logger.info("Sending analysis + trends to LLM (%s) for Stage-2 generation …", model)
 
     response = client.chat.completions.create(

@@ -19,9 +19,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from fetch import fetch_articles
+from fetch import fetch_articles, fetch_metrics_snapshot
 from analyze import analyze_articles
 from trend import analyze_trends, save_daily
+from metrics import analyze_metrics, save_daily_metrics
+from charts import generate_trend_charts
 from generate import generate_post
 
 logger = logging.getLogger("ai-daily-insight")
@@ -151,7 +153,7 @@ def run_pipeline(dry_run: bool = False) -> None:
     logger.info("=== AI Daily Insight Pipeline — %s ===", today)
 
     # ── Step 1: Fetch ──────────────────────────────────────────────
-    logger.info("[1/4] Fetching content from all sources …")
+    logger.info("[1/5] Fetching content from all sources …")
     articles, fetch_stats = fetch_articles()
     logger.info("Collected %d fresh article(s).", len(articles))
 
@@ -163,8 +165,14 @@ def run_pipeline(dry_run: bool = False) -> None:
         logger.info("Dry-run mode — stopping after fetch.")
         return
 
+    # 采集指标快照（arXiv / GitHub / HuggingFace）
+    logger.info("Fetching metrics snapshot for insight …")
+    metrics_snapshot = fetch_metrics_snapshot()
+    save_daily_metrics(today, metrics_snapshot)
+    metrics_report = analyze_metrics(metrics_snapshot)
+
     # ── Step 2: Structural Analysis (Stage-1 Prompt) ────────────────
-    logger.info("[2/4] Running structural change analysis …")
+    logger.info("[2/5] Running structural change analysis …")
     analysis, stage1_usage = analyze_articles(articles)
     logger.info("Title: %s", analysis.get("title", ""))
     logger.info("Keywords: %s", ", ".join(analysis.get("keywords", [])))
@@ -175,7 +183,7 @@ def run_pipeline(dry_run: bool = False) -> None:
     )
 
     # ── Step 3: Trend Comparison ───────────────────────────────────
-    logger.info("[3/4] Comparing against historical trends …")
+    logger.info("[3/5] Comparing against historical trends …")
     today_date = analysis.get("date", today)
     trend_report = analyze_trends(analysis)
     save_daily(today_date, analysis)
@@ -185,9 +193,22 @@ def run_pipeline(dry_run: bool = False) -> None:
         json.dumps(trend_report, indent=2, ensure_ascii=False), encoding="utf-8"
     )
 
-    # ── Step 4: Generate Insight Post (Stage-2 Prompt) ──────────────
-    logger.info("[4/4] Generating Markdown insight post …")
-    markdown, stage2_usage = generate_post(analysis, trend_report)
+    # ── Step 4: Generate trend charts ──────────────────────────────
+    logger.info("[4/5] Generating trend charts …")
+    chart_paths: list[str] = []
+    for p in generate_trend_charts(today):
+        # 相对路径：content/YYYY-MM-DD.md 引用 charts/xxx.png
+        content_dir = PROJECT_ROOT / "content"
+        rel = p.relative_to(content_dir)
+        chart_paths.append(str(rel))
+
+    # ── Step 5: Generate Insight Post (Stage-2 Prompt) ──────────────
+    logger.info("[5/5] Generating Markdown insight post …")
+    markdown, stage2_usage = generate_post(
+        analysis, trend_report,
+        metrics_report=metrics_report,
+        chart_paths=chart_paths if chart_paths else None,
+    )
 
     pipeline_elapsed = time.monotonic() - pipeline_start
     logger.info("=== Pipeline complete (%.1fs) ===", pipeline_elapsed)
