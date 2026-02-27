@@ -189,13 +189,21 @@ def _empty_analysis() -> dict[str, Any]:
     }
 
 
-def analyze_articles(articles: list[dict[str, str]]) -> dict[str, Any]:
+def analyze_articles(
+    articles: list[dict[str, str]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
     """
     Stage-1: structural change analysis → JSON.
+
+    Returns (analysis_dict, token_usage_dict).
     """
+    empty_usage: dict[str, Any] = {
+        "model": "", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
+    }
+
     if not articles:
         logger.warning("No articles to analyse — returning empty analysis.")
-        return _empty_analysis()
+        return _empty_analysis(), empty_usage
 
     client = get_client()
     model = get_model()
@@ -218,9 +226,23 @@ def analyze_articles(articles: list[dict[str, str]]) -> dict[str, Any]:
 
     raw = response.choices[0].message.content
     analysis: dict[str, Any] = json.loads(raw)  # type: ignore[arg-type]
-    logger.info("Stage-1 complete: %s", analysis.get("title", ""))
+
+    usage = getattr(response, "usage", None)
+    token_usage: dict[str, Any] = {
+        "model": model,
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+    }
+    logger.info(
+        "Stage-1 complete: %s  (tokens: %d prompt + %d completion = %d total)",
+        analysis.get("title", ""),
+        token_usage["prompt_tokens"],
+        token_usage["completion_tokens"],
+        token_usage["total_tokens"],
+    )
     logger.info("Core insight: %s", analysis.get("core_insight", ""))
-    return analysis
+    return analysis, token_usage
 
 
 if __name__ == "__main__":

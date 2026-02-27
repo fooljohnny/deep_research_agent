@@ -128,11 +128,11 @@ def _build_user_prompt(
 def generate_post(
     analysis: dict[str, Any],
     trend_report: dict[str, Any] | None = None,
-) -> str:
+) -> tuple[str, dict[str, Any]]:
     """
     Stage-2 generation: analysis + trends → Markdown insight blog post.
 
-    Returns the Markdown string and writes it to content/<date>.md.
+    Returns (markdown_string, token_usage_dict).
     """
     client = get_client()
     model = get_model()
@@ -151,13 +151,27 @@ def generate_post(
 
     markdown: str = response.choices[0].message.content or ""
 
+    usage = getattr(response, "usage", None)
+    token_usage: dict[str, Any] = {
+        "model": model,
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+    }
+
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     CONTENT_DIR.mkdir(parents=True, exist_ok=True)
     out_path = CONTENT_DIR / f"{today}.md"
     out_path.write_text(markdown, encoding="utf-8")
-    logger.info("Blog post written to %s (%d chars)", out_path, len(markdown))
+    logger.info(
+        "Blog post written to %s (%d chars)  (tokens: %d prompt + %d completion = %d total)",
+        out_path, len(markdown),
+        token_usage["prompt_tokens"],
+        token_usage["completion_tokens"],
+        token_usage["total_tokens"],
+    )
 
-    return markdown
+    return markdown, token_usage
 
 
 if __name__ == "__main__":
