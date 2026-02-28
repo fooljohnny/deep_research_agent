@@ -88,6 +88,7 @@ or "this is a brand-new direction in the 30-day window."
 | OpenAI Blog | RSS | `openai.com/blog/rss.xml` |
 | Anthropic Blog | Scrape | HTML parse from `/news` |
 | Google DeepMind Blog | RSS | `deepmind.google/blog/rss.xml` |
+| Google AI Blog | RSS | `research.google/blog/rss/` |
 | Meta AI Blog | Scrape | HTML parse from `/blog/` |
 
 ### 3. Open-Source Ecosystem

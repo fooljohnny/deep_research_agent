@@ -3,7 +3,7 @@ fetch.py — Multi-source fetcher for AI-related content.
 
 Pulls from four categories of sources:
   1. Papers    — arXiv cs.AI / cs.LG / cs.CL
-  2. Company   — OpenAI, Anthropic, Google DeepMind, Meta AI
+  2. Company   — OpenAI, Anthropic, Google DeepMind, Google AI, Meta AI
   3. Open-source — GitHub Trending (AI/ML), HuggingFace trending models
   4. Industry  — TechCrunch AI, VentureBeat AI, Crunchbase News
 
@@ -33,7 +33,8 @@ RSS_FEEDS: list[dict[str, str]] = [
     {"name": "arXiv cs.LG",        "url": "https://rss.arxiv.org/rss/cs.LG",        "category": "papers"},
     {"name": "arXiv cs.CL",        "url": "https://rss.arxiv.org/rss/cs.CL",        "category": "papers"},
     {"name": "OpenAI Blog",        "url": "https://openai.com/blog/rss.xml",        "category": "company"},
-    {"name": "Google DeepMind Blog","url": "https://deepmind.google/blog/rss.xml",   "category": "company"},
+    {"name": "Google DeepMind Blog", "url": "https://deepmind.google/blog/rss.xml",   "category": "company"},
+    {"name": "Google AI Blog",       "url": "https://research.google/blog/rss/", "category": "company"},
     {"name": "TechCrunch AI",      "url": "https://techcrunch.com/category/artificial-intelligence/feed/", "category": "industry"},
     {"name": "VentureBeat AI",     "url": "https://venturebeat.com/category/ai/feed/","category": "industry"},
     {"name": "Crunchbase News",    "url": "https://news.crunchbase.com/feed/",       "category": "industry"},
