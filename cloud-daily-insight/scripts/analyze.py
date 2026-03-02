@@ -9,6 +9,7 @@ a Markdown insight post.
 
 import json
 import logging
+import re
 from typing import Any
 
 from llm_client import get_client, get_model
@@ -240,18 +241,49 @@ def analyze_articles(
         sampled_count, len(articles), model,
     )
 
-    response = client.chat.completions.create(
-        model=model,
-        temperature=0.3,
-        response_format={"type": "json_object"},
-        messages=[
+    # groq/compound 对 response_format 支持不稳定，可能返回空；仅对非 compound 使用
+    create_kwargs: dict[str, Any] = {
+        "model": model,
+        "temperature": 0.3,
+        "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-    )
+    }
+    if "compound" not in model.lower():
+        create_kwargs["response_format"] = {"type": "json_object"}
+    response = client.chat.completions.create(**create_kwargs)
 
-    raw = response.choices[0].message.content
-    analysis: dict[str, Any] = json.loads(raw)  # type: ignore[arg-type]
+    raw = response.choices[0].message.content or ""
+    raw = raw.strip()
+    # 移除可能的 markdown 代码块包裹
+    if raw.startswith("```"):
+        lines = raw.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        raw = "\n".join(lines)
+    # 若仍无内容，尝试从 executed_tools 等提取（compound 模型可能返回不同结构）
+    if not raw and hasattr(response.choices[0].message, "executed_tools"):
+        tools = getattr(response.choices[0].message, "executed_tools", [])
+        for t in tools:
+            if isinstance(t, dict) and "result" in t:
+                raw = str(t.get("result", ""))
+                break
+    if not raw:
+        logger.error("LLM returned empty content. Full response: %s", response)
+        raise ValueError("LLM returned empty response")
+    try:
+        analysis: dict[str, Any] = json.loads(raw)
+    except json.JSONDecodeError:
+        # 尝试用正则提取 JSON 块
+        m = re.search(r"\{[\s\S]*\}", raw)
+        if m:
+            analysis = json.loads(m.group(0))  # type: ignore[assignment]
+        else:
+            logger.error("LLM returned invalid JSON. Raw (first 500): %s", raw[:500])
+            raise
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
