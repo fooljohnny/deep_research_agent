@@ -36,7 +36,7 @@ jobs:
         env:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: ${{ vars.LLM_MODEL || 'llama-3.3-70b-versatile' }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'groq/compound' }}
         run: python main.py
 
       - name: Commit & push new post
