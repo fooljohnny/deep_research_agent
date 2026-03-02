@@ -37,6 +37,8 @@ jobs:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'groq/compound' }}
+          STAGE_DELAY_SEC: ${{ vars.STAGE_DELAY_SEC || '65' }}
+          RETRY_DELAY_SEC: ${{ vars.RETRY_DELAY_SEC || '65' }}
         run: python main.py
 
       - name: Commit & push new post

@@ -102,7 +102,18 @@ export LLM_MODEL="gpt-4o"
 |------|------|------|------|
 | `LLM_API_KEY` | **是** | — | LLM 的 API Key |
 | `LLM_PROVIDER` | 否 | `groq` | `groq` / `openai` / `custom` |
-| `LLM_MODEL` | 否 | 按 provider | 模型名称 |
+| `LLM_MODEL` | 否 | `groq/compound` | 模型名称 |
+| `STAGE_DELAY_SEC` | 否 | `65` | Stage-1 与 Stage-2 间隔秒数，缓解 TPM 限流 |
+| `RETRY_DELAY_SEC` | 否 | `65` | 429 重试前等待秒数 |
+
+## Groq 限流说明
+
+`groq/compound` 底层使用 gpt-oss-120b，在 **on-demand 免费档** 约 **8K TPM**。  
+Pipeline 两阶段合计约 10K tokens，需跨分钟执行。
+
+- 查看你的实际限制：<https://console.groq.com/settings/limits>
+- 若为 **Developer 计划**（200K TPM），可将 `STAGE_DELAY_SEC=0` 加速
+- 若仍遇 429，可增大 `STAGE_DELAY_SEC` 或 `RETRY_DELAY_SEC`
 
 ## GitHub Actions 配置
 
