@@ -13,11 +13,16 @@ Writes a detailed process log to logs/YYYY-MM-DD.log.
 import argparse
 import json
 import logging
+import os
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+# Stage-1 与 Stage-2 间隔，缓解 compound 模型 TPM 限流
+# compound = llama-4-scout + gpt-oss-120b，限流取两者更严者；gpt-oss 在 on-demand 约 8K TPM
+STAGE_DELAY_SEC = int(os.environ.get("STAGE_DELAY_SEC", "65"))
 
 from fetch import fetch_articles, fetch_metrics_snapshot
 from analyze import analyze_articles
@@ -199,6 +204,10 @@ def run_pipeline(dry_run: bool = False) -> None:
         content_dir = PROJECT_ROOT / "content"
         rel = p.relative_to(content_dir)
         chart_paths.append(str(rel))
+
+    # ── Stage 间隔（缓解 compound TPM 限流）──────────────────────────
+    logger.info("Waiting %ds for TPM buffer before Stage-2 …", STAGE_DELAY_SEC)
+    time.sleep(STAGE_DELAY_SEC)
 
     # ── Step 5: Generate Insight Post (Stage-2 Prompt) ──────────────
     logger.info("[5/5] Generating Markdown insight post …")
