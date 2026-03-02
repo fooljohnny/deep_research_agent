@@ -16,9 +16,9 @@ from llm_client import get_client, get_model, chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
-# Groq 免费版 TPM 限制约 12k，需控制 prompt 体积
-MAX_ARTICLES_FOR_ANALYSIS = 45
-MAX_SUMMARY_CHARS = 200
+# 控制 prompt 体积，避免 compound 子模型 8K TPM 超限
+MAX_ARTICLES_FOR_ANALYSIS = 30
+MAX_SUMMARY_CHARS = 150
 
 SYSTEM_PROMPT = """\
 你是一位云计算与SaaS产业结构分析师。
