@@ -16,6 +16,9 @@ import logging
 import sys
 import time
 from datetime import datetime, timezone
+
+# Stage-1 与 Stage-2 间隔，缓解 compound 模型 TPM 限流
+STAGE_DELAY_SEC = 25
 from pathlib import Path
 from typing import Any
 
@@ -199,6 +202,10 @@ def run_pipeline(dry_run: bool = False) -> None:
         content_dir = PROJECT_ROOT / "content"
         rel = p.relative_to(content_dir)
         chart_paths.append(str(rel))
+
+    # ── Stage 间隔（缓解 compound TPM 限流）──────────────────────────
+    logger.info("Waiting %ds for TPM buffer before Stage-2 …", STAGE_DELAY_SEC)
+    time.sleep(STAGE_DELAY_SEC)
 
     # ── Step 5: Generate Insight Post (Stage-2 Prompt) ──────────────
     logger.info("[5/5] Generating Markdown insight post …")

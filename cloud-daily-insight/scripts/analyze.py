@@ -12,7 +12,7 @@ import logging
 import re
 from typing import Any
 
-from llm_client import get_client, get_model
+from llm_client import get_client, get_model, chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +252,7 @@ def analyze_articles(
     }
     if "compound" not in model.lower():
         create_kwargs["response_format"] = {"type": "json_object"}
-    response = client.chat.completions.create(**create_kwargs)
+    response = chat_completion_with_retry(**create_kwargs)
 
     raw = response.choices[0].message.content or ""
     raw = raw.strip()

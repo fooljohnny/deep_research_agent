@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_client import get_client, get_model
+from llm_client import get_model, chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -163,7 +163,6 @@ def generate_post(
 
     Returns (markdown_string, token_usage_dict).
     """
-    client = get_client()
     model = get_model()
 
     user_prompt = _build_user_prompt(
@@ -173,7 +172,7 @@ def generate_post(
     )
     logger.info("Sending analysis + trends to LLM (%s) for Stage-2 generation …", model)
 
-    response = client.chat.completions.create(
+    response = chat_completion_with_retry(
         model=model,
         temperature=0.5,
         messages=[
