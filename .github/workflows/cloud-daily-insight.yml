@@ -39,6 +39,7 @@ jobs:
           LLM_MODEL: ${{ vars.LLM_MODEL || 'groq/compound' }}
           STAGE_DELAY_SEC: ${{ vars.STAGE_DELAY_SEC || '65' }}
           RETRY_DELAY_SEC: ${{ vars.RETRY_DELAY_SEC || '65' }}
+          BATCH_DELAY_SEC: ${{ vars.BATCH_DELAY_SEC || '65' }}
         run: python main.py
 
       - name: Commit & push new post

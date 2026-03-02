@@ -27,7 +27,7 @@ GitHub Actions (cron 21:00 UTC = 北京时间 05:00)
 | 步骤 | 脚本 | 用途 |
 |------|------|------|
 | 1 | `fetch.py` | 从 20+ 云/SaaS 源拉取内容 |
-| 2 | `analyze.py` | Stage-1 — 五维度结构性变化分析 + 关键词提取 |
+| 2 | `analyze.py` | Stage-1 — 分批分析（每批≤30篇）+ 合并，五维度结构性变化 |
 | 3 | `trend.py` | 今日话题向量与 30 天历史对比，检测趋势信号 |
 | 4 | `metrics.py` | 云厂商/SaaS 话题演化分析 |
 | 5 | `charts.py` | 自动生成趋势图 |
@@ -105,6 +105,7 @@ export LLM_MODEL="gpt-4o"
 | `LLM_MODEL` | 否 | `groq/compound` | 模型名称 |
 | `STAGE_DELAY_SEC` | 否 | `65` | Stage-1 与 Stage-2 间隔秒数，缓解 TPM 限流 |
 | `RETRY_DELAY_SEC` | 否 | `65` | 429 重试前等待秒数 |
+| `BATCH_DELAY_SEC` | 否 | `65` | Stage-1 各批次间间隔秒数 |
 
 ## Groq 限流说明
 
@@ -121,6 +122,9 @@ Pipeline 两阶段合计约 10K tokens，受 **gpt-oss-120b 的 8K TPM** 约束�
 - 查看你的实际限制：<https://console.groq.com/settings/limits>
 - 若为 **Developer 计划**（compound 约 200K TPM），可将 `STAGE_DELAY_SEC=0` 加速
 - 若仍遇 429，可增大 `STAGE_DELAY_SEC` 或 `RETRY_DELAY_SEC`
+
+**分批分析**：Stage-1 将文章拆成多批（每批≤30 篇），每批调用一次 LLM，多批时再调用一次合并。
+94 篇文章 → 4 批分析 + 1 次合并 = 5 次 LLM 调用，可覆盖全部文章。
 
 ## GitHub Actions 配置
 

@@ -5,20 +5,26 @@ Identifies *structural shifts* across five dimensions for cloud & SaaS:
 technology, infrastructure, applications, capital, and risk.
 The output is a structured JSON that Stage-2 (generate.py) turns into
 a Markdown insight post.
+
+支持分批分析：将文章拆成多批（每批≤30篇），每批调用一次 LLM，最后合并结果。
 """
 
 import json
 import logging
+import os
 import re
+import time
 from typing import Any
 
 from llm_client import get_client, get_model, chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
-# 控制 prompt 体积，避免 compound 子模型 8K TPM 超限
-MAX_ARTICLES_FOR_ANALYSIS = 30
+# 每批最多文章数，控制单次 prompt 体积
+BATCH_SIZE = 30
 MAX_SUMMARY_CHARS = 150
+# 批次间等待（秒），缓解 TPM 限流
+BATCH_DELAY_SEC = int(os.environ.get("BATCH_DELAY_SEC", "65"))
 
 SYSTEM_PROMPT = """\
 你是一位云计算与SaaS产业结构分析师。
@@ -131,35 +137,56 @@ SYSTEM_PROMPT = """\
 }
 """
 
+MERGE_SYSTEM_PROMPT = """\
+你是云计算产业结构分析师。你收到多份「分批分析」的结构化 JSON，每份来自不同文章子集。
 
-def _sample_articles(articles: list[dict[str, str]], max_total: int) -> list[dict[str, str]]:
-    """按类别均衡采样，保证云/SaaS/行业均有覆盖，且总条数不超过 max_total。"""
+请将它们合并为**一份**统一的结构分析 JSON，要求：
+1. 合并各维度的 evidence，去重（同 URL 只保留一条），按重要性排序，每维度最多保留 10 条
+2. 各维度的分析文本：综合多份的结论，取信号更强者；若多份都无变化则保持「今日无显著变化」
+3. intensity：取多份中最强的（重大突破>渐进改善>无显著变化；强信号>中等>弱）
+4. core_insight：用一句话概括所有批次中最值得关注的结构性变化
+5. title：综合性的博客标题
+6. keywords：合并去重，保留 8-15 个核心关键词
+
+返回严格的 JSON，schema 与输入一致，不要 markdown 代码块。
+"""
+
+
+def _split_into_batches(articles: list[dict[str, str]]) -> list[list[dict[str, str]]]:
+    """按类别均衡拆分为多批，每批最多 BATCH_SIZE 篇，轮询保证每批都有云/SaaS/行业覆盖。"""
     by_category: dict[str, list[dict[str, str]]] = {}
     for a in articles:
         cat = a.get("category", "other")
         by_category.setdefault(cat, []).append(a)
 
-    # 每类最多取若干条，保证多样性
-    per_cat = max(8, max_total // 4)
-    sampled: list[dict[str, str]] = []
-    for cat in ["cloud", "saas", "industry", "other"]:
-        items = by_category.get(cat, [])
-        sampled.extend(items[:per_cat])
-    return sampled[:max_total]
+    cats = ["cloud", "saas", "industry", "other"]
+    # 轮询交错，保证每批多样性
+    ordered: list[dict[str, str]] = []
+    max_len = max(len(by_category.get(c, [])) for c in cats)
+    for i in range(max_len):
+        for c in cats:
+            items = by_category.get(c, [])
+            if i < len(items):
+                ordered.append(items[i])
 
-
-def _build_user_prompt(articles: list[dict[str, str]]) -> str:
-    sampled = _sample_articles(articles, MAX_ARTICLES_FOR_ANALYSIS)
-    lines = [
-        f"今日日期: {_today()}",
-        f"信息条目数: {len(sampled)}",
-        "",
-        "以下是今日新增的云计算/SaaS信息列表（按来源分类）：",
-        "",
+    return [
+        ordered[i : i + BATCH_SIZE]
+        for i in range(0, len(ordered), BATCH_SIZE)
     ]
 
+
+def _build_user_prompt(articles: list[dict[str, str]], batch_label: str = "") -> str:
+    lines = [
+        f"今日日期: {_today()}",
+        f"信息条目数: {len(articles)}",
+        "",
+    ]
+    if batch_label:
+        lines.append(f"{batch_label}\n")
+    lines.append("以下是云计算/SaaS信息列表（按来源分类）：\n")
+
     by_category: dict[str, list[dict[str, str]]] = {}
-    for a in sampled:
+    for a in articles:
         cat = a.get("category", "other")
         by_category.setdefault(cat, []).append(a)
 
@@ -193,6 +220,34 @@ def _today() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+def _parse_llm_json(raw: str, response: Any) -> dict[str, Any]:
+    """解析 LLM 返回的 JSON，处理 markdown 包裹与空内容。"""
+    raw = (raw or "").strip()
+    if raw.startswith("```"):
+        lines = raw.split("\n")
+        if lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        raw = "\n".join(lines)
+    if not raw and hasattr(response.choices[0].message, "executed_tools"):
+        tools = getattr(response.choices[0].message, "executed_tools", [])
+        for t in tools:
+            if isinstance(t, dict) and "result" in t:
+                raw = str(t.get("result", ""))
+                break
+    if not raw:
+        raise ValueError("LLM returned empty response")
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        m = re.search(r"\{[\s\S]*\}", raw)
+        if m:
+            return json.loads(m.group(0))
+        logger.error("Invalid JSON. Raw (first 500): %s", raw[:500])
+        raise
+
+
 def _empty_analysis() -> dict[str, Any]:
     """Fallback when no articles are available."""
     empty_dim = {
@@ -215,33 +270,16 @@ def _empty_analysis() -> dict[str, Any]:
     }
 
 
-def analyze_articles(
+def _analyze_batch(
     articles: list[dict[str, str]],
+    batch_idx: int,
+    total_batches: int,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Stage-1: structural change analysis → JSON.
-
-    Returns (analysis_dict, token_usage_dict).
-    """
-    empty_usage: dict[str, Any] = {
-        "model": "", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
-    }
-
-    if not articles:
-        logger.warning("No articles to analyse — returning empty analysis.")
-        return _empty_analysis(), empty_usage
-
-    client = get_client()
+    """分析单批文章，返回 (analysis, token_usage)。"""
     model = get_model()
+    label = f"第 {batch_idx + 1}/{total_batches} 批" if total_batches > 1 else ""
+    user_prompt = _build_user_prompt(articles, batch_label=label)
 
-    sampled_count = len(_sample_articles(articles, MAX_ARTICLES_FOR_ANALYSIS))
-    user_prompt = _build_user_prompt(articles)
-    logger.info(
-        "Sending %d articles (sampled from %d) to LLM (%s) for structural analysis …",
-        sampled_count, len(articles), model,
-    )
-
-    # groq/compound 对 response_format 支持不稳定，可能返回空；仅对非 compound 使用
     create_kwargs: dict[str, Any] = {
         "model": model,
         "temperature": 0.3,
@@ -253,37 +291,8 @@ def analyze_articles(
     if "compound" not in model.lower():
         create_kwargs["response_format"] = {"type": "json_object"}
     response = chat_completion_with_retry(**create_kwargs)
-
     raw = response.choices[0].message.content or ""
-    raw = raw.strip()
-    # 移除可能的 markdown 代码块包裹
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        if lines[0].startswith("```"):
-            lines = lines[1:]
-        if lines and lines[-1].strip() == "```":
-            lines = lines[:-1]
-        raw = "\n".join(lines)
-    # 若仍无内容，尝试从 executed_tools 等提取（compound 模型可能返回不同结构）
-    if not raw and hasattr(response.choices[0].message, "executed_tools"):
-        tools = getattr(response.choices[0].message, "executed_tools", [])
-        for t in tools:
-            if isinstance(t, dict) and "result" in t:
-                raw = str(t.get("result", ""))
-                break
-    if not raw:
-        logger.error("LLM returned empty content. Full response: %s", response)
-        raise ValueError("LLM returned empty response")
-    try:
-        analysis: dict[str, Any] = json.loads(raw)
-    except json.JSONDecodeError:
-        # 尝试用正则提取 JSON 块
-        m = re.search(r"\{[\s\S]*\}", raw)
-        if m:
-            analysis = json.loads(m.group(0))  # type: ignore[assignment]
-        else:
-            logger.error("LLM returned invalid JSON. Raw (first 500): %s", raw[:500])
-            raise
+    analysis = _parse_llm_json(raw, response)
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
@@ -292,6 +301,100 @@ def analyze_articles(
         "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
         "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
     }
+    return analysis, token_usage
+
+
+def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """将多份分批分析合并为一份，调用 LLM。"""
+    model = get_model()
+    user_prompt = (
+        f"今日日期: {_today()}\n\n"
+        f"以下是 {len(analyses)} 份分批分析结果，请合并为一份：\n\n"
+        + json.dumps(analyses, indent=2, ensure_ascii=False)
+    )
+    create_kwargs: dict[str, Any] = {
+        "model": model,
+        "temperature": 0.2,
+        "messages": [
+            {"role": "system", "content": MERGE_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+    }
+    if "compound" not in model.lower():
+        create_kwargs["response_format"] = {"type": "json_object"}
+    response = chat_completion_with_retry(**create_kwargs)
+    raw = response.choices[0].message.content or ""
+    merged = _parse_llm_json(raw, response)
+    if "date" not in merged or not merged["date"]:
+        merged["date"] = _today()
+
+    usage = getattr(response, "usage", None)
+    token_usage: dict[str, Any] = {
+        "model": model,
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+    }
+    return merged, token_usage
+
+
+def analyze_articles(
+    articles: list[dict[str, str]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Stage-1: 分批结构分析 → 合并 → JSON。
+
+    将文章拆成多批（每批≤BATCH_SIZE），每批调用一次 LLM，最后合并。
+    Returns (analysis_dict, token_usage_dict)。
+    """
+    empty_usage: dict[str, Any] = {
+        "model": "", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
+    }
+
+    if not articles:
+        logger.warning("No articles to analyse — returning empty analysis.")
+        return _empty_analysis(), empty_usage
+
+    model = get_model()
+    batches = _split_into_batches(articles)
+    logger.info(
+        "Stage-1: %d articles → %d batch(es), %d per batch, model=%s",
+        len(articles), len(batches), BATCH_SIZE, model,
+    )
+
+    batch_analyses: list[dict[str, Any]] = []
+    total_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+    for i, batch in enumerate(batches):
+        if i > 0:
+            logger.info("Waiting %ds for TPM buffer before next batch …", BATCH_DELAY_SEC)
+            time.sleep(BATCH_DELAY_SEC)
+        logger.info("Analyzing batch %d/%d (%d articles) …", i + 1, len(batches), len(batch))
+        analysis, usage = _analyze_batch(batch, i, len(batches))
+        batch_analyses.append(analysis)
+        for k in total_usage:
+            total_usage[k] += usage.get(k, 0)
+
+    if len(batch_analyses) == 1:
+        analysis = batch_analyses[0]
+        token_usage = {
+            "model": model,
+            "prompt_tokens": total_usage["prompt_tokens"],
+            "completion_tokens": total_usage["completion_tokens"],
+            "total_tokens": total_usage["total_tokens"],
+        }
+    else:
+        logger.info("Waiting %ds before merge …", BATCH_DELAY_SEC)
+        time.sleep(BATCH_DELAY_SEC)
+        logger.info("Merging %d batch analyses …", len(batch_analyses))
+        analysis, merge_usage = _merge_analyses(batch_analyses)
+        token_usage = {
+            "model": model,
+            "prompt_tokens": total_usage["prompt_tokens"] + merge_usage.get("prompt_tokens", 0),
+            "completion_tokens": total_usage["completion_tokens"] + merge_usage.get("completion_tokens", 0),
+            "total_tokens": total_usage["total_tokens"] + merge_usage.get("total_tokens", 0),
+        }
+
     logger.info(
         "Stage-1 complete: %s  (tokens: %d prompt + %d completion = %d total)",
         analysis.get("title", ""),
