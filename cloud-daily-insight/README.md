@@ -108,11 +108,18 @@ export LLM_MODEL="gpt-4o"
 
 ## Groq 限流说明
 
-`groq/compound` 底层使用 gpt-oss-120b，在 **on-demand 免费档** 约 **8K TPM**。  
-Pipeline 两阶段合计约 10K tokens，需跨分钟执行。
+`groq/compound` 是混合模型，由 **meta-llama/llama-4-scout-17b** 与 **openai/gpt-oss-120b** 组成，  
+限流取两者中**更严格**者：
+
+| 子模型 | On-Demand TPM | Developer TPM |
+|--------|---------------|---------------|
+| gpt-oss-120b | 8K | 250K |
+| llama-4-scout-17b | 30K | 30K |
+
+Pipeline 两阶段合计约 10K tokens，受 **gpt-oss-120b 的 8K TPM** 约束，需跨分钟执行。
 
 - 查看你的实际限制：<https://console.groq.com/settings/limits>
-- 若为 **Developer 计划**（200K TPM），可将 `STAGE_DELAY_SEC=0` 加速
+- 若为 **Developer 计划**（compound 约 200K TPM），可将 `STAGE_DELAY_SEC=0` 加速
 - 若仍遇 429，可增大 `STAGE_DELAY_SEC` 或 `RETRY_DELAY_SEC`
 
 ## GitHub Actions 配置

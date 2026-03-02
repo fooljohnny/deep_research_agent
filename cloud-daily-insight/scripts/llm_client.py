@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 from openai import RateLimitError
 
-# 429 TPM 限流时重试间隔（秒），需 ≥60 以跨过分钟窗口
+# 429 TPM 限流时重试间隔（秒），需 ≥60 以跨过 compound 子模型（gpt-oss 8K TPM）的分钟窗口
 RETRY_DELAY_SEC = int(os.environ.get("RETRY_DELAY_SEC", "65"))
 MAX_RETRIES = 3
 

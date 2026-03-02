@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 # Stage-1 与 Stage-2 间隔，缓解 compound 模型 TPM 限流
-# groq/compound 底层 gpt-oss-120b 在 on-demand 约 8K TPM，两阶段需跨分钟
+# compound = llama-4-scout + gpt-oss-120b，限流取两者更严者；gpt-oss 在 on-demand 约 8K TPM
 STAGE_DELAY_SEC = int(os.environ.get("STAGE_DELAY_SEC", "65"))
 
 from fetch import fetch_articles, fetch_metrics_snapshot
