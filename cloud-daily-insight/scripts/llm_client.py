@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
-        "model": "llama-3.3-70b-versatile",
+        "model": "groq/compound",  # 无每日 token 上限，避免 TPD 429
     },
     "openai": {
         "base_url": "https://api.openai.com/v1",
@@ -57,5 +57,5 @@ def get_model() -> str:
     """Return the model name to use."""
     provider = os.environ.get("LLM_PROVIDER", "groq").lower()
     defaults = PROVIDER_DEFAULTS.get(provider, {})
-    model = os.environ.get("LLM_MODEL", defaults.get("model", "llama-3.3-70b-versatile"))
+    model = os.environ.get("LLM_MODEL", defaults.get("model", "groq/compound"))
     return model

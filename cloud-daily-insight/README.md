@@ -4,7 +4,7 @@
 
 北京时间凌晨 5:00 定时运行，覆盖头部云厂商（AWS、Google Cloud、Azure、阿里云、腾讯云、火山云）及头部 SaaS 厂商（Salesforce、ServiceNow、Adobe、Workday、Zoom、Slack 等）的最新进展。
 
-Powered by **Groq**（默认）或 OpenAI 进行 LLM 推理。
+Powered by **Groq**（默认使用 `groq/compound`，无每日 token 上限）或 OpenAI 进行 LLM 推理。
 
 ## 架构
 
