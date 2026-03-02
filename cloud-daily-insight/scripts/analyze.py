@@ -15,6 +15,10 @@ from llm_client import get_client, get_model
 
 logger = logging.getLogger(__name__)
 
+# Groq 免费版 TPM 限制约 12k，需控制 prompt 体积
+MAX_ARTICLES_FOR_ANALYSIS = 45
+MAX_SUMMARY_CHARS = 200
+
 SYSTEM_PROMPT = """\
 你是一位云计算与SaaS产业结构分析师。
 
@@ -127,17 +131,34 @@ SYSTEM_PROMPT = """\
 """
 
 
+def _sample_articles(articles: list[dict[str, str]], max_total: int) -> list[dict[str, str]]:
+    """按类别均衡采样，保证云/SaaS/行业均有覆盖，且总条数不超过 max_total。"""
+    by_category: dict[str, list[dict[str, str]]] = {}
+    for a in articles:
+        cat = a.get("category", "other")
+        by_category.setdefault(cat, []).append(a)
+
+    # 每类最多取若干条，保证多样性
+    per_cat = max(8, max_total // 4)
+    sampled: list[dict[str, str]] = []
+    for cat in ["cloud", "saas", "industry", "other"]:
+        items = by_category.get(cat, [])
+        sampled.extend(items[:per_cat])
+    return sampled[:max_total]
+
+
 def _build_user_prompt(articles: list[dict[str, str]]) -> str:
+    sampled = _sample_articles(articles, MAX_ARTICLES_FOR_ANALYSIS)
     lines = [
         f"今日日期: {_today()}",
-        f"信息条目数: {len(articles)}",
+        f"信息条目数: {len(sampled)}",
         "",
         "以下是今日新增的云计算/SaaS信息列表（按来源分类）：",
         "",
     ]
 
     by_category: dict[str, list[dict[str, str]]] = {}
-    for a in articles:
+    for a in sampled:
         cat = a.get("category", "other")
         by_category.setdefault(cat, []).append(a)
 
@@ -159,7 +180,7 @@ def _build_user_prompt(articles: list[dict[str, str]]) -> str:
             lines.append(f"{idx}. [{a['source']}] {a['title']}")
             lines.append(f"   URL: {a['url']}")
             if a.get("summary"):
-                lines.append(f"   摘要: {a['summary'][:400]}")
+                lines.append(f"   摘要: {a['summary'][:MAX_SUMMARY_CHARS]}")
             lines.append("")
             idx += 1
 
@@ -212,10 +233,11 @@ def analyze_articles(
     client = get_client()
     model = get_model()
 
+    sampled_count = len(_sample_articles(articles, MAX_ARTICLES_FOR_ANALYSIS))
     user_prompt = _build_user_prompt(articles)
     logger.info(
-        "Sending %d articles to LLM (%s) for structural analysis …",
-        len(articles), model,
+        "Sending %d articles (sampled from %d) to LLM (%s) for structural analysis …",
+        sampled_count, len(articles), model,
     )
 
     response = client.chat.completions.create(
