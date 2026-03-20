@@ -20,6 +20,50 @@ from llm_client import get_client, get_model, chat_completion_with_retry
 
 logger = logging.getLogger(__name__)
 
+
+def _json_response_format_enabled() -> bool:
+    """OpenAI-style json_object mode; disable for gateways that return empty content."""
+    v = os.environ.get("LLM_JSON_RESPONSE_FORMAT")
+    if v is None or not str(v).strip():
+        return True
+    return str(v).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _normalize_assistant_content(msg: Any) -> str:
+    """Collect assistant text from content, multimodal parts, or reasoning-style fields."""
+    c = getattr(msg, "content", None)
+    if isinstance(c, list):
+        texts: list[str] = []
+        for p in c:
+            if isinstance(p, dict):
+                if p.get("type") == "text" and p.get("text"):
+                    texts.append(str(p["text"]))
+                elif p.get("text"):
+                    texts.append(str(p["text"]))
+            elif isinstance(p, str):
+                texts.append(p)
+        joined = "\n".join(texts).strip()
+        if joined:
+            return joined
+    elif isinstance(c, str) and c.strip():
+        return c.strip()
+    elif c not in (None, "") and str(c).strip():
+        return str(c).strip()
+
+    for attr in ("reasoning_content", "reasoning"):
+        v = getattr(msg, attr, None)
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+
+    if hasattr(msg, "model_dump"):
+        d = msg.model_dump(mode="python")
+        for key in ("content", "reasoning_content", "reasoning", "text"):
+            val = d.get(key)
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+    return ""
+
+
 # 每批最多文章数，控制单次 prompt 体积
 BATCH_SIZE = 30
 MAX_SUMMARY_CHARS = 150
@@ -222,30 +266,58 @@ def _today() -> str:
 
 def _parse_llm_json(raw: str, response: Any) -> dict[str, Any]:
     """解析 LLM 返回的 JSON，处理 markdown 包裹与空内容。"""
-    raw = (raw or "").strip()
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        if lines[0].startswith("```"):
+    text = (raw or "").strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        if lines and lines[0].startswith("```"):
             lines = lines[1:]
         if lines and lines[-1].strip() == "```":
             lines = lines[:-1]
-        raw = "\n".join(lines)
-    if not raw and hasattr(response.choices[0].message, "executed_tools"):
+        text = "\n".join(lines).strip()
+
+    if not text and hasattr(response.choices[0].message, "executed_tools"):
         tools = getattr(response.choices[0].message, "executed_tools", [])
         for t in tools:
             if isinstance(t, dict) and "result" in t:
-                raw = str(t.get("result", ""))
+                text = str(t.get("result", "")).strip()
                 break
-    if not raw:
-        raise ValueError("LLM returned empty response")
+
+    if not text:
+        choice = response.choices[0]
+        fr = getattr(choice, "finish_reason", None)
+        dump = (
+            choice.message.model_dump(mode="python")
+            if hasattr(choice.message, "model_dump")
+            else repr(choice.message)
+        )
+        logger.error("Empty assistant body: finish_reason=%s message=%s", fr, dump)
+        raise ValueError(
+            "LLM returned an empty message. Some gateways omit content when json_object mode "
+            "is unsupported — set LLM_JSON_RESPONSE_FORMAT=0 to disable JSON mode."
+        )
+
     try:
-        return json.loads(raw)
+        return json.loads(text)
     except json.JSONDecodeError:
-        m = re.search(r"\{[\s\S]*\}", raw)
-        if m:
-            return json.loads(m.group(0))
-        logger.error("Invalid JSON. Raw (first 500): %s", raw[:500])
-        raise
+        pass
+
+    m = re.search(r"```(?:json)?\s*([\s\S]*?)```", text, re.IGNORECASE | re.DOTALL)
+    if m:
+        inner = m.group(1).strip()
+        try:
+            return json.loads(inner)
+        except json.JSONDecodeError:
+            pass
+
+    start, end = text.find("{"), text.rfind("}")
+    if start >= 0 and end > start:
+        try:
+            return json.loads(text[start : end + 1])
+        except json.JSONDecodeError:
+            pass
+
+    logger.error("Invalid JSON. Raw (first 800): %r", text[:800])
+    raise json.JSONDecodeError("Response is not valid JSON", text, 0)
 
 
 def _empty_analysis() -> dict[str, Any]:
@@ -288,10 +360,10 @@ def _analyze_batch(
             {"role": "user", "content": user_prompt},
         ],
     }
-    if "compound" not in model.lower():
+    if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
     response = chat_completion_with_retry(**create_kwargs)
-    raw = response.choices[0].message.content or ""
+    raw = _normalize_assistant_content(response.choices[0].message)
     analysis = _parse_llm_json(raw, response)
 
     usage = getattr(response, "usage", None)
@@ -320,10 +392,10 @@ def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dic
             {"role": "user", "content": user_prompt},
         ],
     }
-    if "compound" not in model.lower():
+    if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
     response = chat_completion_with_retry(**create_kwargs)
-    raw = response.choices[0].message.content or ""
+    raw = _normalize_assistant_content(response.choices[0].message)
     merged = _parse_llm_json(raw, response)
     if "date" not in merged or not merged["date"]:
         merged["date"] = _today()

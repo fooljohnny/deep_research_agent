@@ -154,6 +154,8 @@ export LLM_MODEL="..."                                       # model id on that 
 
 Do **not** use `LLM_PROVIDER=openai` for these APIs — that always targets `api.openai.com`. Do **not** use `LLM_PROVIDER=deepseek` unless you really mean the official host (or you override `LLM_BASE_URL` to the third-party URL; `custom` is clearer).
 
+If the run succeeds with HTTP 200 but fails with **JSON parse error** or **empty assistant message**, try repository variable **`LLM_JSON_RESPONSE_FORMAT=0`** (disables `response_format: json_object`). Some gateways (e.g. certain ModelArts MaaS deployments) leave `content` empty when JSON mode is requested.
+
 ### Other OpenAI-compatible hosts (`custom`)
 
 Same as above: `custom` + `LLM_BASE_URL` + key + model from that host.
@@ -168,6 +170,7 @@ On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_
 | `LLM_PROVIDER` | No | `groq` | `groq`, `openai`, `deepseek`, or `custom` |
 | `LLM_MODEL` | No | Per provider (e.g. Groq llama, OpenAI gpt-4o, DeepSeek deepseek-chat) | Model id from the provider |
 | `LLM_BASE_URL` | **Yes** for `custom` | Auto for `groq` / `openai` / official `deepseek` | **Required** for third-party gateways (`custom`). If set, overrides the default base URL for any provider. |
+| `LLM_JSON_RESPONSE_FORMAT` | No | `1` (enabled) | Set to `0` if the API returns **empty** `content` when using JSON mode (OpenAI `response_format: json_object`). Some third-party gateways behave this way. |
 
 ## GitHub Actions Setup
 

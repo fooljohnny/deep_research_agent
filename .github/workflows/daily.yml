@@ -39,6 +39,8 @@ jobs:
           LLM_MODEL: ${{ vars.LLM_MODEL || 'llama-3.3-70b-versatile' }}
           # For LLM_PROVIDER=custom only. Use provider "deepseek" for api.deepseek.com (no URL var needed).
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          # Set to 0 if the gateway returns empty content with json_object mode (e.g. some ModelArts MaaS).
+          LLM_JSON_RESPONSE_FORMAT: ${{ vars.LLM_JSON_RESPONSE_FORMAT }}
         run: python main.py
 
       - name: Commit & push new post
