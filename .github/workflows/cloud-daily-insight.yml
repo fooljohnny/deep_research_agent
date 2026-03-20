@@ -37,6 +37,7 @@ jobs:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'groq/compound' }}
+          # Optional; required for LLM_PROVIDER=custom. Use "deepseek" provider for DeepSeek without this.
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
           STAGE_DELAY_SEC: ${{ vars.STAGE_DELAY_SEC || '65' }}
           RETRY_DELAY_SEC: ${{ vars.RETRY_DELAY_SEC || '65' }}

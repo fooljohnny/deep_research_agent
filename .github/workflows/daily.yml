@@ -37,7 +37,7 @@ jobs:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'llama-3.3-70b-versatile' }}
-          # Required when LLM_PROVIDER is custom (e.g. DeepSeek). Set repo variable LLM_BASE_URL.
+          # For LLM_PROVIDER=custom only. Use provider "deepseek" for api.deepseek.com (no URL var needed).
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
         run: python main.py
 
