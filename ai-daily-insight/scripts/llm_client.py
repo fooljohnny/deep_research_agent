@@ -6,7 +6,7 @@ via environment variables. Both analyze.py and generate.py import from here.
 
 Environment variables
 ---------------------
-LLM_PROVIDER   : "groq" (default) | "openai" | "custom"
+LLM_PROVIDER   : "groq" (default) | "openai" | "deepseek" | "custom"
 LLM_API_KEY    : API key for the chosen provider  (required)
 LLM_MODEL      : Model name (default depends on provider)
 LLM_BASE_URL   : Override the API base URL (optional; auto-set per provider)
@@ -28,6 +28,10 @@ PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
         "base_url": "https://api.openai.com/v1",
         "model": "gpt-4o",
     },
+    "deepseek": {
+        "base_url": "https://api.deepseek.com/v1",
+        "model": "deepseek-chat",
+    },
 }
 
 
@@ -44,6 +48,15 @@ def get_client() -> openai.OpenAI:
 
     defaults = PROVIDER_DEFAULTS.get(provider, {})
     base_url = os.environ.get("LLM_BASE_URL", defaults.get("base_url", ""))
+
+    model_env = (os.environ.get("LLM_MODEL") or "").lower()
+    if provider == "openai" and "deepseek" in model_env:
+        raise EnvironmentError(
+            "LLM_PROVIDER is 'openai' but LLM_MODEL looks like a DeepSeek model. "
+            "That sends requests to api.openai.com and causes 401 with a DeepSeek API key. "
+            "Set LLM_PROVIDER to 'deepseek' (recommended) or 'custom' with LLM_BASE_URL="
+            "'https://api.deepseek.com/v1'."
+        )
 
     if provider == "custom" and not (base_url or "").strip():
         raise EnvironmentError(
