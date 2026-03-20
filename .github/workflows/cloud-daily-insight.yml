@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -37,6 +37,8 @@ jobs:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'groq/compound' }}
+          # Optional; required for LLM_PROVIDER=custom. Use "deepseek" provider for DeepSeek without this.
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
           STAGE_DELAY_SEC: ${{ vars.STAGE_DELAY_SEC || '65' }}
           RETRY_DELAY_SEC: ${{ vars.RETRY_DELAY_SEC || '65' }}
           BATCH_DELAY_SEC: ${{ vars.BATCH_DELAY_SEC || '65' }}

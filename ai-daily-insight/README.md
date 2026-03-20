@@ -131,22 +131,52 @@ export LLM_API_KEY="sk-..."
 export LLM_MODEL="gpt-4o"
 ```
 
+### Using DeepSeek **official** API (api.deepseek.com)
+
+Provider `deepseek` points at DeepSeek’s hosted endpoint only.
+
+```bash
+export LLM_PROVIDER="deepseek"
+export LLM_API_KEY="sk-..."
+export LLM_MODEL="deepseek-v3.1-terminus"   # or deepseek-chat; use the id from the DeepSeek console
+```
+
+### Third-party / private DeepSeek-compatible API（第三方部署）
+
+If your model is served by **another vendor** (cloud proxy, enterprise gateway, self-hosted OpenAI-compatible server), use **`custom`** and the **base URL they document** (often ends with `/v1`). The model id is whatever **that service** expects (e.g. `deepseek-v3.1-terminus` or a vendor-specific name).
+
+```bash
+export LLM_PROVIDER="custom"
+export LLM_BASE_URL="https://your-vendor.example.com/v1"   # exact value from the provider
+export LLM_API_KEY="..."                                     # key from that provider
+export LLM_MODEL="..."                                       # model id on that endpoint
+```
+
+Do **not** use `LLM_PROVIDER=openai` for these APIs — that always targets `api.openai.com`. Do **not** use `LLM_PROVIDER=deepseek` unless you really mean the official host (or you override `LLM_BASE_URL` to the third-party URL; `custom` is clearer).
+
+### Other OpenAI-compatible hosts (`custom`)
+
+Same as above: `custom` + `LLM_BASE_URL` + key + model from that host.
+
+On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_MODEL`; for third-party or any non-built-in host, set variable **`LLM_BASE_URL`** (the workflow forwards it into the job).
+
 ## Environment Variables
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `LLM_API_KEY` | **Yes** | — | API key for the LLM provider |
-| `LLM_PROVIDER` | No | `groq` | Provider name: `groq`, `openai`, or `custom` |
-| `LLM_MODEL` | No | `llama-3.3-70b-versatile` (Groq) / `gpt-4o` (OpenAI) | Model to use |
-| `LLM_BASE_URL` | No | Auto-set per provider | Override the API endpoint |
+| `LLM_PROVIDER` | No | `groq` | `groq`, `openai`, `deepseek`, or `custom` |
+| `LLM_MODEL` | No | Per provider (e.g. Groq llama, OpenAI gpt-4o, DeepSeek deepseek-chat) | Model id from the provider |
+| `LLM_BASE_URL` | **Yes** for `custom` | Auto for `groq` / `openai` / official `deepseek` | **Required** for third-party gateways (`custom`). If set, overrides the default base URL for any provider. |
 
 ## GitHub Actions Setup
 
 1. Go to **Settings → Secrets and variables → Actions**.
-2. Add a repository secret named **`LLM_API_KEY`** (your Groq API key).
+2. Add a repository secret **`LLM_API_KEY`** (Groq, OpenAI, DeepSeek, etc., depending on provider).
 3. (Optional) Add variables:
-   - `LLM_PROVIDER` — set to `openai` if using OpenAI instead.
-   - `LLM_MODEL` — override the default model.
+   - `LLM_PROVIDER` — e.g. `deepseek`, `openai`, `groq`, or `custom`.
+   - `LLM_MODEL` — e.g. `deepseek-v3.1-terminus` for DeepSeek.
+   - `LLM_BASE_URL` — **required for `custom`** (third-party / private OpenAI-compatible API). Optional override for built-in providers. Omit for official `deepseek` on api.deepseek.com.
 4. The workflow runs automatically at 06:00 UTC every day, or trigger it manually via **Actions → AI Daily Insight → Run workflow**.
 
 ## Supported Groq Models

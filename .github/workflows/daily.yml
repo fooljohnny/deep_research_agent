@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
@@ -37,6 +37,8 @@ jobs:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_MODEL: ${{ vars.LLM_MODEL || 'llama-3.3-70b-versatile' }}
+          # For LLM_PROVIDER=custom only. Use provider "deepseek" for api.deepseek.com (no URL var needed).
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
         run: python main.py
 
       - name: Commit & push new post
