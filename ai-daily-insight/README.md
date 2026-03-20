@@ -131,28 +131,34 @@ export LLM_API_KEY="sk-..."
 export LLM_MODEL="gpt-4o"
 ```
 
-### Using DeepSeek (official API)
+### Using DeepSeek **official** API (api.deepseek.com)
 
-Use provider `deepseek` so the client targets `https://api.deepseek.com/v1` automatically.
+Provider `deepseek` points at DeepSeek’s hosted endpoint only.
 
 ```bash
 export LLM_PROVIDER="deepseek"
 export LLM_API_KEY="sk-..."
-export LLM_MODEL="deepseek-v3.1-terminus"   # or deepseek-chat; use the id from your DeepSeek console
+export LLM_MODEL="deepseek-v3.1-terminus"   # or deepseek-chat; use the id from the DeepSeek console
 ```
 
-Do **not** set `LLM_PROVIDER=openai` while using a DeepSeek model name — that still calls `api.openai.com` and you get **401** with a DeepSeek key.
+### Third-party / private DeepSeek-compatible API（第三方部署）
 
-### Using another OpenAI-compatible host (`custom`)
+If your model is served by **another vendor** (cloud proxy, enterprise gateway, self-hosted OpenAI-compatible server), use **`custom`** and the **base URL they document** (often ends with `/v1`). The model id is whatever **that service** expects (e.g. `deepseek-v3.1-terminus` or a vendor-specific name).
 
 ```bash
 export LLM_PROVIDER="custom"
-export LLM_BASE_URL="https://api.example.com/v1"
-export LLM_API_KEY="..."
-export LLM_MODEL="..."
+export LLM_BASE_URL="https://your-vendor.example.com/v1"   # exact value from the provider
+export LLM_API_KEY="..."                                     # key from that provider
+export LLM_MODEL="..."                                       # model id on that endpoint
 ```
 
-On GitHub Actions: for DeepSeek, set variable `LLM_PROVIDER=deepseek`, variable `LLM_MODEL`, secret `LLM_API_KEY`. For `custom`, also set variable `LLM_BASE_URL`.
+Do **not** use `LLM_PROVIDER=openai` for these APIs — that always targets `api.openai.com`. Do **not** use `LLM_PROVIDER=deepseek` unless you really mean the official host (or you override `LLM_BASE_URL` to the third-party URL; `custom` is clearer).
+
+### Other OpenAI-compatible hosts (`custom`)
+
+Same as above: `custom` + `LLM_BASE_URL` + key + model from that host.
+
+On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_MODEL`; for third-party or any non-built-in host, set variable **`LLM_BASE_URL`** (the workflow forwards it into the job).
 
 ## Environment Variables
 
@@ -161,7 +167,7 @@ On GitHub Actions: for DeepSeek, set variable `LLM_PROVIDER=deepseek`, variable 
 | `LLM_API_KEY` | **Yes** | — | API key for the LLM provider |
 | `LLM_PROVIDER` | No | `groq` | `groq`, `openai`, `deepseek`, or `custom` |
 | `LLM_MODEL` | No | Per provider (e.g. Groq llama, OpenAI gpt-4o, DeepSeek deepseek-chat) | Model id from the provider |
-| `LLM_BASE_URL` | **Yes** for `custom` | Auto-set for `groq` / `openai` / `deepseek` | Override or required for `custom` only |
+| `LLM_BASE_URL` | **Yes** for `custom` | Auto for `groq` / `openai` / official `deepseek` | **Required** for third-party gateways (`custom`). If set, overrides the default base URL for any provider. |
 
 ## GitHub Actions Setup
 
@@ -170,7 +176,7 @@ On GitHub Actions: for DeepSeek, set variable `LLM_PROVIDER=deepseek`, variable 
 3. (Optional) Add variables:
    - `LLM_PROVIDER` — e.g. `deepseek`, `openai`, `groq`, or `custom`.
    - `LLM_MODEL` — e.g. `deepseek-v3.1-terminus` for DeepSeek.
-   - `LLM_BASE_URL` — **only for `custom`** (e.g. a self-hosted gateway). Not needed for `deepseek`.
+   - `LLM_BASE_URL` — **required for `custom`** (third-party / private OpenAI-compatible API). Optional override for built-in providers. Omit for official `deepseek` on api.deepseek.com.
 4. The workflow runs automatically at 06:00 UTC every day, or trigger it manually via **Actions → AI Daily Insight → Run workflow**.
 
 ## Supported Groq Models

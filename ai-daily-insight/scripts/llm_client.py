@@ -9,7 +9,8 @@ Environment variables
 LLM_PROVIDER   : "groq" (default) | "openai" | "deepseek" | "custom"
 LLM_API_KEY    : API key for the chosen provider  (required)
 LLM_MODEL      : Model name (default depends on provider)
-LLM_BASE_URL   : Override the API base URL (optional; auto-set per provider)
+LLM_BASE_URL   : If set, overrides the default base URL for *any* provider.
+                 Required for `custom` (e.g. third-party DeepSeek-compatible gateways).
 """
 
 import os
@@ -28,6 +29,8 @@ PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
         "base_url": "https://api.openai.com/v1",
         "model": "gpt-4o",
     },
+    # Official DeepSeek SaaS only. Third-party / private deployments: use LLM_PROVIDER=custom
+    # + LLM_BASE_URL from the vendor (OpenAI-compatible, usually …/v1).
     "deepseek": {
         "base_url": "https://api.deepseek.com/v1",
         "model": "deepseek-chat",
@@ -54,15 +57,15 @@ def get_client() -> openai.OpenAI:
         raise EnvironmentError(
             "LLM_PROVIDER is 'openai' but LLM_MODEL looks like a DeepSeek model. "
             "That sends requests to api.openai.com and causes 401 with a DeepSeek API key. "
-            "Set LLM_PROVIDER to 'deepseek' (recommended) or 'custom' with LLM_BASE_URL="
-            "'https://api.deepseek.com/v1'."
+            "Use LLM_PROVIDER='deepseek' for official api.deepseek.com, or 'custom' with "
+            "LLM_BASE_URL set to your vendor's OpenAI-compatible base URL (third-party / private)."
         )
 
     if provider == "custom" and not (base_url or "").strip():
         raise EnvironmentError(
             "LLM_PROVIDER is 'custom' but LLM_BASE_URL is empty. "
             "Set LLM_BASE_URL to your OpenAI-compatible base URL "
-            "(e.g. https://api.deepseek.com/v1). "
+            "(e.g. https://your-vendor.example.com/v1). "
             "In GitHub Actions, add a repository variable LLM_BASE_URL and pass it in the workflow env."
         )
 
