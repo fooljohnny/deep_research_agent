@@ -13,7 +13,12 @@ from pathlib import Path
 from typing import Any
 import json
 
-from llm_client import get_client, get_model
+from llm_client import (
+    extend_chat_completion_kwargs,
+    get_client,
+    get_model,
+    normalize_assistant_message_content,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -182,15 +187,19 @@ def generate_post(
     logger.info("Sending analysis + trends to LLM (%s) for Stage-2 generation …", model)
 
     response = client.chat.completions.create(
-        model=model,
-        temperature=0.5,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ],
+        **extend_chat_completion_kwargs(
+            {
+                "model": model,
+                "temperature": 0.5,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt},
+                ],
+            }
+        )
     )
 
-    markdown: str = response.choices[0].message.content or ""
+    markdown: str = normalize_assistant_message_content(response.choices[0].message)
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {

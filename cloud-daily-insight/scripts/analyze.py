@@ -16,7 +16,12 @@ import re
 import time
 from typing import Any
 
-from llm_client import get_client, get_model, chat_completion_with_retry
+from llm_client import (
+    chat_completion_with_retry,
+    get_client,
+    get_model,
+    normalize_assistant_message_content,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,41 +32,6 @@ def _json_response_format_enabled() -> bool:
     if v is None or not str(v).strip():
         return True
     return str(v).strip().lower() not in ("0", "false", "no", "off")
-
-
-def _normalize_assistant_content(msg: Any) -> str:
-    """Collect assistant text from content, multimodal parts, or reasoning-style fields."""
-    c = getattr(msg, "content", None)
-    if isinstance(c, list):
-        texts: list[str] = []
-        for p in c:
-            if isinstance(p, dict):
-                if p.get("type") == "text" and p.get("text"):
-                    texts.append(str(p["text"]))
-                elif p.get("text"):
-                    texts.append(str(p["text"]))
-            elif isinstance(p, str):
-                texts.append(p)
-        joined = "\n".join(texts).strip()
-        if joined:
-            return joined
-    elif isinstance(c, str) and c.strip():
-        return c.strip()
-    elif c not in (None, "") and str(c).strip():
-        return str(c).strip()
-
-    for attr in ("reasoning_content", "reasoning"):
-        v = getattr(msg, attr, None)
-        if isinstance(v, str) and v.strip():
-            return v.strip()
-
-    if hasattr(msg, "model_dump"):
-        d = msg.model_dump(mode="python")
-        for key in ("content", "reasoning_content", "reasoning", "text"):
-            val = d.get(key)
-            if isinstance(val, str) and val.strip():
-                return val.strip()
-    return ""
 
 
 # 每批最多文章数，控制单次 prompt 体积
@@ -363,7 +333,7 @@ def _analyze_batch(
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
     response = chat_completion_with_retry(**create_kwargs)
-    raw = _normalize_assistant_content(response.choices[0].message)
+    raw = normalize_assistant_message_content(response.choices[0].message)
     analysis = _parse_llm_json(raw, response)
 
     usage = getattr(response, "usage", None)
@@ -395,7 +365,7 @@ def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dic
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
     response = chat_completion_with_retry(**create_kwargs)
-    raw = _normalize_assistant_content(response.choices[0].message)
+    raw = normalize_assistant_message_content(response.choices[0].message)
     merged = _parse_llm_json(raw, response)
     if "date" not in merged or not merged["date"]:
         merged["date"] = _today()

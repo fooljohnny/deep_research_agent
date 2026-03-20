@@ -156,11 +156,34 @@ Do **not** use `LLM_PROVIDER=openai` for these APIs — that always targets `api
 
 If the run succeeds with HTTP 200 but fails with **JSON parse error** or **empty assistant message**, try repository variable **`LLM_JSON_RESPONSE_FORMAT=0`** (disables `response_format: json_object`). Some gateways (e.g. certain ModelArts MaaS deployments) leave `content` empty when JSON mode is requested.
 
+#### Huawei ModelArts MaaS（官方示例兼容）
+
+文档里的接口形如 `https://api.modelarts-maas.com/v2/chat/completions`。在 OpenAI SDK 中把 **v2 这一层**写成 base URL（不要重复 `/chat/completions`）：
+
+```bash
+export LLM_PROVIDER="custom"
+export LLM_BASE_URL="https://api.modelarts-maas.com/v2"
+export LLM_API_KEY="你的 MAAS API Key"
+export LLM_MODEL="deepseek-v3.1-terminus"
+```
+
+官方示例里的 **`thinking`** 字段（深度思考）会通过环境变量带进请求体（OpenAI SDK 的 `extra_body`），等价于 `{"thinking":{"type":"enabled"}}`：
+
+```bash
+export LLM_THINKING_ENABLED="true"
+# 或者自定义更多字段（单行 JSON）：
+# export LLM_EXTRA_BODY='{"thinking":{"type":"enabled"}}'
+```
+
+开启思考模式时，部分网关把正文放在 `reasoning` 相关字段；脚本已用 `normalize_assistant_message_content` 尽量合并。若 Stage-2 博文仍为空，可只对需要 JSON 的 Stage-1 关闭思考（用 `LLM_EXTRA_BODY` 精确控制），或关闭 `LLM_THINKING_ENABLED`。
+
+官方示例使用 `verify=False` 跳过 TLS 校验；本仓库未改 SSL 行为。若遇证书错误，需在运行环境或网关侧处理。
+
 ### Other OpenAI-compatible hosts (`custom`)
 
 Same as above: `custom` + `LLM_BASE_URL` + key + model from that host.
 
-On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_MODEL`; for third-party or any non-built-in host, set variable **`LLM_BASE_URL`** (the workflow forwards it into the job).
+On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_MODEL`; for third-party hosts set **`LLM_BASE_URL`**. For MaaS `thinking`, set **`LLM_THINKING_ENABLED`** or **`LLM_EXTRA_BODY`** (workflow forwards these).
 
 ## Environment Variables
 
@@ -171,6 +194,8 @@ On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_
 | `LLM_MODEL` | No | Per provider (e.g. Groq llama, OpenAI gpt-4o, DeepSeek deepseek-chat) | Model id from the provider |
 | `LLM_BASE_URL` | **Yes** for `custom` | Auto for `groq` / `openai` / official `deepseek` | **Required** for third-party gateways (`custom`). If set, overrides the default base URL for any provider. |
 | `LLM_JSON_RESPONSE_FORMAT` | No | `1` (enabled) | Set to `0` if the API returns **empty** `content` when using JSON mode (OpenAI `response_format: json_object`). Some third-party gateways behave this way. |
+| `LLM_THINKING_ENABLED` | No | off | If `true` / `1` / `enabled`, sends `{"thinking":{"type":"enabled"}}` (Huawei MaaS 等). Ignored if `LLM_EXTRA_BODY` is set. |
+| `LLM_EXTRA_BODY` | No | — | JSON object string merged into the chat request via `extra_body` (e.g. MaaS `thinking` or other vendor fields). Overrides the `LLM_THINKING_ENABLED` shortcut when set. |
 
 ## GitHub Actions Setup
 
@@ -180,6 +205,8 @@ On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_
    - `LLM_PROVIDER` — e.g. `deepseek`, `openai`, `groq`, or `custom`.
    - `LLM_MODEL` — e.g. `deepseek-v3.1-terminus` for DeepSeek.
    - `LLM_BASE_URL` — **required for `custom`** (third-party / private OpenAI-compatible API). Optional override for built-in providers. Omit for official `deepseek` on api.deepseek.com.
+   - `LLM_JSON_RESPONSE_FORMAT` — set to `0` if needed (see table above).
+   - `LLM_THINKING_ENABLED` or `LLM_EXTRA_BODY` — for Huawei MaaS–style `thinking` (see section above).
 4. The workflow runs automatically at 06:00 UTC every day, or trigger it manually via **Actions → AI Daily Insight → Run workflow**.
 
 ## Supported Groq Models

@@ -11,10 +11,15 @@ LLM_API_KEY    : API key for the chosen provider  (required)
 LLM_MODEL      : Model name (default depends on provider)
 LLM_BASE_URL   : If set, overrides the default base URL for *any* provider.
                  Required for `custom` (e.g. third-party DeepSeek-compatible gateways).
+LLM_EXTRA_BODY : Optional JSON object merged into chat.completions.create as extra_body
+                 (e.g. Huawei ModelArts MaaS: {"thinking":{"type":"enabled"}}).
+LLM_THINKING_ENABLED : If "1"/"true"/"enabled", sends thinking mode (shortcut for MaaS example).
 """
 
-import os
+import json
 import logging
+import os
+from typing import Any
 
 import openai
 
@@ -83,3 +88,66 @@ def get_model() -> str:
     defaults = PROVIDER_DEFAULTS.get(provider, {})
     model = os.environ.get("LLM_MODEL", defaults.get("model", "llama-3.3-70b-versatile"))
     return model
+
+
+def normalize_assistant_message_content(msg: Any) -> str:
+    """Collect assistant text from content, multimodal parts, or reasoning-style fields."""
+    c = getattr(msg, "content", None)
+    if isinstance(c, list):
+        texts: list[str] = []
+        for p in c:
+            if isinstance(p, dict):
+                if p.get("type") == "text" and p.get("text"):
+                    texts.append(str(p["text"]))
+                elif p.get("text"):
+                    texts.append(str(p["text"]))
+            elif isinstance(p, str):
+                texts.append(p)
+        joined = "\n".join(texts).strip()
+        if joined:
+            return joined
+    elif isinstance(c, str) and c.strip():
+        return c.strip()
+    elif c not in (None, "") and str(c).strip():
+        return str(c).strip()
+
+    for attr in ("reasoning_content", "reasoning"):
+        v = getattr(msg, attr, None)
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+
+    if hasattr(msg, "model_dump"):
+        d = msg.model_dump(mode="python")
+        for key in ("content", "reasoning_content", "reasoning", "text"):
+            val = d.get(key)
+            if isinstance(val, str) and val.strip():
+                return val.strip()
+    return ""
+
+
+def get_chat_completion_extra_body() -> dict[str, Any]:
+    """Vendor extensions (e.g. Huawei MaaS ``thinking``) passed via OpenAI SDK ``extra_body``."""
+    raw = (os.environ.get("LLM_EXTRA_BODY") or "").strip()
+    if raw:
+        try:
+            obj = json.loads(raw)
+        except json.JSONDecodeError as e:
+            raise EnvironmentError(f"LLM_EXTRA_BODY must be valid JSON: {e}") from e
+        if not isinstance(obj, dict):
+            raise EnvironmentError("LLM_EXTRA_BODY must be a JSON object, e.g. {\"thinking\":{\"type\":\"enabled\"}}")
+        return obj
+    if os.environ.get("LLM_THINKING_ENABLED", "").strip().lower() in (
+        "1", "true", "yes", "on", "enabled",
+    ):
+        return {"thinking": {"type": "enabled"}}
+    return {}
+
+
+def extend_chat_completion_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Merge ``get_chat_completion_extra_body()`` into ``chat.completions.create`` kwargs."""
+    extra = get_chat_completion_extra_body()
+    if not extra:
+        return kwargs
+    merged = dict(extra)
+    merged.update(kwargs.get("extra_body") or {})
+    return {**kwargs, "extra_body": merged}
