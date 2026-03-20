@@ -9,11 +9,78 @@ a Markdown insight post.
 
 import json
 import logging
+import os
+import re
 from typing import Any
 
-from llm_client import get_client, get_model
+from llm_client import (
+    extend_chat_completion_kwargs,
+    get_client,
+    get_model,
+    normalize_assistant_message_content,
+)
 
 logger = logging.getLogger(__name__)
+
+
+def _json_response_format_enabled() -> bool:
+    """OpenAI-style json_object mode; disable for gateways that return empty content."""
+    v = os.environ.get("LLM_JSON_RESPONSE_FORMAT")
+    if v is None or not str(v).strip():
+        return True
+    return str(v).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _parse_stage1_json(raw: str, response: Any) -> dict[str, Any]:
+    """Parse strict JSON from Stage-1; tolerate markdown fences and leading/trailing prose."""
+    text = (raw or "").strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        text = "\n".join(lines).strip()
+
+    if not text:
+        choice = response.choices[0]
+        fr = getattr(choice, "finish_reason", None)
+        dump = (
+            choice.message.model_dump(mode="python")
+            if hasattr(choice.message, "model_dump")
+            else repr(choice.message)
+        )
+        logger.error("Stage-1 empty assistant body: finish_reason=%s message=%s", fr, dump)
+        raise ValueError(
+            "Stage-1 LLM returned an empty message. Some OpenAI-compatible APIs omit `content` "
+            "when `response_format: json_object` is not supported — set "
+            "LLM_JSON_RESPONSE_FORMAT=0 (or GitHub variable of the same name) to disable JSON "
+            "mode and rely on the system prompt only."
+        )
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    m = re.search(r"```(?:json)?\s*([\s\S]*?)```", text, re.IGNORECASE | re.DOTALL)
+    if m:
+        inner = m.group(1).strip()
+        try:
+            return json.loads(inner)
+        except json.JSONDecodeError:
+            pass
+
+    start, end = text.find("{"), text.rfind("}")
+    if start >= 0 and end > start:
+        try:
+            return json.loads(text[start : end + 1])
+        except json.JSONDecodeError:
+            pass
+
+    logger.error("Stage-1 response is not valid JSON (first 800 chars): %r", text[:800])
+    raise json.JSONDecodeError("Stage-1 response is not valid JSON", text, 0)
+
 
 SYSTEM_PROMPT = """\
 你是一位AI产业结构分析师。
@@ -214,18 +281,22 @@ def analyze_articles(
         len(articles), model,
     )
 
-    response = client.chat.completions.create(
-        model=model,
-        temperature=0.3,
-        response_format={"type": "json_object"},
-        messages=[
+    create_kwargs: dict[str, Any] = {
+        "model": model,
+        "temperature": 0.3,
+        "messages": [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": user_prompt},
         ],
-    )
+    }
+    if _json_response_format_enabled():
+        create_kwargs["response_format"] = {"type": "json_object"}
 
-    raw = response.choices[0].message.content
-    analysis: dict[str, Any] = json.loads(raw)  # type: ignore[arg-type]
+    response = client.chat.completions.create(**extend_chat_completion_kwargs(create_kwargs))
+
+    msg = response.choices[0].message
+    raw = normalize_assistant_message_content(msg)
+    analysis = _parse_stage1_json(raw, response)
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {

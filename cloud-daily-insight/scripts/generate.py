@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from llm_client import get_model, chat_completion_with_retry
+from llm_client import chat_completion_with_retry, get_model, normalize_assistant_message_content
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +181,7 @@ def generate_post(
         ],
     )
 
-    markdown: str = response.choices[0].message.content or ""
+    markdown: str = normalize_assistant_message_content(response.choices[0].message)
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
