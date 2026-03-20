@@ -131,6 +131,17 @@ export LLM_API_KEY="sk-..."
 export LLM_MODEL="gpt-4o"
 ```
 
+### Using DeepSeek or another OpenAI-compatible endpoint
+
+```bash
+export LLM_PROVIDER="custom"
+export LLM_BASE_URL="https://api.deepseek.com/v1"
+export LLM_API_KEY="sk-..."
+export LLM_MODEL="deepseek-chat"
+```
+
+On GitHub Actions, set repository variables `LLM_PROVIDER`, `LLM_BASE_URL`, `LLM_MODEL` and secret `LLM_API_KEY`.
+
 ## Environment Variables
 
 | Variable | Required | Default | Description |
@@ -138,15 +149,16 @@ export LLM_MODEL="gpt-4o"
 | `LLM_API_KEY` | **Yes** | — | API key for the LLM provider |
 | `LLM_PROVIDER` | No | `groq` | Provider name: `groq`, `openai`, or `custom` |
 | `LLM_MODEL` | No | `llama-3.3-70b-versatile` (Groq) / `gpt-4o` (OpenAI) | Model to use |
-| `LLM_BASE_URL` | No | Auto-set per provider | Override the API endpoint |
+| `LLM_BASE_URL` | **Yes** for `custom` | Auto-set for `groq` / `openai` | OpenAI-compatible API base URL |
 
 ## GitHub Actions Setup
 
 1. Go to **Settings → Secrets and variables → Actions**.
 2. Add a repository secret named **`LLM_API_KEY`** (your Groq API key).
 3. (Optional) Add variables:
-   - `LLM_PROVIDER` — set to `openai` if using OpenAI instead.
+   - `LLM_PROVIDER` — set to `openai` or `custom` as needed.
    - `LLM_MODEL` — override the default model.
+   - `LLM_BASE_URL` — **required for `custom`** (e.g. `https://api.deepseek.com/v1`). Ignored unless you set a non-empty value; Groq/OpenAI use built-in defaults when this is unset.
 4. The workflow runs automatically at 06:00 UTC every day, or trigger it manually via **Actions → AI Daily Insight → Run workflow**.
 
 ## Supported Groq Models

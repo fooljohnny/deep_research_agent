@@ -45,6 +45,14 @@ def get_client() -> openai.OpenAI:
     defaults = PROVIDER_DEFAULTS.get(provider, {})
     base_url = os.environ.get("LLM_BASE_URL", defaults.get("base_url", ""))
 
+    if provider == "custom" and not (base_url or "").strip():
+        raise EnvironmentError(
+            "LLM_PROVIDER is 'custom' but LLM_BASE_URL is empty. "
+            "Set LLM_BASE_URL to your OpenAI-compatible base URL "
+            "(e.g. https://api.deepseek.com/v1). "
+            "In GitHub Actions, add a repository variable LLM_BASE_URL and pass it in the workflow env."
+        )
+
     kwargs: dict[str, str] = {"api_key": api_key}
     if base_url:
         kwargs["base_url"] = base_url
