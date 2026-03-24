@@ -154,6 +154,52 @@
     );
   }
 
+  /**
+   * Markdown uses paths relative to the .md file (e.g. charts/foo.png).
+   * On github.io those become wrong absolute URLs; point at raw.githubusercontent.com instead.
+   */
+  function resolveMarkdownAssetToRepoPath(contentDir, src) {
+    if (!src || /^https?:\/\//i.test(src) || src.trim().toLowerCase().startsWith("data:")) {
+      return null;
+    }
+    if (src.startsWith("//")) {
+      return null;
+    }
+    var pathPart = src.split("#")[0].split("?")[0].replace(/^\.\//, "");
+    if (pathPart.startsWith("/")) {
+      pathPart = pathPart.replace(/^\/+/, "");
+    }
+    var base = contentDir.split("/").filter(Boolean);
+    var parts = pathPart.split("/").filter(function (s) {
+      return s.length && s !== ".";
+    });
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i] === "..") {
+        if (base.length) {
+          base.pop();
+        }
+      } else {
+        base.push(parts[i]);
+      }
+    }
+    return base.join("/");
+  }
+
+  function rewriteImageSourcesInArticle(articleEl, contentDir) {
+    articleEl.querySelectorAll("img[src]").forEach(function (img) {
+      var repoPath = resolveMarkdownAssetToRepoPath(contentDir, img.getAttribute("src") || "");
+      if (!repoPath) {
+        return;
+      }
+      img.setAttribute("src", withCacheBust(rawUrl(repoPath)));
+      img.setAttribute("loading", "lazy");
+      img.setAttribute(
+        "referrerpolicy",
+        "no-referrer",
+      );
+    });
+  }
+
   async function fetchJson(url) {
     const r = await fetch(withCacheBust(url), {
       cache: "no-store",
@@ -232,6 +278,7 @@
       var md = await r.text();
       var html = marked.parse(md);
       article.innerHTML = DOMPurify.sanitize(html);
+      rewriteImageSourcesInArticle(article, PATHS[bucket]);
       article.style.display = "block";
       loading.style.display = "none";
       setActive(hash);
