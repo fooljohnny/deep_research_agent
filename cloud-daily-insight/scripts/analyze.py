@@ -21,6 +21,7 @@ from llm_client import (
     get_client,
     get_model,
     normalize_assistant_message_content,
+    parse_llm_json_object,
 )
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,15 @@ def _json_response_format_enabled() -> bool:
     if v is None or not str(v).strip():
         return True
     return str(v).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _llm_json_parse_attempts() -> int:
+    """How many times to call the LLM if the reply is not valid JSON (stochastic / truncated output)."""
+    try:
+        n = int((os.environ.get("LLM_JSON_PARSE_ATTEMPTS") or "2").strip())
+    except ValueError:
+        n = 2
+    return max(1, min(n, 5))
 
 
 # 每批最多文章数，控制单次 prompt 体积
@@ -279,14 +289,17 @@ def _parse_llm_json(raw: str, response: Any) -> dict[str, Any]:
         except json.JSONDecodeError:
             pass
 
-    start, end = text.find("{"), text.rfind("}")
-    if start >= 0 and end > start:
-        try:
-            return json.loads(text[start : end + 1])
-        except json.JSONDecodeError:
-            pass
+    recovered = parse_llm_json_object(text)
+    if recovered is not None:
+        return recovered
 
-    logger.error("Invalid JSON. Raw (first 800): %r", text[:800])
+    fr = getattr(response.choices[0], "finish_reason", None)
+    logger.error(
+        "Invalid JSON (finish_reason=%s). Head: %r … tail: %r",
+        fr,
+        text[:400],
+        text[-200:] if len(text) > 200 else text,
+    )
     raise json.JSONDecodeError("Response is not valid JSON", text, 0)
 
 
@@ -332,9 +345,29 @@ def _analyze_batch(
     }
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
-    response = chat_completion_with_retry(**create_kwargs)
-    raw = normalize_assistant_message_content(response.choices[0].message)
-    analysis = _parse_llm_json(raw, response)
+
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    analysis = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
+        try:
+            analysis = _parse_llm_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Batch %d: LLM JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    batch_idx + 1, attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if analysis is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Batch analysis missing after LLM calls")
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
@@ -364,9 +397,30 @@ def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dic
     }
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
-    response = chat_completion_with_retry(**create_kwargs)
-    raw = normalize_assistant_message_content(response.choices[0].message)
-    merged = _parse_llm_json(raw, response)
+
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    merged = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
+        try:
+            merged = _parse_llm_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Merge step: JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if merged is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Merge result missing after LLM calls")
+
     if "date" not in merged or not merged["date"]:
         merged["date"] = _today()
 
