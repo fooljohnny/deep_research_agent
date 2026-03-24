@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" />
   <style>
@@ -97,6 +100,7 @@
     <p class="hint">
       目录由 GitHub API 读取仓库
       <code id="repo-label"></code>。<br />
+      每次打开页面都会重新请求列表与正文（禁用缓存）。<br />
       匿名访问有速率限制；若失败可在 URL 加参数
       <code>?owner=fooljohnny&repo=deep_research_agent&branch=main</code>
     </p>
@@ -130,6 +134,13 @@
   document.getElementById("repo-label").textContent =
     CONFIG.owner + "/" + CONFIG.repo + "@" + CONFIG.branch;
 
+  function withCacheBust(url) {
+    var sep = url.indexOf("?") >= 0 ? "&" : "?";
+    return url + sep + "_=" + Date.now();
+  }
+
+  var FETCH_OPTS = { cache: "no-store" };
+
   function rawUrl(relPath) {
     return (
       "https://raw.githubusercontent.com/" +
@@ -144,7 +155,8 @@
   }
 
   async function fetchJson(url) {
-    const r = await fetch(url, {
+    const r = await fetch(withCacheBust(url), {
+      cache: "no-store",
       headers: { Accept: "application/vnd.github+json" },
     });
     if (!r.ok) {
@@ -212,8 +224,8 @@
     article.style.display = "none";
 
     try {
-      var url = rawUrl(rel);
-      var r = await fetch(url);
+      var url = withCacheBust(rawUrl(rel));
+      var r = await fetch(url, FETCH_OPTS);
       if (!r.ok) {
         throw new Error("无法拉取正文: " + r.status + " " + url);
       }
@@ -240,11 +252,21 @@
     return a;
   }
 
-  async function init() {
+  var hashListenerBound = false;
+
+  async function refreshListsAndArticle() {
     var loading = document.getElementById("loading");
     var errEl = document.getElementById("error");
     var listAi = document.getElementById("list-ai");
     var listCloud = document.getElementById("list-cloud");
+    var welcome = document.getElementById("welcome");
+
+    errEl.style.display = "none";
+    welcome.style.display = "none";
+    loading.style.display = "block";
+    loading.textContent = "正在加载最新文件列表…";
+    listAi.innerHTML = "";
+    listCloud.innerHTML = "";
 
     try {
       var aiFiles = await listMarkdown(PATHS.ai);
@@ -258,11 +280,9 @@
       });
 
       loading.style.display = "none";
-      document.getElementById("welcome").style.display = "block";
-
-      window.addEventListener("hashchange", function () {
-        loadArticle(window.location.hash || "");
-      });
+      if (!(window.location.hash || "").replace(/^#/, "")) {
+        welcome.style.display = "block";
+      }
       loadArticle(window.location.hash || "");
     } catch (e) {
       loading.style.display = "none";
@@ -274,7 +294,23 @@
     }
   }
 
-  init();
+  function bootstrap() {
+    if (!hashListenerBound) {
+      hashListenerBound = true;
+      window.addEventListener("hashchange", function () {
+        loadArticle(window.location.hash || "");
+      });
+    }
+    refreshListsAndArticle();
+  }
+
+  bootstrap();
+
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) {
+      refreshListsAndArticle();
+    }
+  });
 })();
   </script>
 </body>

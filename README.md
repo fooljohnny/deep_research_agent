@@ -10,4 +10,4 @@ Regularly capture new domain blogs every day and output insight analysis reports
 3. 若默认分支不是 `main`，打开页面时在 URL 后加参数，例如：  
    `?branch=main`（或与你的默认分支一致）。
 
-列表数据来自 **GitHub Contents API**（匿名有速率限制）；正文来自 **raw.githubusercontent.com**。
+列表数据来自 **GitHub Contents API**（匿名有速率限制）；正文来自 **raw.githubusercontent.com**。`index.html` 对每次访问使用 **禁用缓存** 与 **cache-bust** 参数，便于在报告每日更新后打开页面即看到最新列表与正文。
