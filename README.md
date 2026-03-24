@@ -11,3 +11,5 @@ Regularly capture new domain blogs every day and output insight analysis reports
    `?branch=main`（或与你的默认分支一致）。
 
 列表数据来自 **GitHub Contents API**（匿名有速率限制）；正文来自 **raw.githubusercontent.com**。`index.html` 对每次访问使用 **禁用缓存** 与 **cache-bust** 参数，便于在报告每日更新后打开页面即看到最新列表与正文。
+
+报告里的趋势图等使用相对路径（如 `charts/*.png`）；在 `github.io` 上会自动改写为对应分支下的 **raw** 图片地址，避免 broken image。
