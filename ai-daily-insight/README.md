@@ -194,6 +194,7 @@ On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_
 | `LLM_MODEL` | No | Per provider (e.g. Groq llama, OpenAI gpt-4o, DeepSeek deepseek-chat) | Model id from the provider |
 | `LLM_BASE_URL` | **Yes** for `custom` | Auto for `groq` / `openai` / official `deepseek` | **Required** for third-party gateways (`custom`). If set, overrides the default base URL for any provider. |
 | `LLM_JSON_RESPONSE_FORMAT` | No | `1` (enabled) | Set to `0` if the API returns **empty** `content` when using JSON mode (OpenAI `response_format: json_object`). Some third-party gateways behave this way. |
+| `LLM_JSON_PARSE_ATTEMPTS` | No | `2` | If Stage-1 returns invalid JSON, retry the LLM call up to this many times (1–5). Reduces flaky failures from stochastic / truncated model output. |
 | `LLM_THINKING_ENABLED` | No | off | If `true` / `1` / `enabled`, sends `{"thinking":{"type":"enabled"}}` (Huawei MaaS 等). Ignored if `LLM_EXTRA_BODY` is set. |
 | `LLM_EXTRA_BODY` | No | — | JSON object string merged into the chat request via `extra_body` (e.g. MaaS `thinking` or other vendor fields). Overrides the `LLM_THINKING_ENABLED` shortcut when set. |
 
@@ -206,6 +207,7 @@ On **GitHub Actions**: set secret `LLM_API_KEY`; variables `LLM_PROVIDER`, `LLM_
    - `LLM_MODEL` — e.g. `deepseek-v3.1-terminus` for DeepSeek.
    - `LLM_BASE_URL` — **required for `custom`** (third-party / private OpenAI-compatible API). Optional override for built-in providers. Omit for official `deepseek` on api.deepseek.com.
    - `LLM_JSON_RESPONSE_FORMAT` — set to `0` if needed (see table above).
+   - `LLM_JSON_PARSE_ATTEMPTS` — optional; default `2` retries on bad JSON (see table).
    - `LLM_THINKING_ENABLED` or `LLM_EXTRA_BODY` — for Huawei MaaS–style `thinking` (see section above).
 4. The workflow runs automatically at 06:00 UTC every day, or trigger it manually via **Actions → AI Daily Insight → Run workflow**.
 

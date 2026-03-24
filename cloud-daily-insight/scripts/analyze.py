@@ -35,6 +35,15 @@ def _json_response_format_enabled() -> bool:
     return str(v).strip().lower() not in ("0", "false", "no", "off")
 
 
+def _llm_json_parse_attempts() -> int:
+    """How many times to call the LLM if the reply is not valid JSON (stochastic / truncated output)."""
+    try:
+        n = int((os.environ.get("LLM_JSON_PARSE_ATTEMPTS") or "2").strip())
+    except ValueError:
+        n = 2
+    return max(1, min(n, 5))
+
+
 # 每批最多文章数，控制单次 prompt 体积
 BATCH_SIZE = 30
 MAX_SUMMARY_CHARS = 150
@@ -336,9 +345,29 @@ def _analyze_batch(
     }
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
-    response = chat_completion_with_retry(**create_kwargs)
-    raw = normalize_assistant_message_content(response.choices[0].message)
-    analysis = _parse_llm_json(raw, response)
+
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    analysis = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
+        try:
+            analysis = _parse_llm_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Batch %d: LLM JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    batch_idx + 1, attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if analysis is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Batch analysis missing after LLM calls")
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
@@ -368,9 +397,30 @@ def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dic
     }
     if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
-    response = chat_completion_with_retry(**create_kwargs)
-    raw = normalize_assistant_message_content(response.choices[0].message)
-    merged = _parse_llm_json(raw, response)
+
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    merged = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
+        try:
+            merged = _parse_llm_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Merge step: JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if merged is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Merge result missing after LLM calls")
+
     if "date" not in merged or not merged["date"]:
         merged["date"] = _today()
 
