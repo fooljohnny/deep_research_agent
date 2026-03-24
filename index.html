@@ -185,6 +185,11 @@
     return base.join("/");
   }
 
+  /** Fix legacy posts that used "## # Section" (renders as h2 + literal "#"). */
+  function normalizeMarkdownLegacyHeadings(md) {
+    return (md || "").replace(/^##\s+#\s+/gm, "## ");
+  }
+
   function rewriteImageSourcesInArticle(articleEl, contentDir) {
     articleEl.querySelectorAll("img[src]").forEach(function (img) {
       var repoPath = resolveMarkdownAssetToRepoPath(contentDir, img.getAttribute("src") || "");
@@ -275,7 +280,7 @@
       if (!r.ok) {
         throw new Error("无法拉取正文: " + r.status + " " + url);
       }
-      var md = await r.text();
+      var md = normalizeMarkdownLegacyHeadings(await r.text());
       var html = marked.parse(md);
       article.innerHTML = DOMPurify.sanitize(html);
       rewriteImageSourcesInArticle(article, PATHS[bucket]);
