@@ -18,6 +18,7 @@ from llm_client import (
     get_client,
     get_model,
     normalize_assistant_message_content,
+    parse_llm_json_object,
 )
 
 logger = logging.getLogger(__name__)
@@ -71,14 +72,17 @@ def _parse_stage1_json(raw: str, response: Any) -> dict[str, Any]:
         except json.JSONDecodeError:
             pass
 
-    start, end = text.find("{"), text.rfind("}")
-    if start >= 0 and end > start:
-        try:
-            return json.loads(text[start : end + 1])
-        except json.JSONDecodeError:
-            pass
+    recovered = parse_llm_json_object(text)
+    if recovered is not None:
+        return recovered
 
-    logger.error("Stage-1 response is not valid JSON (first 800 chars): %r", text[:800])
+    fr = getattr(response.choices[0], "finish_reason", None)
+    logger.error(
+        "Stage-1 invalid JSON (finish_reason=%s). Head: %r … tail: %r",
+        fr,
+        text[:400],
+        text[-200:] if len(text) > 200 else text,
+    )
     raise json.JSONDecodeError("Stage-1 response is not valid JSON", text, 0)
 
 
