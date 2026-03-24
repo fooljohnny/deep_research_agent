@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>每日洞察 · AI & Cloud</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" />
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0;
+      display: flex;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f6f8fa;
+      color: #1f2328;
+    }
+    @media (prefers-color-scheme: dark) {
+      body { background: #0d1117; color: #e6edf3; }
+      .nav { border-color: #30363d !important; background: #161b22; }
+      .nav a { color: #58a6ff !important; }
+      .section h2 { color: #8b949e !important; }
+      .hint, #loading { color: #8b949e !important; }
+    }
+    .nav {
+      width: min(300px, 38vw);
+      flex-shrink: 0;
+      border-right: 1px solid #d0d7de;
+      padding: 1rem 0.75rem;
+      overflow: auto;
+      background: #fff;
+    }
+    .main {
+      flex: 1;
+      overflow: auto;
+      padding: 1.25rem 1.5rem;
+    }
+    .markdown-body {
+      box-sizing: border-box;
+      min-width: 200px;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #d0d7de;
+    }
+    @media (prefers-color-scheme: dark) {
+      .markdown-body {
+        background: #161b22;
+        border-color: #30363d;
+      }
+    }
+    h1.app-title { font-size: 1.05rem; margin: 0 0 1rem; font-weight: 600; }
+    .section { margin-bottom: 1.25rem; }
+    .section h2 {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #656d76;
+      margin: 0 0 0.4rem;
+    }
+    .nav a {
+      display: block;
+      padding: 0.3rem 0.25rem;
+      color: #0969da;
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-radius: 4px;
+    }
+    .nav a:hover { background: rgba(9, 105, 218, 0.08); text-decoration: none; }
+    .nav a.active { font-weight: 600; background: rgba(9, 105, 218, 0.12); }
+    .hint { color: #656d76; font-size: 0.75rem; line-height: 1.4; margin-top: 1rem; }
+    .hint code { font-size: 0.7rem; word-break: break-all; }
+    #error { color: #cf222e; max-width: 980px; margin: 0 auto; }
+    @media (prefers-color-scheme: dark) {
+      #error { color: #f85149; }
+    }
+    .welcome { color: #656d76; max-width: 980px; margin: 0 auto; }
+    @media (max-width: 640px) {
+      body { flex-direction: column; }
+      .nav { width: 100%; max-height: 40vh; border-right: none; border-bottom: 1px solid #d0d7de; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <h1 class="app-title">每日洞察</h1>
+    <div class="section">
+      <h2>AI Daily Insight</h2>
+      <div id="list-ai"></div>
+    </div>
+    <div class="section">
+      <h2>Cloud Daily Insight</h2>
+      <div id="list-cloud"></div>
+    </div>
+    <p class="hint">
+      目录由 GitHub API 读取仓库
+      <code id="repo-label"></code>。<br />
+      每次打开页面都会重新请求列表与正文（禁用缓存）。<br />
+      匿名访问有速率限制；若失败可在 URL 加参数
+      <code>?owner=fooljohnny&repo=deep_research_agent&branch=main</code>
+    </p>
+  </nav>
+  <main class="main" id="main-wrap">
+    <p id="loading" class="welcome">正在加载文件列表…</p>
+    <p id="error" style="display: none;"></p>
+    <article id="article" class="markdown-body" style="display: none;"></article>
+    <div id="welcome" class="welcome markdown-body" style="display: none;">
+      <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
+      <p>链接可分享：<code id="sample-hash"></code></p>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const CONFIG = {
+    owner: params.get("owner") || "fooljohnny",
+    repo: params.get("repo") || "deep_research_agent",
+    branch: params.get("branch") || "main",
+  };
+
+  const PATHS = {
+    ai: "ai-daily-insight/content",
+    cloud: "cloud-daily-insight/content",
+  };
+
+  document.getElementById("repo-label").textContent =
+    CONFIG.owner + "/" + CONFIG.repo + "@" + CONFIG.branch;
+
+  function withCacheBust(url) {
+    var sep = url.indexOf("?") >= 0 ? "&" : "?";
+    return url + sep + "_=" + Date.now();
+  }
+
+  var FETCH_OPTS = { cache: "no-store" };
+
+  function rawUrl(relPath) {
+    return (
+      "https://raw.githubusercontent.com/" +
+      encodeURIComponent(CONFIG.owner) +
+      "/" +
+      encodeURIComponent(CONFIG.repo) +
+      "/" +
+      encodeURIComponent(CONFIG.branch) +
+      "/" +
+      relPath.split("/").map(encodeURIComponent).join("/")
+    );
+  }
+
+  async function fetchJson(url) {
+    const r = await fetch(withCacheBust(url), {
+      cache: "no-store",
+      headers: { Accept: "application/vnd.github+json" },
+    });
+    if (!r.ok) {
+      const t = await r.text();
+      throw new Error(r.status + " " + r.statusText + (t ? ": " + t.slice(0, 200) : ""));
+    }
+    return r.json();
+  }
+
+  async function listMarkdown(prefix) {
+    const api =
+      "https://api.github.com/repos/" +
+      CONFIG.owner +
+      "/" +
+      CONFIG.repo +
+      "/contents/" +
+      prefix +
+      "?ref=" +
+      encodeURIComponent(CONFIG.branch);
+    const data = await fetchJson(api);
+    if (!Array.isArray(data)) {
+      throw new Error("Unexpected API response for " + prefix);
+    }
+    return data
+      .filter(function (item) {
+        return item.type === "file" && /\.md$/i.test(item.name);
+      })
+      .sort(function (a, b) {
+        return b.name.localeCompare(a.name);
+      });
+  }
+
+  function setActive(hash) {
+    document.querySelectorAll(".nav a").forEach(function (a) {
+      a.classList.toggle("active", a.getAttribute("href") === hash);
+    });
+  }
+
+  async function loadArticle(hash) {
+    var m = /^#(ai|cloud)\/(.+\.md)$/.exec(hash);
+    var article = document.getElementById("article");
+    var welcome = document.getElementById("welcome");
+    var loading = document.getElementById("loading");
+    var errEl = document.getElementById("error");
+
+    errEl.style.display = "none";
+    welcome.style.display = "none";
+
+    if (!m) {
+      loading.style.display = "none";
+      article.style.display = "none";
+      welcome.style.display = "block";
+      document.getElementById("sample-hash").textContent =
+        window.location.pathname + window.location.search + "#ai/2026-03-20.md";
+      setActive("");
+      return;
+    }
+
+    var bucket = m[1];
+    var file = m[2];
+    var rel = PATHS[bucket] + "/" + file;
+
+    loading.style.display = "block";
+    loading.textContent = "正在加载 " + rel + " …";
+    article.style.display = "none";
+
+    try {
+      var url = withCacheBust(rawUrl(rel));
+      var r = await fetch(url, FETCH_OPTS);
+      if (!r.ok) {
+        throw new Error("无法拉取正文: " + r.status + " " + url);
+      }
+      var md = await r.text();
+      var html = marked.parse(md);
+      article.innerHTML = DOMPurify.sanitize(html);
+      article.style.display = "block";
+      loading.style.display = "none";
+      setActive(hash);
+      document.title = file.replace(/\.md$/i, "") + " · 洞察";
+    } catch (e) {
+      loading.style.display = "none";
+      article.style.display = "none";
+      errEl.textContent = String(e.message || e);
+      errEl.style.display = "block";
+      setActive("");
+    }
+  }
+
+  function buildLink(bucket, name) {
+    var a = document.createElement("a");
+    a.href = "#" + bucket + "/" + name;
+    a.textContent = name.replace(/\.md$/i, "");
+    return a;
+  }
+
+  var hashListenerBound = false;
+
+  async function refreshListsAndArticle() {
+    var loading = document.getElementById("loading");
+    var errEl = document.getElementById("error");
+    var listAi = document.getElementById("list-ai");
+    var listCloud = document.getElementById("list-cloud");
+    var welcome = document.getElementById("welcome");
+
+    errEl.style.display = "none";
+    welcome.style.display = "none";
+    loading.style.display = "block";
+    loading.textContent = "正在加载最新文件列表…";
+    listAi.innerHTML = "";
+    listCloud.innerHTML = "";
+
+    try {
+      var aiFiles = await listMarkdown(PATHS.ai);
+      var cloudFiles = await listMarkdown(PATHS.cloud);
+
+      aiFiles.forEach(function (f) {
+        listAi.appendChild(buildLink("ai", f.name));
+      });
+      cloudFiles.forEach(function (f) {
+        listCloud.appendChild(buildLink("cloud", f.name));
+      });
+
+      loading.style.display = "none";
+      if (!(window.location.hash || "").replace(/^#/, "")) {
+        welcome.style.display = "block";
+      }
+      loadArticle(window.location.hash || "");
+    } catch (e) {
+      loading.style.display = "none";
+      errEl.textContent =
+        "加载目录失败（可能是 GitHub API 限速或分支名不对）。详情: " +
+        (e.message || e) +
+        " — 可尝试 URL 参数 ?branch=你的默认分支";
+      errEl.style.display = "block";
+    }
+  }
+
+  function bootstrap() {
+    if (!hashListenerBound) {
+      hashListenerBound = true;
+      window.addEventListener("hashchange", function () {
+        loadArticle(window.location.hash || "");
+      });
+    }
+    refreshListsAndArticle();
+  }
+
+  bootstrap();
+
+  window.addEventListener("pageshow", function (ev) {
+    if (ev.persisted) {
+      refreshListsAndArticle();
+    }
+  });
+})();
+  </script>
+</body>
+</html>
