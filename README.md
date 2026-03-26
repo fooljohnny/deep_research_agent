@@ -24,6 +24,10 @@ Regularly capture new domain blogs every day and output insight analysis reports
 
 若 API 也被限流或拦截，图表仍可能无法显示。
 
+### 若相邻两天的报告「一个正常、一个像代码块」
+
+多为 **Stage-2 误把全文包进 markdown 围栏**（行首 ` ``` `）：未闭合时整篇会渲染成 `<pre>`，与正常标题段落差异很大。阅读页会对「` ``` ` + YAML + …」做预处理；新生成报告请在提示词中要求 **不要用 ``` 包裹 front-matter**（仓库内 `generate.py` 已强调）。
+
 ### 若控制台仍报 `cdn.jsdelivr.net` / `ERR_TUNNEL_CONNECTION_FAILED`
 
 当前 `index.html` **不再引用** jsDelivr；样式与脚本均来自本站 `css/`、`js/`。若 F12 里仍出现对 `cdn.jsdelivr.net/.../github-markdown.min.css` 的请求，说明浏览器或中间代理还在用**旧版页面**：
