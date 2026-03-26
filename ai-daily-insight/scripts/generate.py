@@ -48,14 +48,13 @@ SYSTEM_PROMPT = """\
 ### 博客结构（严格遵守以下章节顺序与标题文案）
 
 #### Front-matter
-以 YAML front-matter 开头：
-```
+以 YAML front-matter 开头（**直接**写 `---` 行，**不要**用 markdown 代码围栏 ``` 包裹）：
 ---
 title: "标题"
 date: YYYY-MM-DD
 tags: [关键标签]
 ---
-```
+**禁止**在全文开头写单独的 ``` 再写 front-matter，否则整篇会被渲染成代码块、阅读页像记事本。
 
 #### 今日AI结构性变化
 - **章节标题行**（二级）：`## 今日AI结构性变化`

@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
   <!-- Local CSS only — no jsdelivr. If DevTools still requests cdn.jsdelivr.net, the old index is cached: hard-refresh or wait for Pages. -->
-  <link rel="stylesheet" href="css/github-markdown.min.css?v=2" />
+  <link rel="stylesheet" href="css/github-markdown.min.css?v=3" />
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -127,8 +127,8 @@
   </main>
 
   <!-- Bundled locally: GitHub Pages / some regions may block or fail CDN; avoids marked.parse undefined -->
-  <script src="js/marked.min.js?v=2"></script>
-  <script src="js/purify.min.js?v=2"></script>
+  <script src="js/marked.min.js?v=3"></script>
+  <script src="js/purify.min.js?v=3"></script>
   <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -284,6 +284,46 @@
     return (md || "").replace(/^##\s+#\s+/gm, "## ");
   }
 
+  /**
+   * LLM sometimes wraps YAML in ``` fences or opens ``` before front-matter and only closes at EOF,
+   * so the whole post renders as one <pre> (looks like a notepad vs normal markdown).
+   */
+  function stripErroneousOuterCodeFences(md) {
+    var text = (md || "").replace(/^\uFEFF/, "");
+    var lines = text.split(/\r?\n/);
+    if (lines.length < 3 || String(lines[0]).trim() !== "```") {
+      return md;
+    }
+    if (!String(lines[1] || "").trim().startsWith("---")) {
+      return md;
+    }
+    var endYaml = -1;
+    for (var i = 2; i < lines.length; i++) {
+      if (/^---\s*$/.test(lines[i])) {
+        endYaml = i;
+        break;
+      }
+    }
+    if (endYaml < 0) {
+      return md;
+    }
+    var i = endYaml + 1;
+    if (i < lines.length && String(lines[i]).trim() === "```") {
+      i++;
+    }
+    while (i < lines.length && String(lines[i]).trim() === "") {
+      i++;
+    }
+    var body = lines.slice(i).join("\n");
+    body = body.replace(/\r?\n```\s*$/m, "");
+    body = body.replace(/```\s*$/m, "");
+    return body.replace(/^\uFEFF/, "").trimStart();
+  }
+
+  function normalizeMarkdownForRender(md) {
+    return normalizeMarkdownLegacyHeadings(stripErroneousOuterCodeFences(md || ""));
+  }
+
   function markdownToHtml(src) {
     var m = typeof marked !== "undefined" ? marked : null;
     if (!m) {
@@ -418,7 +458,7 @@
     article.style.display = "none";
 
     try {
-      var md = normalizeMarkdownLegacyHeadings(await fetchRepoTextWithFallback(rel));
+      var md = normalizeMarkdownForRender(await fetchRepoTextWithFallback(rel));
       var html = markdownToHtml(md);
       article.innerHTML = sanitizeHtml(html);
       rewriteImageSourcesInArticle(article, PATHS[bucket]);
