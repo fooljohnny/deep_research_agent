@@ -3,7 +3,7 @@ Regularly capture new domain blogs every day and output insight analysis reports
 
 ## 在线阅读报告 (GitHub Pages)
 
-仓库根目录的 [`index.html`](index.html) 会列出 `ai-daily-insight/content` 与 `cloud-daily-insight/content` 下的 Markdown，并渲染阅读。依赖同级的 [`js/marked.min.js`](js/marked.min.js) 与 [`js/purify.min.js`](js/purify.min.js)（已随仓库提供，避免外链 CDN 被拦截导致 `marked.parse` 报错）。
+仓库根目录的 [`index.html`](index.html) 会列出 `ai-daily-insight/content` 与 `cloud-daily-insight/content` 下的 Markdown，并渲染阅读。依赖同级的 [`js/marked.min.js`](js/marked.min.js)、[`js/purify.min.js`](js/purify.min.js) 与 [`css/github-markdown.min.css`](css/github-markdown.min.css)（均随仓库提供，避免 CDN 被拦截后出现无样式「记事本」或 `marked.parse` 报错）。
 
 1. 在 GitHub 仓库 **Settings → Pages** 中，**Source** 选 **Deploy from a branch**，分支选默认分支（如 `main`），目录选 **/ (root)**，保存。
 2. 站点地址一般为：`https://fooljohnny.github.io/deep_research_agent/` 或 `.../index.html`。
