@@ -7,14 +7,15 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" />
+  <!-- Local CSS only — no jsdelivr. If DevTools still requests cdn.jsdelivr.net, the old index is cached: hard-refresh or wait for Pages. -->
+  <link rel="stylesheet" href="css/github-markdown.min.css?v=2" />
   <style>
     :root { color-scheme: light dark; }
     body {
       margin: 0;
       display: flex;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
       background: #f6f8fa;
       color: #1f2328;
     }
@@ -24,6 +25,7 @@
       .nav a { color: #58a6ff !important; }
       .section h2 { color: #8b949e !important; }
       .hint, #loading { color: #8b949e !important; }
+      .readme-surface { background: #0d1117; border-color: #30363d; }
     }
     .nav {
       width: min(300px, 38vw);
@@ -36,23 +38,30 @@
     .main {
       flex: 1;
       overflow: auto;
-      padding: 1.25rem 1.5rem;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    /* GitHub README-like column: avoid card chrome that fights github-markdown-css */
+    .readme-surface {
+      flex: 1;
+      max-width: 1012px;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 24px 40px 64px;
+      background: #ffffff;
+      border-left: 1px solid #d0d7de;
+      border-right: 1px solid #d0d7de;
+      min-height: 100%;
+    }
+    @media (max-width: 900px) {
+      .readme-surface { padding: 16px 16px 48px; border-left: none; border-right: none; }
     }
     .markdown-body {
       box-sizing: border-box;
-      min-width: 200px;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid #d0d7de;
-    }
-    @media (prefers-color-scheme: dark) {
-      .markdown-body {
-        background: #161b22;
-        border-color: #30363d;
-      }
+      min-width: 0;
     }
     h1.app-title { font-size: 1.05rem; margin: 0 0 1rem; font-weight: 600; }
     .section { margin-bottom: 1.25rem; }
@@ -106,18 +115,20 @@
     </p>
   </nav>
   <main class="main" id="main-wrap">
-    <p id="loading" class="welcome">正在加载文件列表…</p>
-    <p id="error" style="display: none;"></p>
-    <article id="article" class="markdown-body" style="display: none;"></article>
-    <div id="welcome" class="welcome markdown-body" style="display: none;">
-      <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
-      <p>链接可分享：<code id="sample-hash"></code></p>
+    <div class="readme-surface">
+      <p id="loading" class="welcome">正在加载文件列表…</p>
+      <p id="error" style="display: none;"></p>
+      <article id="article" class="markdown-body" style="display: none;"></article>
+      <div id="welcome" class="welcome markdown-body" style="display: none;">
+        <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
+        <p>链接可分享：<code id="sample-hash"></code></p>
+      </div>
     </div>
   </main>
 
   <!-- Bundled locally: GitHub Pages / some regions may block or fail CDN; avoids marked.parse undefined -->
-  <script src="js/marked.min.js"></script>
-  <script src="js/purify.min.js"></script>
+  <script src="js/marked.min.js?v=2"></script>
+  <script src="js/purify.min.js?v=2"></script>
   <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -126,6 +137,88 @@
     repo: params.get("repo") || "deep_research_agent",
     branch: params.get("branch") || "main",
   };
+
+  /** Pages site root path, e.g. /deep_research_agent/ — same-origin files when branch is deployed to Pages */
+  function pagesRepoRootPath() {
+    var p = window.location.pathname || "/";
+    if (p.endsWith("/")) {
+      return p;
+    }
+    var slash = p.lastIndexOf("/");
+    return slash >= 0 ? p.slice(0, slash + 1) : "/";
+  }
+
+  function sameOriginRepoFileUrl(relPath) {
+    return window.location.origin + pagesRepoRootPath() + relPath;
+  }
+
+  function githubContentsApiUrl(relPath) {
+    return (
+      "https://api.github.com/repos/" +
+      CONFIG.owner +
+      "/" +
+      CONFIG.repo +
+      "/contents/" +
+      relPath.split("/").map(encodeURIComponent).join("/") +
+      "?ref=" +
+      encodeURIComponent(CONFIG.branch)
+    );
+  }
+
+  function decodeBase64Utf8(b64) {
+    var bin = atob(b64.replace(/\s/g, ""));
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) {
+      bytes[i] = bin.charCodeAt(i);
+    }
+    return new TextDecoder("utf-8").decode(bytes);
+  }
+
+  function guessImageMime(repoPath) {
+    var ext = (repoPath.split(".").pop() || "").toLowerCase();
+    var map = {
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      webp: "image/webp",
+      svg: "image/svg+xml",
+    };
+    return map[ext] || "application/octet-stream";
+  }
+
+  async function fetchRepoTextViaApi(relPath) {
+    var url = githubContentsApiUrl(relPath);
+    var data = await fetchJson(url);
+    if (data.encoding === "base64" && data.content) {
+      return decodeBase64Utf8(data.content);
+    }
+    throw new Error("GitHub API 未返回可解码的正文: " + relPath);
+  }
+
+  async function fetchRepoTextWithFallback(relPath) {
+    var candidates = [sameOriginRepoFileUrl(relPath), rawUrl(relPath)];
+    for (var c = 0; c < candidates.length; c++) {
+      try {
+        var r = await fetch(withCacheBust(candidates[c]), FETCH_OPTS);
+        if (r.ok) {
+          return await r.text();
+        }
+      } catch (err) {
+        /* tunnel / blocked */
+      }
+    }
+    return await fetchRepoTextViaApi(relPath);
+  }
+
+  async function fetchRepoBinaryAsDataUrl(relPath) {
+    var data = await fetchJson(githubContentsApiUrl(relPath));
+    if (data.encoding !== "base64" || !data.content) {
+      throw new Error("无法通过 API 读取二进制: " + relPath);
+    }
+    var mime = guessImageMime(relPath);
+    return "data:" + mime + ";base64," + data.content.replace(/\s/g, "");
+  }
 
   const PATHS = {
     ai: "ai-daily-insight/content",
@@ -198,6 +291,9 @@
         "Markdown 引擎未加载（marked 缺失）。请确认仓库根目录存在 js/marked.min.js 且 Pages 已部署最新提交。"
       );
     }
+    if (typeof m.setOptions === "function") {
+      m.setOptions({ gfm: true, breaks: false });
+    }
     if (typeof m.parse === "function") {
       return m.parse(src);
     }
@@ -222,12 +318,33 @@
       if (!repoPath) {
         return;
       }
-      img.setAttribute("src", withCacheBust(rawUrl(repoPath)));
       img.setAttribute("loading", "lazy");
-      img.setAttribute(
-        "referrerpolicy",
-        "no-referrer",
-      );
+      img.setAttribute("referrerpolicy", "no-referrer");
+
+      var same = withCacheBust(sameOriginRepoFileUrl(repoPath));
+      var raw = withCacheBust(rawUrl(repoPath));
+
+      img.onerror = function onImgErr() {
+        if (img.dataset.imgStage === "same") {
+          img.dataset.imgStage = "raw";
+          img.src = raw;
+          return;
+        }
+        if (img.dataset.imgStage === "raw") {
+          img.onerror = null;
+          fetchRepoBinaryAsDataUrl(repoPath)
+            .then(function (dataUrl) {
+              img.src = dataUrl;
+            })
+            .catch(function () {
+              img.alt = (img.alt || "图表") + "（无法加载：网络或 API 限制）";
+            });
+          return;
+        }
+      };
+
+      img.dataset.imgStage = "same";
+      img.src = same;
     });
   }
 
@@ -301,12 +418,7 @@
     article.style.display = "none";
 
     try {
-      var url = withCacheBust(rawUrl(rel));
-      var r = await fetch(url, FETCH_OPTS);
-      if (!r.ok) {
-        throw new Error("无法拉取正文: " + r.status + " " + url);
-      }
-      var md = normalizeMarkdownLegacyHeadings(await r.text());
+      var md = normalizeMarkdownLegacyHeadings(await fetchRepoTextWithFallback(rel));
       var html = markdownToHtml(md);
       article.innerHTML = sanitizeHtml(html);
       rewriteImageSourcesInArticle(article, PATHS[bucket]);
