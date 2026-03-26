@@ -115,8 +115,9 @@
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+  <!-- Bundled locally: GitHub Pages / some regions may block or fail CDN; avoids marked.parse undefined -->
+  <script src="js/marked.min.js"></script>
+  <script src="js/purify.min.js"></script>
   <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -188,6 +189,31 @@
   /** Fix legacy posts that used "## # Section" (renders as h2 + literal "#"). */
   function normalizeMarkdownLegacyHeadings(md) {
     return (md || "").replace(/^##\s+#\s+/gm, "## ");
+  }
+
+  function markdownToHtml(src) {
+    var m = typeof marked !== "undefined" ? marked : null;
+    if (!m) {
+      throw new Error(
+        "Markdown 引擎未加载（marked 缺失）。请确认仓库根目录存在 js/marked.min.js 且 Pages 已部署最新提交。"
+      );
+    }
+    if (typeof m.parse === "function") {
+      return m.parse(src);
+    }
+    if (typeof m === "function") {
+      return m(src);
+    }
+    throw new Error("Markdown 引擎 API 不兼容：marked 无 parse 且非函数。");
+  }
+
+  function sanitizeHtml(html) {
+    if (typeof DOMPurify === "undefined" || !DOMPurify.sanitize) {
+      throw new Error(
+        "DOMPurify 未加载。请确认 js/purify.min.js 存在且可访问。"
+      );
+    }
+    return DOMPurify.sanitize(html);
   }
 
   function rewriteImageSourcesInArticle(articleEl, contentDir) {
@@ -281,8 +307,8 @@
         throw new Error("无法拉取正文: " + r.status + " " + url);
       }
       var md = normalizeMarkdownLegacyHeadings(await r.text());
-      var html = marked.parse(md);
-      article.innerHTML = DOMPurify.sanitize(html);
+      var html = markdownToHtml(md);
+      article.innerHTML = sanitizeHtml(html);
       rewriteImageSourcesInArticle(article, PATHS[bucket]);
       article.style.display = "block";
       loading.style.display = "none";
