@@ -7,14 +7,15 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown.min.css" />
+  <!-- Local: same reason as js/ — CDN CSS blocked → unstyled “notepad” look -->
+  <link rel="stylesheet" href="css/github-markdown.min.css" />
   <style>
     :root { color-scheme: light dark; }
     body {
       margin: 0;
       display: flex;
       min-height: 100vh;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
       background: #f6f8fa;
       color: #1f2328;
     }
@@ -24,6 +25,7 @@
       .nav a { color: #58a6ff !important; }
       .section h2 { color: #8b949e !important; }
       .hint, #loading { color: #8b949e !important; }
+      .readme-surface { background: #0d1117; border-color: #30363d; }
     }
     .nav {
       width: min(300px, 38vw);
@@ -36,23 +38,30 @@
     .main {
       flex: 1;
       overflow: auto;
-      padding: 1.25rem 1.5rem;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    /* GitHub README-like column: avoid card chrome that fights github-markdown-css */
+    .readme-surface {
+      flex: 1;
+      max-width: 1012px;
+      width: 100%;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding: 24px 40px 64px;
+      background: #ffffff;
+      border-left: 1px solid #d0d7de;
+      border-right: 1px solid #d0d7de;
+      min-height: 100%;
+    }
+    @media (max-width: 900px) {
+      .readme-surface { padding: 16px 16px 48px; border-left: none; border-right: none; }
     }
     .markdown-body {
       box-sizing: border-box;
-      min-width: 200px;
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 1.5rem;
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid #d0d7de;
-    }
-    @media (prefers-color-scheme: dark) {
-      .markdown-body {
-        background: #161b22;
-        border-color: #30363d;
-      }
+      min-width: 0;
     }
     h1.app-title { font-size: 1.05rem; margin: 0 0 1rem; font-weight: 600; }
     .section { margin-bottom: 1.25rem; }
@@ -106,12 +115,14 @@
     </p>
   </nav>
   <main class="main" id="main-wrap">
-    <p id="loading" class="welcome">正在加载文件列表…</p>
-    <p id="error" style="display: none;"></p>
-    <article id="article" class="markdown-body" style="display: none;"></article>
-    <div id="welcome" class="welcome markdown-body" style="display: none;">
-      <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
-      <p>链接可分享：<code id="sample-hash"></code></p>
+    <div class="readme-surface">
+      <p id="loading" class="welcome">正在加载文件列表…</p>
+      <p id="error" style="display: none;"></p>
+      <article id="article" class="markdown-body" style="display: none;"></article>
+      <div id="welcome" class="welcome markdown-body" style="display: none;">
+        <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
+        <p>链接可分享：<code id="sample-hash"></code></p>
+      </div>
     </div>
   </main>
 
@@ -197,6 +208,9 @@
       throw new Error(
         "Markdown 引擎未加载（marked 缺失）。请确认仓库根目录存在 js/marked.min.js 且 Pages 已部署最新提交。"
       );
+    }
+    if (typeof m.setOptions === "function") {
+      m.setOptions({ gfm: true, breaks: false });
     }
     if (typeof m.parse === "function") {
       return m.parse(src);
