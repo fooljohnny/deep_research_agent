@@ -7,8 +7,8 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
-  <!-- Local: same reason as js/ — CDN CSS blocked → unstyled “notepad” look -->
-  <link rel="stylesheet" href="css/github-markdown.min.css" />
+  <!-- Local CSS only — no jsdelivr. If DevTools still requests cdn.jsdelivr.net, the old index is cached: hard-refresh or wait for Pages. -->
+  <link rel="stylesheet" href="css/github-markdown.min.css?v=2" />
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -127,8 +127,8 @@
   </main>
 
   <!-- Bundled locally: GitHub Pages / some regions may block or fail CDN; avoids marked.parse undefined -->
-  <script src="js/marked.min.js"></script>
-  <script src="js/purify.min.js"></script>
+  <script src="js/marked.min.js?v=2"></script>
+  <script src="js/purify.min.js?v=2"></script>
   <script>
 (function () {
   const params = new URLSearchParams(window.location.search);

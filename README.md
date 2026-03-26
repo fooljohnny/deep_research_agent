@@ -13,3 +13,10 @@ Regularly capture new domain blogs every day and output insight analysis reports
 列表数据来自 **GitHub Contents API**（匿名有速率限制）；正文来自 **raw.githubusercontent.com**。`index.html` 对每次访问使用 **禁用缓存** 与 **cache-bust** 参数，便于在报告每日更新后打开页面即看到最新列表与正文。
 
 报告里的趋势图等使用相对路径（如 `charts/*.png`）；在 `github.io` 上会自动改写为对应分支下的 **raw** 图片地址，避免 broken image。
+
+### 若控制台仍报 `cdn.jsdelivr.net` / `ERR_TUNNEL_CONNECTION_FAILED`
+
+当前 `index.html` **不再引用** jsDelivr；样式与脚本均来自本站 `css/`、`js/`。若 F12 里仍出现对 `cdn.jsdelivr.net/.../github-markdown.min.css` 的请求，说明浏览器或中间代理还在用**旧版页面**：
+
+1. 确认 **GitHub Pages** 的发布分支已包含最新的 `index.html` 与 `css/github-markdown.min.css`（若用 `gh-pages` 分支部署，需已合并/推送该分支）。
+2. 对 `index.html` 做一次 **强制刷新**（Ctrl+Shift+R 或清空本站缓存）后再打开。
