@@ -14,6 +14,11 @@ from pathlib import Path
 from typing import Any
 
 from llm_client import chat_completion_with_retry, get_model, normalize_assistant_message_content
+from stage2_resilience import (
+    build_fallback_markdown_cloud,
+    is_gateway_sensitive_input_error,
+    strip_urls_from_value,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +158,16 @@ def generate_post(
     """
     model = get_model()
 
+    def _call_stage2(content: str):
+        return chat_completion_with_retry(
+            model=model,
+            temperature=0.5,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": content},
+            ],
+        )
+
     user_prompt = _build_user_prompt(
         analysis, trend_report,
         metrics_report=metrics_report,
@@ -160,24 +175,60 @@ def generate_post(
     )
     logger.info("Sending analysis + trends to LLM (%s) for Stage-2 generation …", model)
 
-    response = chat_completion_with_retry(
-        model=model,
-        temperature=0.5,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ],
-    )
-
-    markdown: str = normalize_assistant_message_content(response.choices[0].message)
-
-    usage = getattr(response, "usage", None)
+    response = None
+    markdown = ""
     token_usage: dict[str, Any] = {
         "model": model,
-        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
-        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
-        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
     }
+
+    try:
+        response = _call_stage2(user_prompt)
+    except Exception as exc:
+        if is_gateway_sensitive_input_error(exc):
+            logger.warning(
+                "Stage-2 rejected as sensitive; retrying with URLs stripped from JSON …",
+            )
+            user_sanitized = _build_user_prompt(
+                strip_urls_from_value(analysis),
+                strip_urls_from_value(trend_report) if trend_report else None,
+                metrics_report=strip_urls_from_value(metrics_report) if metrics_report else None,
+                chart_paths=chart_paths,
+            )
+            try:
+                response = _call_stage2(user_sanitized)
+            except Exception as exc2:
+                if is_gateway_sensitive_input_error(exc2):
+                    logger.error(
+                        "Stage-2 still blocked after URL strip; writing fallback post. %s",
+                        exc2,
+                    )
+                    markdown = build_fallback_markdown_cloud(
+                        analysis,
+                        trend_report,
+                        metrics_report,
+                        chart_paths,
+                        reason=(
+                            "云端网关判定输入含敏感信息（ModelArts.81011），"
+                            "去链接重试仍失败；本页由结构分析 JSON 自动生成。"
+                        ),
+                    )
+                else:
+                    raise
+        else:
+            raise
+
+    if response is not None:
+        markdown = normalize_assistant_message_content(response.choices[0].message)
+        usage = getattr(response, "usage", None)
+        token_usage = {
+            "model": model,
+            "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+            "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+            "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+        }
 
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     CONTENT_DIR.mkdir(parents=True, exist_ok=True)
