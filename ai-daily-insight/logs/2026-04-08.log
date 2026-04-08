@@ -1,0 +1,146 @@
+22:43:14  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-04-08.log
+22:43:14  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-04-08 ===
+22:43:14  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+22:43:14  INFO      fetch  Fetching RSS: arXiv cs.AI …
+22:43:15  INFO      fetch    → arXiv cs.AI: 10 new item(s)
+22:43:15  INFO      fetch  Fetching RSS: arXiv cs.LG …
+22:43:15  INFO      fetch    → arXiv cs.LG: 10 new item(s)
+22:43:15  INFO      fetch  Fetching RSS: arXiv cs.CL …
+22:43:15  INFO      fetch    → arXiv cs.CL: 10 new item(s)
+22:43:15  INFO      fetch  Fetching RSS: OpenAI Blog …
+22:43:16  INFO      fetch    → OpenAI Blog: 2 new item(s)
+22:43:16  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+22:43:16  INFO      fetch    → Google DeepMind Blog: 0 new item(s)
+22:43:16  INFO      fetch  Fetching RSS: Google AI Blog …
+22:43:17  INFO      fetch    → Google AI Blog: 1 new item(s)
+22:43:17  INFO      fetch  Fetching RSS: TechCrunch AI …
+22:43:17  INFO      fetch    → TechCrunch AI: 9 new item(s)
+22:43:17  INFO      fetch  Fetching RSS: VentureBeat AI …
+22:43:17  INFO      fetch    → VentureBeat AI: 0 new item(s)
+22:43:17  INFO      fetch  Fetching RSS: Crunchbase News …
+22:43:18  INFO      fetch    → Crunchbase News: 1 new item(s)
+22:43:18  INFO      fetch  Fetching Anthropic Blog …
+22:43:20  INFO      fetch    → Anthropic Blog: 0 new item(s)
+22:43:20  INFO      fetch  Fetching Meta AI Blog …
+22:43:22  INFO      fetch    → Meta AI Blog: 4 new item(s)
+22:43:22  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+22:43:23  INFO      fetch    → GitHub Trending: 2 new item(s)
+22:43:23  INFO      fetch  Fetching HuggingFace Trending Models …
+22:43:23  INFO      fetch    → HuggingFace Trending: 1 new item(s)
+22:43:23  INFO      fetch  Total fresh items: 50
+22:43:23  INFO      ai-daily-insight  Collected 50 fresh article(s).
+22:43:23  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+22:43:24  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-04-08.json
+22:43:26  INFO      metrics  Metrics report: arXiv=延续, GitHub=8, HF=20
+22:43:26  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+22:43:26  INFO      llm_client  LLM provider: custom  base_url: https://api.modelarts-maas.com/v2
+22:43:26  INFO      analyze  Sending 50 articles to LLM (deepseek-v3.1-terminus) for structural analysis …
+22:44:05  INFO      httpx  HTTP Request: POST https://api.modelarts-maas.com/v2/chat/completions "HTTP/1.1 200 OK"
+22:44:05  INFO      analyze  Stage-1 complete: AI Agent Infrastructure Matures as Enterprise Adoption Accelerates  (tokens: 6389 prompt + 1517 completion = 7906 total)
+22:44:05  INFO      analyze  Core insight: AI agent infrastructure is reaching production maturity with enterprise-ready solutions, while research focuses on improving reasoning reliability and training efficiency.
+22:44:05  INFO      ai-daily-insight  Title: AI Agent Infrastructure Matures as Enterprise Adoption Accelerates
+22:44:05  INFO      ai-daily-insight  Keywords: AI Agents, LLM, Multi-agent Systems, Enterprise AI, Speculative Sampling, Memory Management, Reasoning, Training Efficiency, OpenAI, Meta, MedGemma, MegaTrain, Cactus, Mem0, RAG
+22:44:05  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+22:44:05  INFO      trend  Loaded 28 historical record(s) (up to 30 days back)
+22:44:06  INFO      trend  Trend report: 1 signal(s) — 应用层(continuous_trend)
+22:44:06  INFO      trend  Overall novelty: 0.576
+22:44:06  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-04-08.json
+22:44:06  INFO      ai-daily-insight  [4/5] Generating trend charts …
+22:44:06  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Can not load face (unknown file format; error code 0x2)
+22:44:06  INFO      matplotlib.font_manager  generated new fontManager
+22:44:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-04-08_arxiv_capability.png
+22:44:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-04-08_github_stars.png
+22:44:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-04-08_hf_downloads.png
+22:44:09  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+22:44:09  INFO      llm_client  LLM provider: custom  base_url: https://api.modelarts-maas.com/v2
+22:44:09  INFO      generate  Sending analysis + trends to LLM (deepseek-v3.1-terminus) for Stage-2 generation …
+22:44:54  INFO      httpx  HTTP Request: POST https://api.modelarts-maas.com/v2/chat/completions "HTTP/1.1 200 OK"
+22:44:54  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-04-08.md (4393 chars)  (tokens: 4379 prompt + 1710 completion = 6089 total)
+22:44:54  INFO      ai-daily-insight  === Pipeline complete (99.6s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-04-08
+========================================================================
+
+  Total elapsed:       99.6s
+  Blog post:           content/2026-04-08.md (4,393 chars)
+  Log file:            logs/2026-04-08.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (13 ok, 0 fail)
+  Articles fetched:    166
+  New (after dedup):   50
+  Fetch time:          8.8s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     ok         15    10   0.4s
+  arXiv cs.LG                  RSS     ok         15    10   0.3s
+  arXiv cs.CL                  RSS     ok         15    10   0.2s
+  OpenAI Blog                  RSS     ok         15     2   0.6s
+  Google DeepMind Blog         RSS     ok         15     0   0.6s
+  Google AI Blog               RSS     ok         15     1   0.4s
+  TechCrunch AI                RSS     ok         15     9   0.2s
+  VentureBeat AI               RSS     ok          7     0   0.3s
+  Crunchbase News              RSS     ok         10     1   0.3s
+  Anthropic Blog               scrape  ok         13     0   2.5s
+  Meta AI Blog                 scrape  ok          8     4   1.6s
+  GitHub Trending              scrape  ok          8     2   1.2s
+  HuggingFace Trending         API     ok         15     1   0.2s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               deepseek-v3.1-terminus
+  Stage-1 (analyze):    6,389 prompt +  1,517 completion =   7,906 total
+  Stage-2 (generate):   4,379 prompt +  1,710 completion =   6,089 total
+  Grand total tokens:   13,995
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        28
+  Has enough history:  True
+  Trend signals:       1
+  Overall novelty:     0.576
+  New keywords:        Cactus, Enterprise AI, MedGemma, MegaTrain, Mem0, Memory Management, Multi-agent Systems, Reasoning, Speculative Sampling, Training Efficiency
+  Rising keywords:     RAG
+  Fading keywords:     AI, AI安全, Compliance, Federated Learning, Google DeepMind, Nvidia, Transformer, 自然语言处理
+
+========================================================================
+22:44:54  INFO      ai-daily-insight  ========================================================================
+22:44:54  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-04-08
+22:44:54  INFO      ai-daily-insight  ========================================================================
+22:44:54  INFO      ai-daily-insight  Total elapsed:       99.6s
+22:44:54  INFO      ai-daily-insight  Blog post:           content/2026-04-08.md (4,393 chars)
+22:44:54  INFO      ai-daily-insight  Log file:            logs/2026-04-08.log
+22:44:54  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+22:44:54  INFO      ai-daily-insight  Sources:             13 (13 ok, 0 fail)
+22:44:54  INFO      ai-daily-insight  Articles fetched:    166
+22:44:54  INFO      ai-daily-insight  New (after dedup):   50
+22:44:54  INFO      ai-daily-insight  Fetch time:          8.8s
+22:44:54  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+22:44:54  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+22:44:54  INFO      ai-daily-insight  arXiv cs.AI                  RSS     ok         15    10   0.4s
+22:44:54  INFO      ai-daily-insight  arXiv cs.LG                  RSS     ok         15    10   0.3s
+22:44:54  INFO      ai-daily-insight  arXiv cs.CL                  RSS     ok         15    10   0.2s
+22:44:54  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15     2   0.6s
+22:44:54  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     0   0.6s
+22:44:54  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     1   0.4s
+22:44:54  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15     9   0.2s
+22:44:54  INFO      ai-daily-insight  VentureBeat AI               RSS     ok          7     0   0.3s
+22:44:54  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     1   0.3s
+22:44:54  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         13     0   2.5s
+22:44:54  INFO      ai-daily-insight  Meta AI Blog                 scrape  ok          8     4   1.6s
+22:44:54  INFO      ai-daily-insight  GitHub Trending              scrape  ok          8     2   1.2s
+22:44:54  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     1   0.2s
+22:44:54  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+22:44:54  INFO      ai-daily-insight  Model:               deepseek-v3.1-terminus
+22:44:54  INFO      ai-daily-insight  Stage-1 (analyze):    6,389 prompt +  1,517 completion =   7,906 total
+22:44:54  INFO      ai-daily-insight  Stage-2 (generate):   4,379 prompt +  1,710 completion =   6,089 total
+22:44:54  INFO      ai-daily-insight  Grand total tokens:   13,995
+22:44:54  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+22:44:54  INFO      ai-daily-insight  History days:        28
+22:44:54  INFO      ai-daily-insight  Has enough history:  True
+22:44:54  INFO      ai-daily-insight  Trend signals:       1
+22:44:54  INFO      ai-daily-insight  Overall novelty:     0.576
+22:44:54  INFO      ai-daily-insight  New keywords:        Cactus, Enterprise AI, MedGemma, MegaTrain, Mem0, Memory Management, Multi-agent Systems, Reasoning, Speculative Sampling, Training Efficiency
+22:44:54  INFO      ai-daily-insight  Rising keywords:     RAG
+22:44:54  INFO      ai-daily-insight  Fading keywords:     AI, AI安全, Compliance, Federated Learning, Google DeepMind, Nvidia, Transformer, 自然语言处理
+22:44:54  INFO      ai-daily-insight  ========================================================================
