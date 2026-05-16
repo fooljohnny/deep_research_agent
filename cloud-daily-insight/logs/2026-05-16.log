@@ -1,0 +1,185 @@
+21:52:40  INFO      cloud-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/logs/2026-05-16.log
+21:52:40  INFO      cloud-daily-insight  === Cloud Daily Insight Pipeline — 2026-05-16 ===
+21:52:40  INFO      cloud-daily-insight  [1/5] Fetching content from all sources …
+21:52:40  INFO      fetch  Fetching RSS: AWS Blog …
+21:52:41  INFO      fetch    → AWS Blog: 10 new item(s)
+21:52:41  INFO      fetch  Fetching RSS: Google Cloud Blog …
+21:52:42  INFO      fetch    → Google Cloud Blog: 10 new item(s)
+21:52:42  INFO      fetch  Fetching RSS: Microsoft Azure Blog …
+21:52:42  INFO      fetch    → Microsoft Azure Blog: 10 new item(s)
+21:52:42  INFO      fetch  Fetching RSS: Alibaba Cloud Blog …
+21:52:46  INFO      fetch    → Alibaba Cloud Blog: 0 new item(s)
+21:52:46  INFO      fetch  Fetching RSS: 火山引擎博客 …
+21:52:49  INFO      fetch    → 火山引擎博客: 6 new item(s)
+21:52:49  INFO      fetch  Fetching RSS: Salesforce Blog …
+21:52:50  INFO      fetch    → Salesforce Blog: 10 new item(s)
+21:52:50  INFO      fetch  Fetching RSS: ServiceNow Blog …
+21:52:50  INFO      fetch    → ServiceNow Blog: 0 new item(s)
+21:52:50  INFO      fetch  Fetching RSS: Adobe Blog …
+21:52:50  INFO      fetch    → Adobe Blog: 10 new item(s)
+21:52:50  INFO      fetch  Fetching RSS: Workday Blog …
+21:52:50  INFO      fetch    → Workday Blog: 0 new item(s)
+21:52:50  INFO      fetch  Fetching RSS: Zoom Blog …
+21:53:10  INFO      fetch    → Zoom Blog: 0 new item(s)
+21:53:10  INFO      fetch  Fetching RSS: Slack Blog …
+21:53:10  INFO      fetch    → Slack Blog: 0 new item(s)
+21:53:10  INFO      fetch  Fetching RSS: HubSpot Blog …
+21:53:11  INFO      fetch    → HubSpot Blog: 10 new item(s)
+21:53:11  INFO      fetch  Fetching RSS: Zendesk Blog …
+21:53:12  INFO      fetch    → Zendesk Blog: 0 new item(s)
+21:53:12  INFO      fetch  Fetching RSS: TechCrunch …
+21:53:12  INFO      fetch    → TechCrunch: 10 new item(s)
+21:53:12  INFO      fetch  Fetching RSS: VentureBeat Enterprise …
+21:53:12  INFO      fetch    → VentureBeat Enterprise: 7 new item(s)
+21:53:12  INFO      fetch  Fetching RSS: The Register …
+21:53:13  INFO      fetch    → The Register: 10 new item(s)
+21:53:13  INFO      fetch  Fetching RSS: Cloudflare Blog …
+21:53:13  INFO      fetch    → Cloudflare Blog: 10 new item(s)
+21:53:13  INFO      fetch  Fetching Tencent Cloud Blog (scrape) …
+21:53:15  INFO      fetch    → Tencent Cloud Blog: 1 new item(s)
+21:53:15  INFO      fetch  Fetching 火山引擎 Blog (scrape) …
+21:53:18  INFO      fetch    → 火山引擎 Blog: 0 new item(s)
+21:53:18  INFO      fetch  Total fresh items: 104
+21:53:18  INFO      cloud-daily-insight  Collected 104 fresh article(s).
+21:53:18  INFO      cloud-daily-insight  Fetching metrics snapshot for insight …
+21:54:09  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/metrics/2026-05-16.json
+21:54:10  INFO      metrics  Metrics report: Cloud=延续, SaaS=延续
+21:54:10  INFO      cloud-daily-insight  [2/5] Running structural change analysis …
+21:54:10  INFO      analyze  Stage-1: 104 articles → 4 batch(es), 30 per batch, model=llama-3.3-70b-versatile
+21:54:10  INFO      analyze  Analyzing batch 1/4 (30 articles) …
+21:54:10  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:54:13  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:54:13  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+21:55:18  INFO      analyze  Analyzing batch 2/4 (30 articles) …
+21:55:18  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:55:22  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:55:22  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+21:56:27  INFO      analyze  Analyzing batch 3/4 (30 articles) …
+21:56:27  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:56:30  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:56:30  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+21:57:35  INFO      analyze  Analyzing batch 4/4 (14 articles) …
+21:57:35  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:57:37  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:57:37  INFO      analyze  Waiting 65s before merge …
+21:58:42  INFO      analyze  Merging 4 batch analyses …
+21:58:42  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:58:47  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:58:47  INFO      analyze  Stage-1 complete: 云计算和SaaS产业结构分析：技术、基础设施、应用、资本和风险  (tokens: 19527 prompt + 6293 completion = 25820 total)
+21:58:47  INFO      analyze  Core insight: AWS、Salesforce、Google Cloud和Adobe等公司在云计算和SaaS领域取得了显著进展，推动了行业的发展和创新
+21:58:47  INFO      cloud-daily-insight  Title: 云计算和SaaS产业结构分析：技术、基础设施、应用、资本和风险
+21:58:47  INFO      cloud-daily-insight  Keywords: 云计算, SaaS, AI, 云原生, AWS, Salesforce, Google Cloud, Adobe, Azure, 火山引擎, HubSpot, API管理, 数据产品, 数字化转型, 数据安全, QUIC, Linux, DNSSEC
+21:58:47  INFO      cloud-daily-insight  [3/5] Comparing against historical trends …
+21:58:47  INFO      trend  Loaded 18 historical record(s) (up to 30 days back)
+21:58:48  INFO      trend  Trend report: 3 signal(s) — 技术层(sudden_spike), 技术层(continuous_trend), 资本信号(continuous_trend)
+21:58:48  INFO      trend  Overall novelty: 0.313
+21:58:48  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/history/2026-05-16.json
+21:58:48  INFO      cloud-daily-insight  [4/5] Generating trend charts …
+21:58:48  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Can not load face (unknown file format; error code 0x2)
+21:58:48  INFO      matplotlib.font_manager  generated new fontManager
+21:58:50  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-05-16_cloud_novelty.png
+21:58:50  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-05-16_saas_novelty.png
+21:58:50  INFO      cloud-daily-insight  Waiting 65s for TPM buffer before Stage-2 …
+21:59:55  INFO      cloud-daily-insight  [5/5] Generating Markdown insight post …
+21:59:55  INFO      generate  Sending analysis + trends to LLM (llama-3.3-70b-versatile) for Stage-2 generation …
+21:59:55  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:00:02  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:00:02  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/2026-05-16.md (6865 chars)  (tokens: 4745 prompt + 2381 completion = 7126 total)
+22:00:02  INFO      cloud-daily-insight  === Pipeline complete (441.3s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-05-16
+========================================================================
+
+  Total elapsed:       441.3s
+  Blog post:           content/2026-05-16.md (6,865 chars)
+  Log file:            logs/2026-05-16.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             19 (12 ok, 7 fail)
+  Articles fetched:    139
+  New (after dedup):   104
+  Fetch time:          38.1s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  AWS Blog                     RSS     ok         15    10   0.3s
+  Google Cloud Blog            RSS     ok         15    10   1.7s
+  Microsoft Azure Blog         RSS     ok         10    10   0.1s
+  Alibaba Cloud Blog           RSS     fail        0     0   3.6s
+  火山引擎博客                       RSS     ok          6     6   3.1s
+  Salesforce Blog              RSS     ok         10    10   0.4s
+  ServiceNow Blog              RSS     fail        0     0   0.1s
+  Adobe Blog                   RSS     ok         15    10   0.2s
+  Workday Blog                 RSS     fail        0     0   0.3s
+  Zoom Blog                    RSS     fail        0     0  19.5s
+  Slack Blog                   RSS     fail        0     0   0.1s
+  HubSpot Blog                 RSS     ok         15    10   1.4s
+  Zendesk Blog                 RSS     fail        0     0   0.5s
+  TechCrunch                   RSS     ok         15    10   0.1s
+  VentureBeat Enterprise       RSS     ok          7     7   0.3s
+  The Register                 RSS     ok         15    10   0.8s
+  Cloudflare Blog              RSS     ok         15    10   0.6s
+  Tencent Cloud Blog           scrape  ok          1     1   2.1s
+  火山引擎 Blog                    scrape  fail        0     0   2.9s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               llama-3.3-70b-versatile
+  Stage-1 (analyze):   19,527 prompt +  6,293 completion =  25,820 total
+  Stage-2 (generate):   4,745 prompt +  2,381 completion =   7,126 total
+  Grand total tokens:   32,946
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        18
+  Has enough history:  True
+  Trend signals:       3
+  Overall novelty:     0.313
+  New keywords:        API管理, DNSSEC, Linux, QUIC, 数据安全
+  Fading keywords:     Claude Opus 4.7
+
+========================================================================
+22:00:02  INFO      cloud-daily-insight  ========================================================================
+22:00:02  INFO      cloud-daily-insight  PIPELINE SUMMARY — 2026-05-16
+22:00:02  INFO      cloud-daily-insight  ========================================================================
+22:00:02  INFO      cloud-daily-insight  Total elapsed:       441.3s
+22:00:02  INFO      cloud-daily-insight  Blog post:           content/2026-05-16.md (6,865 chars)
+22:00:02  INFO      cloud-daily-insight  Log file:            logs/2026-05-16.log
+22:00:02  INFO      cloud-daily-insight  ── Fetch ─────────────────────────────────────────────────
+22:00:02  INFO      cloud-daily-insight  Sources:             19 (12 ok, 7 fail)
+22:00:02  INFO      cloud-daily-insight  Articles fetched:    139
+22:00:02  INFO      cloud-daily-insight  New (after dedup):   104
+22:00:02  INFO      cloud-daily-insight  Fetch time:          38.1s
+22:00:02  INFO      cloud-daily-insight  Source                       Method  Status Fetched   New   Time
+22:00:02  INFO      cloud-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+22:00:02  INFO      cloud-daily-insight  AWS Blog                     RSS     ok         15    10   0.3s
+22:00:02  INFO      cloud-daily-insight  Google Cloud Blog            RSS     ok         15    10   1.7s
+22:00:02  INFO      cloud-daily-insight  Microsoft Azure Blog         RSS     ok         10    10   0.1s
+22:00:02  INFO      cloud-daily-insight  Alibaba Cloud Blog           RSS     fail        0     0   3.6s
+22:00:02  INFO      cloud-daily-insight  火山引擎博客                       RSS     ok          6     6   3.1s
+22:00:02  INFO      cloud-daily-insight  Salesforce Blog              RSS     ok         10    10   0.4s
+22:00:02  INFO      cloud-daily-insight  ServiceNow Blog              RSS     fail        0     0   0.1s
+22:00:02  INFO      cloud-daily-insight  Adobe Blog                   RSS     ok         15    10   0.2s
+22:00:02  INFO      cloud-daily-insight  Workday Blog                 RSS     fail        0     0   0.3s
+22:00:02  INFO      cloud-daily-insight  Zoom Blog                    RSS     fail        0     0  19.5s
+22:00:02  INFO      cloud-daily-insight  Slack Blog                   RSS     fail        0     0   0.1s
+22:00:02  INFO      cloud-daily-insight  HubSpot Blog                 RSS     ok         15    10   1.4s
+22:00:02  INFO      cloud-daily-insight  Zendesk Blog                 RSS     fail        0     0   0.5s
+22:00:02  INFO      cloud-daily-insight  TechCrunch                   RSS     ok         15    10   0.1s
+22:00:02  INFO      cloud-daily-insight  VentureBeat Enterprise       RSS     ok          7     7   0.3s
+22:00:02  INFO      cloud-daily-insight  The Register                 RSS     ok         15    10   0.8s
+22:00:02  INFO      cloud-daily-insight  Cloudflare Blog              RSS     ok         15    10   0.6s
+22:00:02  INFO      cloud-daily-insight  Tencent Cloud Blog           scrape  ok          1     1   2.1s
+22:00:02  INFO      cloud-daily-insight  火山引擎 Blog                    scrape  fail        0     0   2.9s
+22:00:02  INFO      cloud-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+22:00:02  INFO      cloud-daily-insight  Model:               llama-3.3-70b-versatile
+22:00:02  INFO      cloud-daily-insight  Stage-1 (analyze):   19,527 prompt +  6,293 completion =  25,820 total
+22:00:02  INFO      cloud-daily-insight  Stage-2 (generate):   4,745 prompt +  2,381 completion =   7,126 total
+22:00:02  INFO      cloud-daily-insight  Grand total tokens:   32,946
+22:00:02  INFO      cloud-daily-insight  ── Trend Analysis ────────────────────────────────────────
+22:00:02  INFO      cloud-daily-insight  History days:        18
+22:00:02  INFO      cloud-daily-insight  Has enough history:  True
+22:00:02  INFO      cloud-daily-insight  Trend signals:       3
+22:00:02  INFO      cloud-daily-insight  Overall novelty:     0.313
+22:00:02  INFO      cloud-daily-insight  New keywords:        API管理, DNSSEC, Linux, QUIC, 数据安全
+22:00:02  INFO      cloud-daily-insight  Fading keywords:     Claude Opus 4.7
+22:00:02  INFO      cloud-daily-insight  ========================================================================
