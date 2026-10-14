@@ -94,7 +94,7 @@ def parse_llm_json_object(text: str) -> dict[str, Any] | None:
 PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
     },
     "openai": {
         "base_url": "https://api.openai.com/v1",
@@ -152,7 +152,7 @@ def get_model() -> str:
     """Return the model name to use."""
     provider = os.environ.get("LLM_PROVIDER", "groq").lower()
     defaults = PROVIDER_DEFAULTS.get(provider, {})
-    model = os.environ.get("LLM_MODEL", defaults.get("model", "llama-3.3-70b-versatile"))
+    model = os.environ.get("LLM_MODEL", defaults.get("model", "openai/gpt-oss-120b"))
     return model
 
 
