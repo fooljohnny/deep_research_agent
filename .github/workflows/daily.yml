@@ -36,7 +36,7 @@ jobs:
         env:
           LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_MODEL: ${{ vars.LLM_MODEL || 'openai/gpt-oss-20b' }}
+          LLM_MODEL: ${{ vars.LLM_MODEL || 'openai/gpt-oss-120b' }}
           # For LLM_PROVIDER=custom only. Use provider "deepseek" for api.deepseek.com (no URL var needed).
           LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
           # Set to 0 if the gateway returns empty content with json_object mode (e.g. some ModelArts MaaS).
