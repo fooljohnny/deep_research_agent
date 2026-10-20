@@ -1,0 +1,144 @@
+23:22:50  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-06-22.log
+23:22:50  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-06-22 ===
+23:22:50  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+23:22:50  INFO      fetch  Fetching RSS: arXiv cs.AI …
+23:22:51  INFO      fetch    → arXiv cs.AI: 0 new item(s)
+23:22:51  INFO      fetch  Fetching RSS: arXiv cs.LG …
+23:22:51  INFO      fetch    → arXiv cs.LG: 0 new item(s)
+23:22:51  INFO      fetch  Fetching RSS: arXiv cs.CL …
+23:22:51  INFO      fetch    → arXiv cs.CL: 0 new item(s)
+23:22:51  INFO      fetch  Fetching RSS: OpenAI Blog …
+23:22:52  INFO      fetch    → OpenAI Blog: 3 new item(s)
+23:22:52  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+23:22:52  INFO      fetch    → Google DeepMind Blog: 0 new item(s)
+23:22:52  INFO      fetch  Fetching RSS: Google AI Blog …
+23:22:52  INFO      fetch    → Google AI Blog: 0 new item(s)
+23:22:52  INFO      fetch  Fetching RSS: TechCrunch AI …
+23:22:53  INFO      fetch    → TechCrunch AI: 7 new item(s)
+23:22:53  INFO      fetch  Fetching RSS: VentureBeat AI …
+23:22:53  INFO      fetch    → VentureBeat AI: 0 new item(s)
+23:22:53  INFO      fetch  Fetching RSS: Crunchbase News …
+23:22:53  INFO      fetch    → Crunchbase News: 5 new item(s)
+23:22:53  INFO      fetch  Fetching Anthropic Blog …
+23:22:58  INFO      fetch    → Anthropic Blog: 0 new item(s)
+23:22:58  INFO      fetch  Fetching Meta AI Blog …
+23:23:00  INFO      fetch    → Meta AI Blog: 0 new item(s)
+23:23:00  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+23:23:01  INFO      fetch    → GitHub Trending: 1 new item(s)
+23:23:01  INFO      fetch  Fetching HuggingFace Trending Models …
+23:23:01  INFO      fetch    → HuggingFace Trending: 1 new item(s)
+23:23:01  INFO      fetch  Total fresh items: 17
+23:23:01  INFO      ai-daily-insight  Collected 17 fresh article(s).
+23:23:01  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+23:23:02  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-06-22.json
+23:23:02  INFO      metrics  Metrics report: arXiv=unknown, GitHub=11, HF=20
+23:23:02  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+23:23:02  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+23:23:02  INFO      analyze  Sending 17 articles to LLM (llama-3.3-70b-versatile) for structural analysis …
+23:23:05  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+23:23:05  INFO      analyze  Stage-1 complete: AI Industry Sees Significant Developments in Technology, Infrastructure, and Capital  (tokens: 2984 prompt + 1245 completion = 4229 total)
+23:23:05  INFO      analyze  Core insight: OpenAI introduces new Daybreak tools, while AI chipmaker Groq confirms $650M raise, and Google DeepMind bets $75M on AI's future in Hollywood.
+23:23:05  INFO      ai-daily-insight  Title: AI Industry Sees Significant Developments in Technology, Infrastructure, and Capital
+23:23:05  INFO      ai-daily-insight  Keywords: OpenAI, Daybreak, Codex Security, GPT-5.5-Cyber, Groq, Google DeepMind, A24, Alexa+, Reflection AI, NVIDIA, AI-native, SaaS
+23:23:05  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+23:23:05  INFO      trend  Loaded 30 historical record(s) (up to 30 days back)
+23:23:05  INFO      trend  Trend report: 3 signal(s) — 风险信号(continuous_trend), 技术层(emerging_topic), 应用层(emerging_topic)
+23:23:05  INFO      trend  Overall novelty: 0.672
+23:23:05  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-06-22.json
+23:23:05  INFO      ai-daily-insight  [4/5] Generating trend charts …
+23:23:05  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+23:23:06  INFO      matplotlib.font_manager  generated new fontManager
+23:23:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-06-22_arxiv_capability.png
+23:23:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-06-22_github_stars.png
+23:23:09  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-06-22_hf_downloads.png
+23:23:09  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+23:23:09  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+23:23:09  INFO      generate  Sending analysis + trends to LLM (llama-3.3-70b-versatile) for Stage-2 generation …
+23:23:13  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+23:23:13  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-06-22.md (2473 chars)  (tokens: 4376 prompt + 1132 completion = 5508 total)
+23:23:13  INFO      ai-daily-insight  === Pipeline complete (22.2s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-06-22
+========================================================================
+
+  Total elapsed:       22.2s
+  Blog post:           content/2026-06-22.md (2,473 chars)
+  Log file:            logs/2026-06-22.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (10 ok, 3 fail)
+  Articles fetched:    127
+  New (after dedup):   17
+  Fetch time:          10.7s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     fail        0     0   0.1s
+  arXiv cs.LG                  RSS     fail        0     0   0.1s
+  arXiv cs.CL                  RSS     fail        0     0   0.1s
+  OpenAI Blog                  RSS     ok         15     3   0.9s
+  Google DeepMind Blog         RSS     ok         15     0   0.5s
+  Google AI Blog               RSS     ok         15     0   0.3s
+  TechCrunch AI                RSS     ok         15     7   0.1s
+  VentureBeat AI               RSS     ok          7     0   0.5s
+  Crunchbase News              RSS     ok         10     5   0.2s
+  Anthropic Blog               scrape  ok         12     0   4.7s
+  Meta AI Blog                 scrape  ok         12     0   1.7s
+  GitHub Trending              scrape  ok         11     1   1.3s
+  HuggingFace Trending         API     ok         15     1   0.1s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               llama-3.3-70b-versatile
+  Stage-1 (analyze):    2,984 prompt +  1,245 completion =   4,229 total
+  Stage-2 (generate):   4,376 prompt +  1,132 completion =   5,508 total
+  Grand total tokens:    9,737
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        30
+  Has enough history:  True
+  Trend signals:       3
+  Overall novelty:     0.672
+  New keywords:        A24, Alexa+, Codex Security, Daybreak, GPT-5.5-Cyber, Reflection AI
+  Fading keywords:     AI安全, Google, HuggingFace, IPO, SpaceX, TechCrunch, 开源生态, 数据中心, 融资
+
+========================================================================
+23:23:13  INFO      ai-daily-insight  ========================================================================
+23:23:13  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-06-22
+23:23:13  INFO      ai-daily-insight  ========================================================================
+23:23:13  INFO      ai-daily-insight  Total elapsed:       22.2s
+23:23:13  INFO      ai-daily-insight  Blog post:           content/2026-06-22.md (2,473 chars)
+23:23:13  INFO      ai-daily-insight  Log file:            logs/2026-06-22.log
+23:23:13  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+23:23:13  INFO      ai-daily-insight  Sources:             13 (10 ok, 3 fail)
+23:23:13  INFO      ai-daily-insight  Articles fetched:    127
+23:23:13  INFO      ai-daily-insight  New (after dedup):   17
+23:23:13  INFO      ai-daily-insight  Fetch time:          10.7s
+23:23:13  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+23:23:13  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+23:23:13  INFO      ai-daily-insight  arXiv cs.AI                  RSS     fail        0     0   0.1s
+23:23:13  INFO      ai-daily-insight  arXiv cs.LG                  RSS     fail        0     0   0.1s
+23:23:13  INFO      ai-daily-insight  arXiv cs.CL                  RSS     fail        0     0   0.1s
+23:23:13  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15     3   0.9s
+23:23:13  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     0   0.5s
+23:23:13  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     0   0.3s
+23:23:13  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15     7   0.1s
+23:23:13  INFO      ai-daily-insight  VentureBeat AI               RSS     ok          7     0   0.5s
+23:23:13  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     5   0.2s
+23:23:13  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         12     0   4.7s
+23:23:13  INFO      ai-daily-insight  Meta AI Blog                 scrape  ok         12     0   1.7s
+23:23:13  INFO      ai-daily-insight  GitHub Trending              scrape  ok         11     1   1.3s
+23:23:13  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     1   0.1s
+23:23:13  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+23:23:13  INFO      ai-daily-insight  Model:               llama-3.3-70b-versatile
+23:23:13  INFO      ai-daily-insight  Stage-1 (analyze):    2,984 prompt +  1,245 completion =   4,229 total
+23:23:13  INFO      ai-daily-insight  Stage-2 (generate):   4,376 prompt +  1,132 completion =   5,508 total
+23:23:13  INFO      ai-daily-insight  Grand total tokens:    9,737
+23:23:13  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+23:23:13  INFO      ai-daily-insight  History days:        30
+23:23:13  INFO      ai-daily-insight  Has enough history:  True
+23:23:13  INFO      ai-daily-insight  Trend signals:       3
+23:23:13  INFO      ai-daily-insight  Overall novelty:     0.672
+23:23:13  INFO      ai-daily-insight  New keywords:        A24, Alexa+, Codex Security, Daybreak, GPT-5.5-Cyber, Reflection AI
+23:23:13  INFO      ai-daily-insight  Fading keywords:     AI安全, Google, HuggingFace, IPO, SpaceX, TechCrunch, 开源生态, 数据中心, 融资
+23:23:13  INFO      ai-daily-insight  ========================================================================

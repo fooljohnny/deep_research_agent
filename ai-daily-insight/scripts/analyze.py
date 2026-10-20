@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import re
+import time
 from typing import Any
 
 from llm_client import (
@@ -18,6 +19,7 @@ from llm_client import (
     get_client,
     get_model,
     normalize_assistant_message_content,
+    parse_llm_json_object,
 )
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,15 @@ def _json_response_format_enabled() -> bool:
     if v is None or not str(v).strip():
         return True
     return str(v).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _llm_json_parse_attempts() -> int:
+    """Retry LLM call if reply is not valid JSON (default 2 attempts)."""
+    try:
+        n = int((os.environ.get("LLM_JSON_PARSE_ATTEMPTS") or "2").strip())
+    except ValueError:
+        n = 2
+    return max(1, min(n, 5))
 
 
 def _parse_stage1_json(raw: str, response: Any) -> dict[str, Any]:
@@ -71,14 +82,17 @@ def _parse_stage1_json(raw: str, response: Any) -> dict[str, Any]:
         except json.JSONDecodeError:
             pass
 
-    start, end = text.find("{"), text.rfind("}")
-    if start >= 0 and end > start:
-        try:
-            return json.loads(text[start : end + 1])
-        except json.JSONDecodeError:
-            pass
+    recovered = parse_llm_json_object(text)
+    if recovered is not None:
+        return recovered
 
-    logger.error("Stage-1 response is not valid JSON (first 800 chars): %r", text[:800])
+    fr = getattr(response.choices[0], "finish_reason", None)
+    logger.error(
+        "Stage-1 invalid JSON (finish_reason=%s). Head: %r … tail: %r",
+        fr,
+        text[:400],
+        text[-200:] if len(text) > 200 else text,
+    )
     raise json.JSONDecodeError("Stage-1 response is not valid JSON", text, 0)
 
 
@@ -292,11 +306,29 @@ def analyze_articles(
     if _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
 
-    response = client.chat.completions.create(**extend_chat_completion_kwargs(create_kwargs))
-
-    msg = response.choices[0].message
-    raw = normalize_assistant_message_content(msg)
-    analysis = _parse_stage1_json(raw, response)
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    analysis = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = client.chat.completions.create(**extend_chat_completion_kwargs(create_kwargs))
+        msg = response.choices[0].message
+        raw = normalize_assistant_message_content(msg)
+        try:
+            analysis = _parse_stage1_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Stage-1 JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if analysis is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Stage-1 analysis missing after LLM calls")
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {

@@ -106,6 +106,9 @@ export LLM_MODEL="gpt-4o"
 | `STAGE_DELAY_SEC` | 否 | `65` | Stage-1 与 Stage-2 间隔秒数，缓解 TPM 限流 |
 | `RETRY_DELAY_SEC` | 否 | `65` | 429 重试前等待秒数 |
 | `BATCH_DELAY_SEC` | 否 | `65` | Stage-1 各批次间间隔秒数 |
+| `LLM_JSON_PARSE_ATTEMPTS` | 否 | `2` | Stage-1 单批 / 合并步骤若返回非法 JSON，最多重复请求 LLM 的次数（1–5），减轻网关偶发截断或格式漂移 |
+
+第三方模型输出**非确定**，同一流水线可能某天成功、某天因 JSON 截断或格式问题失败；除更稳健的解析外，默认会**自动重试 1 次**（共 2 次请求）。需要可调大该变量（会略增 token 与耗时）。
 
 ## Groq 限流说明
 
@@ -130,7 +133,8 @@ Pipeline 两阶段合计约 10K tokens，受 **gpt-oss-120b 的 8K TPM** 约束�
 
 1. 进入 **Settings → Secrets and variables → Actions**
 2. 添加 `LLM_API_KEY` 仓库 secret（如使用 AI Daily Insight 可复用同一 key）
-3. 工作流每日北京时间 05:00 自动运行，也可手动触发：**Actions → Cloud Daily Insight → Run workflow**
+3. 可在 **Variables** 中设置 `LLM_JSON_PARSE_ATTEMPTS`（默认工作流不传则用脚本默认 `2`）等，见上表。
+4. 工作流每日北京时间 05:00 自动运行，也可手动触发：**Actions → Cloud Daily Insight → Run workflow**
 
 ## License
 

@@ -1,0 +1,258 @@
+21:58:00  INFO      cloud-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/logs/2026-08-01.log
+21:58:00  INFO      cloud-daily-insight  === Cloud Daily Insight Pipeline — 2026-08-01 ===
+21:58:00  INFO      cloud-daily-insight  [1/5] Fetching content from all sources …
+21:58:00  INFO      fetch  Fetching RSS: AWS Blog …
+21:58:01  INFO      fetch    → AWS Blog: 10 new item(s)
+21:58:01  INFO      fetch  Fetching RSS: Google Cloud Blog …
+21:58:02  INFO      fetch    → Google Cloud Blog: 10 new item(s)
+21:58:02  INFO      fetch  Fetching RSS: Microsoft Azure Blog …
+21:58:03  INFO      fetch    → Microsoft Azure Blog: 10 new item(s)
+21:58:03  INFO      fetch  Fetching RSS: Alibaba Cloud Blog …
+21:58:06  INFO      fetch    → Alibaba Cloud Blog: 0 new item(s)
+21:58:06  INFO      fetch  Fetching RSS: 火山引擎博客 …
+21:58:08  INFO      fetch    → 火山引擎博客: 6 new item(s)
+21:58:08  INFO      fetch  Fetching RSS: Salesforce Blog …
+21:58:08  INFO      fetch    → Salesforce Blog: 10 new item(s)
+21:58:08  INFO      fetch  Fetching RSS: ServiceNow Blog …
+21:58:08  INFO      fetch    → ServiceNow Blog: 0 new item(s)
+21:58:08  INFO      fetch  Fetching RSS: Adobe Blog …
+21:58:09  INFO      fetch    → Adobe Blog: 0 new item(s)
+21:58:09  INFO      fetch  Fetching RSS: Workday Blog …
+21:58:09  INFO      fetch    → Workday Blog: 0 new item(s)
+21:58:09  INFO      fetch  Fetching RSS: Zoom Blog …
+21:58:49  INFO      fetch    → Zoom Blog: 0 new item(s)
+21:58:49  INFO      fetch  Fetching RSS: Slack Blog …
+21:58:49  INFO      fetch    → Slack Blog: 0 new item(s)
+21:58:49  INFO      fetch  Fetching RSS: HubSpot Blog …
+21:58:51  INFO      fetch    → HubSpot Blog: 10 new item(s)
+21:58:51  INFO      fetch  Fetching RSS: Zendesk Blog …
+21:58:52  INFO      fetch    → Zendesk Blog: 0 new item(s)
+21:58:52  INFO      fetch  Fetching RSS: TechCrunch …
+21:58:52  INFO      fetch    → TechCrunch: 10 new item(s)
+21:58:52  INFO      fetch  Fetching RSS: VentureBeat Enterprise …
+21:58:52  INFO      fetch    → VentureBeat Enterprise: 7 new item(s)
+21:58:52  INFO      fetch  Fetching RSS: The Register …
+21:58:53  INFO      fetch    → The Register: 10 new item(s)
+21:58:53  INFO      fetch  Fetching RSS: Cloudflare Blog …
+21:58:54  INFO      fetch    → Cloudflare Blog: 10 new item(s)
+21:58:54  INFO      fetch  Fetching Tencent Cloud Blog (scrape) …
+21:58:54  INFO      fetch    → Tencent Cloud Blog: 0 new item(s)
+21:58:54  INFO      fetch  Fetching 火山引擎 Blog (scrape) …
+21:59:15  WARNING   fetch  Failed to fetch Volcengine Blog
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connection.py", line 571, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 1450, in getresponse
+    response.begin()
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 336, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/http/client.py", line 297, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/socket.py", line 720, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py", line 1251, in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/ssl.py", line 1103, in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: The read operation timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py", line 696, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py", line 842, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/retry.py", line 498, in increment
+    raise reraise(type(error), error, _stacktrace)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/util/util.py", line 39, in reraise
+    raise value
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py", line 788, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/urllib3/connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='developer.volcengine.com', port=443): Read timed out. (read timeout=20)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/scripts/fetch.py", line 154, in _fetch_volcengine_blog
+    resp = requests.get(url, headers=HTTP_HEADERS, timeout=HTTP_TIMEOUT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/api.py", line 87, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/api.py", line 71, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/sessions.py", line 651, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/sessions.py", line 784, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/site-packages/requests/adapters.py", line 742, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='developer.volcengine.com', port=443): Read timed out. (read timeout=20)
+21:59:15  INFO      fetch    → 火山引擎 Blog: 0 new item(s)
+21:59:15  INFO      fetch  Total fresh items: 93
+21:59:15  INFO      cloud-daily-insight  Collected 93 fresh article(s).
+21:59:15  INFO      cloud-daily-insight  Fetching metrics snapshot for insight …
+21:59:47  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/metrics/2026-08-01.json
+21:59:48  INFO      metrics  Metrics report: Cloud=延续, SaaS=延续
+21:59:48  INFO      cloud-daily-insight  [2/5] Running structural change analysis …
+21:59:48  INFO      analyze  Stage-1: 93 articles → 4 batch(es), 30 per batch, model=llama-3.3-70b-versatile
+21:59:48  INFO      analyze  Analyzing batch 1/4 (30 articles) …
+21:59:48  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+21:59:51  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+21:59:51  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+22:00:56  INFO      analyze  Analyzing batch 2/4 (30 articles) …
+22:00:56  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:01:00  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:01:00  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+22:02:05  INFO      analyze  Analyzing batch 3/4 (30 articles) …
+22:02:05  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:02:08  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:02:08  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+22:03:13  INFO      analyze  Analyzing batch 4/4 (3 articles) …
+22:03:13  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:03:15  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:03:15  INFO      analyze  Waiting 65s before merge …
+22:04:20  INFO      analyze  Merging 4 batch analyses …
+22:04:20  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:04:23  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:04:23  INFO      analyze  Stage-1 complete: 云计算与SaaS产业结构性变化分析：技术、基础设施、应用、资本和风险  (tokens: 18304 prompt + 5532 completion = 23836 total)
+22:04:23  INFO      analyze  Core insight: 云计算与SaaS产业结构性变化主要体现在技术层面的进步，包括云原生、AI/ML融合等方面的突破，以及基础设施层面的升级，如数据产品和安全功能的增强
+22:04:23  INFO      cloud-daily-insight  Title: 云计算与SaaS产业结构性变化分析：技术、基础设施、应用、资本和风险
+22:04:23  INFO      cloud-daily-insight  Keywords: AWS, Salesforce, Google Cloud, Azure, Cloudflare, AI, 机器学习, 云计算, SaaS, 网络安全, 基础设施, 数据产品
+22:04:23  INFO      cloud-daily-insight  [3/5] Comparing against historical trends …
+22:04:23  INFO      trend  Loaded 30 historical record(s) (up to 30 days back)
+22:04:24  INFO      trend  Trend report: 4 signal(s) — 技术层(sudden_spike), 技术层(continuous_trend), 应用层(continuous_trend), 风险信号(continuous_trend)
+22:04:24  INFO      trend  Overall novelty: 0.333
+22:04:24  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/history/2026-08-01.json
+22:04:24  INFO      cloud-daily-insight  [4/5] Generating trend charts …
+22:04:24  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+22:04:25  INFO      matplotlib.font_manager  generated new fontManager
+22:04:27  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-08-01_cloud_novelty.png
+22:04:27  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-08-01_saas_novelty.png
+22:04:27  INFO      cloud-daily-insight  Waiting 65s for TPM buffer before Stage-2 …
+22:05:32  INFO      cloud-daily-insight  [5/5] Generating Markdown insight post …
+22:05:32  INFO      generate  Sending analysis + trends to LLM (llama-3.3-70b-versatile) for Stage-2 generation …
+22:05:32  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+22:05:36  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+22:05:36  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/2026-08-01.md (3348 chars)  (tokens: 4167 prompt + 1444 completion = 5611 total)
+22:05:36  INFO      cloud-daily-insight  === Pipeline complete (455.9s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-08-01
+========================================================================
+
+  Total elapsed:       455.9s
+  Blog post:           content/2026-08-01.md (3,348 chars)
+  Log file:            logs/2026-08-01.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             19 (10 ok, 9 fail)
+  Articles fetched:    123
+  New (after dedup):   93
+  Fetch time:          74.2s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  AWS Blog                     RSS     ok         15    10   0.3s
+  Google Cloud Blog            RSS     ok         15    10   1.7s
+  Microsoft Azure Blog         RSS     ok         10    10   0.2s
+  Alibaba Cloud Blog           RSS     fail        0     0   2.9s
+  火山引擎博客                       RSS     ok          6     6   2.4s
+  Salesforce Blog              RSS     ok         10    10   0.4s
+  ServiceNow Blog              RSS     fail        0     0   0.1s
+  Adobe Blog                   RSS     fail        0     0   0.3s
+  Workday Blog                 RSS     fail        0     0   0.3s
+  Zoom Blog                    RSS     fail        0     0  39.5s
+  Slack Blog                   RSS     fail        0     0   0.4s
+  HubSpot Blog                 RSS     ok         15    10   2.1s
+  Zendesk Blog                 RSS     fail        0     0   0.8s
+  TechCrunch                   RSS     ok         15    10   0.1s
+  VentureBeat Enterprise       RSS     ok          7     7   0.3s
+  The Register                 RSS     ok         15    10   1.1s
+  Cloudflare Blog              RSS     ok         15    10   0.3s
+  Tencent Cloud Blog           scrape  fail        0     0   0.7s
+  火山引擎 Blog                    scrape  fail        0     0  20.3s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               llama-3.3-70b-versatile
+  Stage-1 (analyze):   18,304 prompt +  5,532 completion =  23,836 total
+  Stage-2 (generate):   4,167 prompt +  1,444 completion =   5,611 total
+  Grand total tokens:   29,447
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        30
+  Has enough history:  True
+  Trend signals:       4
+  Overall novelty:     0.333
+  New keywords:        数据产品
+  Rising keywords:     机器学习, 网络安全
+  Fading keywords:     CRM, Kubernetes, Serverless, 云原生, 数字化转型, 数据中心, 数据安全
+
+========================================================================
+22:05:36  INFO      cloud-daily-insight  ========================================================================
+22:05:36  INFO      cloud-daily-insight  PIPELINE SUMMARY — 2026-08-01
+22:05:36  INFO      cloud-daily-insight  ========================================================================
+22:05:36  INFO      cloud-daily-insight  Total elapsed:       455.9s
+22:05:36  INFO      cloud-daily-insight  Blog post:           content/2026-08-01.md (3,348 chars)
+22:05:36  INFO      cloud-daily-insight  Log file:            logs/2026-08-01.log
+22:05:36  INFO      cloud-daily-insight  ── Fetch ─────────────────────────────────────────────────
+22:05:36  INFO      cloud-daily-insight  Sources:             19 (10 ok, 9 fail)
+22:05:36  INFO      cloud-daily-insight  Articles fetched:    123
+22:05:36  INFO      cloud-daily-insight  New (after dedup):   93
+22:05:36  INFO      cloud-daily-insight  Fetch time:          74.2s
+22:05:36  INFO      cloud-daily-insight  Source                       Method  Status Fetched   New   Time
+22:05:36  INFO      cloud-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+22:05:36  INFO      cloud-daily-insight  AWS Blog                     RSS     ok         15    10   0.3s
+22:05:36  INFO      cloud-daily-insight  Google Cloud Blog            RSS     ok         15    10   1.7s
+22:05:36  INFO      cloud-daily-insight  Microsoft Azure Blog         RSS     ok         10    10   0.2s
+22:05:36  INFO      cloud-daily-insight  Alibaba Cloud Blog           RSS     fail        0     0   2.9s
+22:05:36  INFO      cloud-daily-insight  火山引擎博客                       RSS     ok          6     6   2.4s
+22:05:36  INFO      cloud-daily-insight  Salesforce Blog              RSS     ok         10    10   0.4s
+22:05:36  INFO      cloud-daily-insight  ServiceNow Blog              RSS     fail        0     0   0.1s
+22:05:36  INFO      cloud-daily-insight  Adobe Blog                   RSS     fail        0     0   0.3s
+22:05:36  INFO      cloud-daily-insight  Workday Blog                 RSS     fail        0     0   0.3s
+22:05:36  INFO      cloud-daily-insight  Zoom Blog                    RSS     fail        0     0  39.5s
+22:05:36  INFO      cloud-daily-insight  Slack Blog                   RSS     fail        0     0   0.4s
+22:05:36  INFO      cloud-daily-insight  HubSpot Blog                 RSS     ok         15    10   2.1s
+22:05:36  INFO      cloud-daily-insight  Zendesk Blog                 RSS     fail        0     0   0.8s
+22:05:36  INFO      cloud-daily-insight  TechCrunch                   RSS     ok         15    10   0.1s
+22:05:36  INFO      cloud-daily-insight  VentureBeat Enterprise       RSS     ok          7     7   0.3s
+22:05:36  INFO      cloud-daily-insight  The Register                 RSS     ok         15    10   1.1s
+22:05:36  INFO      cloud-daily-insight  Cloudflare Blog              RSS     ok         15    10   0.3s
+22:05:36  INFO      cloud-daily-insight  Tencent Cloud Blog           scrape  fail        0     0   0.7s
+22:05:36  INFO      cloud-daily-insight  火山引擎 Blog                    scrape  fail        0     0  20.3s
+22:05:36  INFO      cloud-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+22:05:36  INFO      cloud-daily-insight  Model:               llama-3.3-70b-versatile
+22:05:36  INFO      cloud-daily-insight  Stage-1 (analyze):   18,304 prompt +  5,532 completion =  23,836 total
+22:05:36  INFO      cloud-daily-insight  Stage-2 (generate):   4,167 prompt +  1,444 completion =   5,611 total
+22:05:36  INFO      cloud-daily-insight  Grand total tokens:   29,447
+22:05:36  INFO      cloud-daily-insight  ── Trend Analysis ────────────────────────────────────────
+22:05:36  INFO      cloud-daily-insight  History days:        30
+22:05:36  INFO      cloud-daily-insight  Has enough history:  True
+22:05:36  INFO      cloud-daily-insight  Trend signals:       4
+22:05:36  INFO      cloud-daily-insight  Overall novelty:     0.333
+22:05:36  INFO      cloud-daily-insight  New keywords:        数据产品
+22:05:36  INFO      cloud-daily-insight  Rising keywords:     机器学习, 网络安全
+22:05:36  INFO      cloud-daily-insight  Fading keywords:     CRM, Kubernetes, Serverless, 云原生, 数字化转型, 数据中心, 数据安全
+22:05:36  INFO      cloud-daily-insight  ========================================================================

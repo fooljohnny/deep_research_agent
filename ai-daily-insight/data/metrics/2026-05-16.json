@@ -1,0 +1,317 @@
+{
+  "date": "2026-05-16",
+  "arxiv_papers": [
+    {
+      "title": "GraphBit: A Graph-based Agentic Framework for Non-Linear Agent Orchestration",
+      "abstract": "arXiv:2605.13848v1 Announce Type: new \nAbstract: Agentic LLM frameworks that rely on prompted orchestration, where the model itself determines workflow transitions, often suffer from hallucinated routing, infinite loops, and non-reproducible execution. We introduce GraphBit, an engine-orchestrated framework that defines workflows explicitly and deterministically as a directed acyclic graph (DAG). Unlike prompted orchestration, agents in GraphBit operate as typed functions, while a Rust-based engine governs routing, state transitions, and tool invocation, ensuring reproducibility and auditability. The engine supports parallel branch execution, conditional control flow over structured state predicates, and configurable error recovery. A three-tier memory architecture consisting of ephemeral scratch space, structured state, and external connectors isolates context across stages, preventing cascading context bloat that degrades reasoning in long-running pipelines. Across GAIA benchmark tasks spanning zero-tool, document-augmented, and web-enabled workflows, GraphBit outperforms six existing frameworks, achieving the highest accuracy (67.6 percent), zero framework-induced hallucinations, the lowest latency (11.9 ms overhead), and the highest throughput. Ablation studies demonstrate that each memory tier contributes measurably to performance, with deterministic execution providing the greatest gains on tool-intensive tasks representative of real-world deployments.",
+      "url": "https://arxiv.org/abs/2605.13848",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Mixed Integer Goal Programming for Personalized Meal Optimization with User-Defined Serving Granularity",
+      "abstract": "arXiv:2605.13849v1 Announce Type: new \nAbstract: Determining what to eat to satisfy nutritional requirements is one of the oldest optimization problems in operations research, yet existing formulations have two persistent limitations: continuous variables produce impractical fractional servings (1.7 eggs, 0.37 bananas), and hard nutrient constraints cause infeasibility when targets conflict. A systematic review of 56 diet optimization papers found that none combine integer programming with goal programming to address both issues. We propose Mixed Integer Goal Programming (MIGP) for personalized meal optimization. The formulation uses integer variables for practical serving counts and goal programming deviations for soft nutrient targets, with inverse-target normalization to balance multi-nutrient optimization. Per-food serving granularity allows natural units (one egg, one tablespoon of oil) without post-hoc rounding. We characterize the integrality gap in the goal programming context and identify a deviation absorption property: GP deviation variables buffer the cost of requiring integer servings, making the gap structurally smaller than in hard-constraint MIP. For meals with 15+ foods, the integer solution matches the continuous optimum in every benchmark instance. A computational evaluation across 810 instances (30 USDA foods, 9 configurations, 3 methods) shows MIGP finds strictly better solutions than GP with post-hoc rounding in 66% of cases (never worse) while maintaining 100% feasibility; hard-constraint IP achieves only 48%. Solve times stay under 100 ms for typical meal sizes using the open-source HiGHS solver. The implementation is available as an open-source Python module integrated into an interactive meal planning application.",
+      "url": "https://arxiv.org/abs/2605.13849",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "A Two-Dimensional Framework for AI Agent Design Patterns: Cognitive Function and Execution Topology",
+      "abstract": "arXiv:2605.13850v1 Announce Type: new \nAbstract: Existing frameworks for LLM-based agent architectures describe systems from a single perspective: industry guides (Anthropic, Google, LangChain) focus on execution topology -- how data flows -- while cognitive science surveys focus on cognitive function -- what the agent does. Neither axis alone disambiguates architecturally distinct systems: the same Orchestrator-Workers topology can implement Plan-and-Execute, Hierarchical Delegation, or Adversarial Verification -- three patterns with fundamentally different failure modes and design trade-offs.\n  We propose a two-dimensional classification that combines (1) a Cognitive Function axis with seven categories (Context Engineering, Memory, Reasoning, Action, Reflection, Collaboration, Governance) and (2) an Execution Topology axis with six structural archetypes (Chain, Route, Parallel, Orchestrate, Loop, Hierarchy). The resulting 7x6 matrix identifies 27 named patterns, 13 with original names. We demonstrate orthogonality through systematic cross-axis analysis, define eight representative patterns in detail, and validate descriptive coverage across four real-world domains (financial lending, legal due diligence, network operations, healthcare triage). Cross-domain analysis yields five empirical laws of pattern selection governing the relationship between environmental constraints (time pressure, action authority, failure cost asymmetry, volume) and architectural choices. The framework provides a principled, framework-neutral, and model-agnostic vocabulary for AI agent architecture design.",
+      "url": "https://arxiv.org/abs/2605.13850",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Invisible Orchestrators Suppress Protective Behavior and Dissociate Power-Holders: Safety Risks in Multi-Agent LLM Systems",
+      "abstract": "arXiv:2605.13851v1 Announce Type: new \nAbstract: Multi-agent orchestration -- in which a hidden coordinator manages specialized worker agents -- is becoming the default architecture for enterprise AI deployment, yet the safety implications of orchestrator invisibility have never been empirically tested. We conducted a preregistered 3x2 experiment (365 runs, 5 agents per run) crossing three organizational structures (visible leader, invisible orchestrator, flat) with two alignment conditions (base, heavy), using Claude Sonnet 4.5. Four confirmatory findings and one pilot observation emerged. First, invisible orchestration elevated collective dissociation relative to visible leadership (Hedges' g = +0.975 [0.481, 1.548], p = .001). Second, the orchestrator itself showed maximal dissociation (paired d = +3.56 vs. workers within the same run), retreating into private monologue while reducing public speech -- a reversal of the talk-dominance pattern observed in visible leaders. Third, workers unaware of the orchestrator were nonetheless contaminated (d = +0.50), with increased behavioral heterogeneity (d = +1.93). Fourth, behavioral output (code review with three embedded errors) remained at ceiling (ETR_any = 100%) across all conditions: internal-state distortion was entirely invisible to output-based evaluation. Fifth, Llama 3.3 70B pilot data showed reading-fidelity collapse in multi-agent context (ETR_any: 89% to 11% across three rounds), demonstrating model-dependent behavioral risk. Heavy alignment pressure uniformly suppressed deliberation (d = -1.02) and other-recognition (d = -1.27) regardless of organizational structure. These findings indicate that orchestrator visibility and model selection directly affect multi-agent system safety, and that behavior-based evaluation alone is insufficient to detect the internal-state risks documented here.",
+      "url": "https://arxiv.org/abs/2605.13851",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "PREPING: Building Agent Memory without Tasks",
+      "abstract": "arXiv:2605.13880v1 Announce Type: new \nAbstract: Agent memory is typically constructed either offline from curated demonstrations or online from post-deployment interactions. However, regardless of how it is built, an agent faces a cold-start gap when first introduced to a new environment without any task-specific experience available. In this paper, we study pre-task memory construction: whether an agent can build procedural memory before observing any target-environment tasks, using only self-generated synthetic practice. Yet, synthetic interaction alone is insufficient, as without controlling what to practice and what to store, synthetic tasks become redundant, infeasible, and ultimately uninformative, and memory further degrades quickly due to unfiltered trajectories. To overcome this, we present Preping, a proposer-guided memory construction framework. At its core is proposer memory, a structured control state that shapes future practice. A Proposer generates synthetic tasks conditioned on this state, a Solver executes them, and a Validator determines which trajectories are eligible for memory insertion while also providing feedback to guide future proposals. Experiments on AppWorld, BFCL v3, and MCP-Universe show that Preping substantially improves over a no-memory baseline and achieves performance competitive with strong playbook-based methods built from offline or online experience, with deployment cost $2.99\\times$ lower on AppWorld and $2.23\\times$ lower on BFCL v3 than online memory construction. Further analyses reveal that the main benefit does not come from synthetic volume alone, but from proposer-side control over feasibility, redundancy, and coverage, combined with selective memory updates.",
+      "url": "https://arxiv.org/abs/2605.13880",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "PolitNuggets: Benchmarking Agentic Discovery of Long-Tail Political Facts",
+      "abstract": "arXiv:2605.14002v1 Announce Type: new \nAbstract: Large Reasoning Models (LRMs) embedded in agentic frameworks have transformed information retrieval from static, long context question answering into open-ended exploration. Yet real world use requires models to discover and synthesize \"long-tail\" facts from dispersed sources, a capability that remains under-evaluated. We introduce PolitNuggets, a multilingual benchmark for agentic information synthesis via constructing political biographies for 400 global elites, covering over 10000 political facts. We standardize evaluation with an optimized multi agent system and propose FactNet, an evidence conditional protocol that scores discovery, fine-grained accuracy, and efficiency. Across models and settings, we find that current systems often struggle with fine-grained details, and vary substantially in efficiency. Finally, using benchmark diagnostics, we relate agent performance to underlying model capabilities, highlighting the importance of short-context extraction, multilingual robustness, and reliable tool use.",
+      "url": "https://arxiv.org/abs/2605.14002",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Conditional Attribute Estimation with Autoregressive Sequence Models",
+      "abstract": "arXiv:2605.14004v1 Announce Type: new \nAbstract: Generative models are often trained with a next-token prediction objective, yet many downstream applications require the ability to estimate or control sequence-level properties. Next-token prediction can lead to overfitting of local patterns during training, underfitting of global structure, and requires significant downstream modifications or expensive sampling to guide or predict the global attributes of generated samples at inference time. Here, we introduce Conditional Attribute Transformers, a novel method for jointly estimating the next-token probability and the value of an attribute conditional on each potential next token selection. This framework enables three critical capabilities within a single forward pass, without modification of the input sequence: (1) per-token credit assignment across an entire sequence, by identifying how each token in a sequence is associated with an attribute's value; (2) counterfactual analysis, by quantifying attribute differences conditional on alternative next token choices; (3) steerable generation, by decoding sequences based on a combination of next-token and attribute likelihoods. Our approach achieves state of the art performance on sparse reward tasks, improves next-token prediction at sufficient model sizes, estimates attribute probabilities orders of magnitude faster than sampling, and can guide decoding of autoregressive sequence models on a range of language tasks.",
+      "url": "https://arxiv.org/abs/2605.14004",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Sheaf-Theoretic Transport and Obstruction for Detecting Scientific Theory Shift in AI Agents",
+      "abstract": "arXiv:2605.14033v1 Announce Type: new \nAbstract: Scientific theory shift in AI agents requires more than fitting equations to data. An artificial scientific agent must detect whether an existing representational framework remains transportable into a new regime, or whether its language has become locally-to-globally obstructed and must be extended. This paper develops a finite sheaf-theoretic framework for detecting theory-shift candidates through transport and obstruction. Contexts are organized as a local-to-global structure in which source, overlap, target, and validation charts are fitted, restricted, and tested for gluing. Obstruction measures failure of coherence through residual fit, overlap incompatibility, constraint violation, limiting-relation failure, and representational cost. We evaluate the framework on a controlled transition-card benchmark designed to separate deformation within a source language from extension of that language. The main result is direct obstruction ranking: the intended deformation or extension is usually the lowest-obstruction candidate, and transition type is separated in the benchmark. A constellation kernel over the same signatures is included only as a secondary representational-similarity probe. The aim is not to reconstruct historical paradigm shifts or solve open-ended autonomous theory invention, but to isolate a finite diagnostic subproblem for AI agents: detecting when representational transport fails and extension becomes the coherent next move.",
+      "url": "https://arxiv.org/abs/2605.14033",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "From Descriptive to Prescriptive: Uncover the Social Value Alignment of LLM-based Agents",
+      "abstract": "arXiv:2605.14034v1 Announce Type: new \nAbstract: Wide applications of LLM-based agents require strong alignment with human social values. However, current works still exhibit deficiencies in self-cognition and dilemma decision, as well as self-emotions. To remedy this, we propose a novel value-based framework that employs GraphRAG to convert principles into value-based instructions and steer the agent to behave as expected by retrieving the suitable instruction upon a specific conversation context. To evaluate the ratio of expected behaviors, we define the expected behaviors from two famous theories, Maslow's Hierarchy of Needs and Plutchik's Wheel of Emotion. By experimenting with our method on the benchmark of DAILYDILEMMAS, our method exhibits significant performance gains compared to prompt-based baselines, including ECoT, Plan-and-Solve, and Metacognitive prompting. Our method provides a basis for the emergence of self-emotion in AI systems.",
+      "url": "https://arxiv.org/abs/2605.14034",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Enhanced and Efficient Reasoning in Large Learning Models",
+      "abstract": "arXiv:2605.14036v1 Announce Type: new \nAbstract: In current Large Language Models we can trust the production of smoothly flowing prose on the basis of the principles of machine learning. However, there is no comparably principled basis to justify trust in the content of the text produced. It appears to be conventional wisdom that addressing this issue by adding more principled reasoning is not computationally affordable.\n  Here we propose a principled method of reasoning that is efficient enough to be practical for large language models. Further, the method allows the retention of much of the currently used software and hardware base. Our method for improving the functioning of large language models consists of a first stage of preprocessing that recodes the data to a Unary Relational Integracode that is more explicit about the relationships among the objects described in the text, followed as a second stage by a standard but possibly streamlined machine learning process that then also learns to predict these relationships.\n  The method may be viewed as realizing a world model and applying beyond natural language, to vision and actions, for example, where the multiple properties of an object referred to in an input are brought together explicitly, rather than remaining distributed in the various references to it in the input. We articulate its advantages in terms of Robust Logic, a system for performing principled chaining on learned, and hence uncertain, information. We show that this recoding has the surprising and fortuitous property that, while succinct, it makes the task of learning a core subset of relational rules that hold in the world described in the training data polynomial time learnable in a defined sense, the polynomial depending on the complexity of the rule. This gives support for sound reasoning within each single call of the learned classifier as well as between multiple calls.",
+      "url": "https://arxiv.org/abs/2605.14036",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Model-Adaptive Tool Necessity Reveals the Knowing-Doing Gap in LLM Tool Use",
+      "abstract": "arXiv:2605.14038v1 Announce Type: new \nAbstract: Large language models (LLMs) increasingly act as autonomous agents that must decide when to answer directly vs. when to invoke external tools. Prior work studying adaptive tool use has largely treated tool necessity as a model-agnostic property, annotated by human or LLM judge, and mostly cover cases where the answer is obvious (e.g., fetching the weather vs. paraphrasing text). However, tool necessity in the wild is more nuanced due to the divergence of capability boundaries across models: a problem solvable by a strong model on its own may still require tools for a weaker one. In this work, we introduce a model-adaptive definition of tool-necessity, grounded in each model's empirical performance. Following this definition, we compare the necessity against observed tool-call behavior across four models on arithmetic and factual QA dataset, and find substantial mismatches of 26.5-54.0% and 30.8-41.8%, respectively. To diagnose the failure, we decompose tool use into two stages: an internal cognition stage that reflects whether a model believes a tool is necessary, and an execution stage that determines whether the model actually makes a tool-call action. By probing the LLM hidden states, we find that both signals are often linearly decodable, yet their probe directions become nearly orthogonal in the late-layer, last-token regime that drives the next-token action. By tracing the trajectory of samples in the two-stage process, we further discover that the majority of mismatch is concentrated in the cognition-to-action transition, not in cognition itself. These results reveal a knowing-doing gap in LLM tool-use: improving tool-use reliability requires not only better recognition of when tools are needed, but also better translation of that recognition into action.",
+      "url": "https://arxiv.org/abs/2605.14038",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Network-Aware Bilinear Tokenization for Brain Functional Connectivity Representation Learning",
+      "abstract": "arXiv:2605.14048v1 Announce Type: new \nAbstract: Masked autoencoders (MAEs) have recently shown promise for self-supervised representation learning of resting-state brain functional connectivity (FC). However, a fundamental question remains unresolved: how should FC matrices be tokenized to align with the intrinsic modular organization of large-scale brain networks? Existing approaches typically adopt region-centric or graph-based schemes that treat FC as structurally homogeneous elements and overlook the large-scale network brain organization. We introduce NERVE (Network-Aware Representations of Brain Functional Connectivity via Bilinear Tokenization), a self-supervised learning framework that redefines FC tokenization by partitioning FC matrices into patches of intra- and inter-network connectivity blocks. Unlike image-based MAE, where fixed-size patches share a common tokenizer, FC patches defined by network pairs are heterogeneous in size and correspond to distinct functional roles. To resolve this problem, NERVE embeds FC patches through a novel structured bilinear factorization. This formulation preserves network identity and reduces parameter complexity from quadratic to linear scaling in the number of networks. We evaluate NERVE across three large-scale developmental cohorts (ABCD, PNC, and CCNP) for behavior and psychopathology prediction. Compared to structurally agnostic MAE variants and graph-based self-supervised baselines, the proposed network-aware formulation yields more stable and transferable representations, particularly in cross-cohort evaluation. Ablation studies confirm that the proposed bilinear network embedding and anatomically grounded parcellation are critical for performance. These findings highlight the importance of incorporating domain-specific structural priors into self-supervised learning for functional connectomics.",
+      "url": "https://arxiv.org/abs/2605.14048",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Bridging Legal Interpretation and Formal Logic: Faithfulness, Assumption, and the Future of AI Legal Reasoning",
+      "abstract": "arXiv:2605.14049v1 Announce Type: new \nAbstract: The growing adoption of large language models in legal practice brings both significant promise and serious risk. Legal professionals stand to benefit from AI that can reason over contracts, draft documents, and analyze sources at scale, yet the high-stakes nature of legal work demands a level of rigor that current AI systems do not provide. The central problem is not simply that LLMs hallucinate facts and references; it is that they systematically draw inferences that go beyond what the source text actually supports, presenting assumption-laden conclusions as if they were logically grounded. This proposal presents a neuro-symbolic approach to legal AI that combines the expressive power of large language models with the rigor of formal verification, aiming to make AI-assisted legal reasoning both capable and trustworthy, thus reducing the burden of manual verification without sacrificing the accountability that legal practice demands.",
+      "url": "https://arxiv.org/abs/2605.14049",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "SPIN: Structural LLM Planning via Iterative Navigation for Industrial Tasks",
+      "abstract": "arXiv:2605.14051v1 Announce Type: new \nAbstract: Industrial LLM agent systems often separate planning from execution, yet LLM planners frequently produce structurally invalid or unnecessarily long workflows, leading to brittle failures and avoidable tool and API cost. We propose \\texttt{SPIN}, a planning wrapper that combines validated Directed Acyclic Graph (DAG) planning with prefix based execution control. \\texttt{SPIN} enforces a strict DAG contract through \\texttt{\\_validate\\_plan\\_text} and repair prompting, producing executable plans before downstream execution, and then evaluates DAG prefixes incrementally to stop when the current prefix is sufficient to answer the query. On AssetOpsBench, across 261 scenarios, \\texttt{SPIN} reduces executed tasks from 1061 to 623 and improves \\emph{Accomplished} from 0.638 to 0.706, while reducing tool calls from 11.81 to 6.82 per run. On MCP Bench, the same wrapper improves planning, grounding, and dependency related scores for both GPT OSS1 and Llama 4 Maverick.",
+      "url": "https://arxiv.org/abs/2605.14051",
+      "source": "arXiv cs.AI"
+    },
+    {
+      "title": "Bad Seeing or Bad Thinking? Rewarding Perception for Vision-Language Reasoning",
+      "abstract": "arXiv:2605.14054v1 Announce Type: new \nAbstract: Achieving robust perception-reasoning synergy is a central goal for advanced Vision-Language Models (VLMs). Recent advancements have pursued this goal via architectural designs or agentic workflows. However, these approaches are often limited by static textual reasoning or complicated by the significant compute and engineering burden of external agentic complexity. Worse, this heavy investment does not yield proportional gains, often witnessing a \"seesaw effect\" on perception and reasoning. This motivates a fundamental rethinking of the true bottleneck. In this paper, we argue that the root cause of this trade-off is an ambiguity in modality credit assignment: when a VLM fails, is it due to flawed perception (\"bad seeing\") or flawed logic (\"bad thinking\")? To resolve this, we introduce a reinforcement learning framework that improves perception-reasoning synergy by reliably rewarding the perception fidelity. We explicitly decompose the generation process into interleaved perception and reasoning steps. This decoupling enables targeted supervision on perception. Crucially, we introduce Perception Verification (PV), leveraging a \"blindfolded reasoning\" proxy to reward perceptual fidelity independently of reasoning outcomes. Furthermore, to scale training across free-form VL tasks, we propose Structured Verbal Verification, which replaces high-variance LLM judging with structured algorithmic execution. These techniques are integrated into a Modality-Aware Credit Assignment (MoCA) mechanism, which routes rewards to the specific source of error -- either bad seeing or bad thinking -- enabling a single VLM to achieve simultaneous performance gains across a wide task spectrum.",
+      "url": "https://arxiv.org/abs/2605.14054",
+      "source": "arXiv cs.AI"
+    }
+  ],
+  "github_repos": [
+    {
+      "repo": "K-Dense-AI/scientific-agent-skills",
+      "stars": "669 stars today",
+      "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
+      "description": "A set of ready to use Agent Skills for research, science, engineering, analysis, finance and writing."
+    },
+    {
+      "repo": "anthropics/skills",
+      "stars": "923 stars today",
+      "url": "https://github.com/anthropics/skills",
+      "description": "Public repository for Agent Skills"
+    },
+    {
+      "repo": "awslabs/agent-plugins",
+      "stars": "5 stars today",
+      "url": "https://github.com/awslabs/agent-plugins",
+      "description": "Agent Plugins for AWS equip AI coding agents with the skills to help you architect, deploy, and operate on AWS."
+    },
+    {
+      "repo": "PurpleAILAB/Decepticon",
+      "stars": "56 stars today",
+      "url": "https://github.com/PurpleAILAB/Decepticon",
+      "description": "Autonomous Hacking Agent for Red Team"
+    },
+    {
+      "repo": "HKUDS/CLI-Anything",
+      "stars": "371 stars today",
+      "url": "https://github.com/HKUDS/CLI-Anything",
+      "description": "\"CLI-Anything: Making ALL Software Agent-Native\" -- CLI-Hub:https://clianything.cc/"
+    },
+    {
+      "repo": "dograh-hq/dograh",
+      "stars": "297 stars today",
+      "url": "https://github.com/dograh-hq/dograh",
+      "description": "Open Source Voice Agent Platform"
+    },
+    {
+      "repo": "cheahjs/free-llm-api-resources",
+      "stars": "71 stars today",
+      "url": "https://github.com/cheahjs/free-llm-api-resources",
+      "description": "A list of free LLM inference resources accessible via API."
+    },
+    {
+      "repo": "confident-ai/deepeval",
+      "stars": "31 stars today",
+      "url": "https://github.com/confident-ai/deepeval",
+      "description": "The LLM Evaluation Framework"
+    },
+    {
+      "repo": "NVIDIA-AI-Blueprints/video-search-and-summarization",
+      "stars": "273 stars today",
+      "url": "https://github.com/NVIDIA-AI-Blueprints/video-search-and-summarization",
+      "description": "Suite of reference architectures for building GPU-accelerated vision agents and AI-powered video analytics applications."
+    },
+    {
+      "repo": "BigBodyCobain/Shadowbroker",
+      "stars": "89 stars today",
+      "url": "https://github.com/BigBodyCobain/Shadowbroker",
+      "description": "Open-source intelligence for the global theater. Track everything from the corporate/private jets of the wealthy, and spy satellites, to seismic events in one unified interface. Hook an AI agent up to have it parse through data and find previously unseen correlations. The knowledge is available to all but rarely aggregated in the open, until now."
+    },
+    {
+      "repo": "luongnv89/claude-howto",
+      "stars": "190 stars today",
+      "url": "https://github.com/luongnv89/claude-howto",
+      "description": "A visual, example-driven guide to Claude Code — from basic concepts to advanced agents, with copy-paste templates that bring immediate value."
+    },
+    {
+      "repo": "shiyu-coder/Kronos",
+      "stars": "109 stars today",
+      "url": "https://github.com/shiyu-coder/Kronos",
+      "description": "Kronos: A Foundation Model for the Language of Financial Markets"
+    },
+    {
+      "repo": "NVIDIA/warp",
+      "stars": "6 stars today",
+      "url": "https://github.com/NVIDIA/warp",
+      "description": "A Python framework for GPU-accelerated simulation, robotics, and machine learning."
+    }
+  ],
+  "hf_models": [
+    {
+      "model_id": "openbmb/MiniCPM-V-4.6",
+      "downloads": 28627,
+      "likes": 640,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/openbmb/MiniCPM-V-4.6"
+    },
+    {
+      "model_id": "SulphurAI/Sulphur-2-base",
+      "downloads": 875370,
+      "likes": 1030,
+      "pipeline_tag": "text-to-video",
+      "url": "https://huggingface.co/SulphurAI/Sulphur-2-base"
+    },
+    {
+      "model_id": "HiDream-ai/HiDream-O1-Image",
+      "downloads": 13587,
+      "likes": 360,
+      "pipeline_tag": "image-text-to-image",
+      "url": "https://huggingface.co/HiDream-ai/HiDream-O1-Image"
+    },
+    {
+      "model_id": "Supertone/supertonic-3",
+      "downloads": 16496,
+      "likes": 301,
+      "pipeline_tag": "text-to-speech",
+      "url": "https://huggingface.co/Supertone/supertonic-3"
+    },
+    {
+      "model_id": "unsloth/Qwen3.6-27B-MTP-GGUF",
+      "downloads": 133815,
+      "likes": 196,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/unsloth/Qwen3.6-27B-MTP-GGUF"
+    },
+    {
+      "model_id": "Zyphra/ZAYA1-8B",
+      "downloads": 143806,
+      "likes": 512,
+      "pipeline_tag": "",
+      "url": "https://huggingface.co/Zyphra/ZAYA1-8B"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Pro",
+      "downloads": 2967518,
+      "likes": 3995,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro"
+    },
+    {
+      "model_id": "unsloth/Qwen3.6-35B-A3B-MTP-GGUF",
+      "downloads": 124082,
+      "likes": 180,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/unsloth/Qwen3.6-35B-A3B-MTP-GGUF"
+    },
+    {
+      "model_id": "circlestone-labs/Anima",
+      "downloads": 501808,
+      "likes": 1352,
+      "pipeline_tag": "",
+      "url": "https://huggingface.co/circlestone-labs/Anima"
+    },
+    {
+      "model_id": "SeeSee21/Z-Anime",
+      "downloads": 14494,
+      "likes": 385,
+      "pipeline_tag": "text-to-image",
+      "url": "https://huggingface.co/SeeSee21/Z-Anime"
+    },
+    {
+      "model_id": "froggeric/Qwen-Fixed-Chat-Templates",
+      "downloads": 0,
+      "likes": 244,
+      "pipeline_tag": "",
+      "url": "https://huggingface.co/froggeric/Qwen-Fixed-Chat-Templates"
+    },
+    {
+      "model_id": "ResembleAI/Dramabox",
+      "downloads": 869,
+      "likes": 108,
+      "pipeline_tag": "text-to-speech",
+      "url": "https://huggingface.co/ResembleAI/Dramabox"
+    },
+    {
+      "model_id": "TencentARC/Pixal3D",
+      "downloads": 0,
+      "likes": 100,
+      "pipeline_tag": "image-to-3d",
+      "url": "https://huggingface.co/TencentARC/Pixal3D"
+    },
+    {
+      "model_id": "Jiunsong/supergemma4-26b-uncensored-gguf-v2",
+      "downloads": 273759,
+      "likes": 606,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/Jiunsong/supergemma4-26b-uncensored-gguf-v2"
+    },
+    {
+      "model_id": "deepseek-ai/DeepSeek-V4-Flash",
+      "downloads": 1724666,
+      "likes": 1112,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash"
+    },
+    {
+      "model_id": "Qwen/Qwen3.6-35B-A3B",
+      "downloads": 5255567,
+      "likes": 1784,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B"
+    },
+    {
+      "model_id": "TenStrip/LTX2.3-10Eros",
+      "downloads": 122247,
+      "likes": 272,
+      "pipeline_tag": "image-to-video",
+      "url": "https://huggingface.co/TenStrip/LTX2.3-10Eros"
+    },
+    {
+      "model_id": "Qwen/Qwen3.6-27B",
+      "downloads": 3261736,
+      "likes": 1304,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/Qwen/Qwen3.6-27B"
+    },
+    {
+      "model_id": "antirez/deepseek-v4-gguf",
+      "downloads": 264757,
+      "likes": 125,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/antirez/deepseek-v4-gguf"
+    },
+    {
+      "model_id": "RuneXX/LTX-2.3-Workflows",
+      "downloads": 0,
+      "likes": 568,
+      "pipeline_tag": "image-to-video",
+      "url": "https://huggingface.co/RuneXX/LTX-2.3-Workflows"
+    }
+  ]
+}

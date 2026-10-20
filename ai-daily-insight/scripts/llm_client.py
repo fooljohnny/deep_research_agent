@@ -25,10 +25,76 @@ import openai
 
 logger = logging.getLogger(__name__)
 
+
+def _first_balanced_brace_object(s: str, start: int) -> str | None:
+    """Return substring from first `{` through matching `}` (strings/escapes aware), or None."""
+    if start < 0 or start >= len(s) or s[start] != "{":
+        return None
+    depth = 0
+    i = start
+    in_str = False
+    esc = False
+    while i < len(s):
+        c = s[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif c == "\\":
+                esc = True
+            elif c == '"':
+                in_str = False
+            i += 1
+            continue
+        if c == '"':
+            in_str = True
+            i += 1
+            continue
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                return s[start : i + 1]
+        i += 1
+    return None
+
+
+def parse_llm_json_object(text: str) -> dict[str, Any] | None:
+    """
+    Parse the first JSON object from LLM text.
+
+    Handles trailing prose, BOM/whitespace, and ``rfind('}')`` mismatches from nested braces
+    in string values (common with gateways that stream or truncate).
+    """
+    text = (text or "").strip()
+    if not text:
+        return None
+
+    dec = json.JSONDecoder()
+    for idx in range(len(text)):
+        if text[idx] != "{":
+            continue
+        try:
+            obj, _end = dec.raw_decode(text, idx)
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+        chunk = _first_balanced_brace_object(text, idx)
+        if chunk:
+            try:
+                obj = json.loads(chunk)
+                if isinstance(obj, dict):
+                    return obj
+            except json.JSONDecodeError:
+                pass
+    return None
+
+
 PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
-        "model": "llama-3.3-70b-versatile",
+        "model": "openai/gpt-oss-120b",
     },
     "openai": {
         "base_url": "https://api.openai.com/v1",
@@ -86,7 +152,7 @@ def get_model() -> str:
     """Return the model name to use."""
     provider = os.environ.get("LLM_PROVIDER", "groq").lower()
     defaults = PROVIDER_DEFAULTS.get(provider, {})
-    model = os.environ.get("LLM_MODEL", defaults.get("model", "llama-3.3-70b-versatile"))
+    model = os.environ.get("LLM_MODEL", defaults.get("model", "openai/gpt-oss-120b"))
     return model
 
 

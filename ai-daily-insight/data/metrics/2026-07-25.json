@@ -1,0 +1,287 @@
+{
+  "date": "2026-07-25",
+  "arxiv_papers": [
+    {
+      "title": "What is Good? Extracting and Testing Implicit Theories of Literary Quality from LLM Reasoning Traces",
+      "abstract": "arXiv:2607.20425v1 Announce Type: new \nAbstract: What makes writing \"good\" remains a persistent question in literary studies and computational linguistics. We present a two-study investigation of how reasoning-enabled LLMs evaluate literary quality.\n  In Study 1, we construct a benchmark of 30 real texts spanning six quality tiers, from canonical literature to anonymous forum posts, and extract the model's implicit theory of quality from its reasoning traces. Across five DeepSeek replications, the model achieves 79.3% mean tier-classification accuracy. The traces reveal a consistent stated theory: the model values intentionality over correctness, prioritizing craft, depth, and distinctive voice. A familiarity experiment with style-matched but unrecognizable passages suggests that source recognition may inflate scores, although this is confounded by genuine quality differences between canonical originals and researcher-written pastiches.\n  In Study 2, we probe this theory through systematic degradation of five canonical prose passages. We apply six manipulations - vocabulary simplification, rhythm flattening, imagery removal, voice genericization, structure simplification, and combined degradation - and reevaluate each version. Vocabulary simplification causes the smallest quality loss (0.41 +/- 0.46 points), far below structure (2.78) or voice (2.34) loss. Combined degradation is devastating (-5.64) but subadditive. An exploratory comparison with Qwen QwQ shows the same broad qualitative pattern.\n  Together, these studies suggest that LLM judgments of writing quality are holistic, author-specific, and more sensitive to structural than lexical features, with implications for automated writing feedback and computational aesthetics.",
+      "url": "https://arxiv.org/abs/2607.20425",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Knowledge Injection Exists in MoE? Exploring Expert-Aware Contrast Decoding in MoE for Mitigating LLMs'Hallucinations",
+      "abstract": "arXiv:2607.20426v1 Announce Type: new \nAbstract: Existing LLM hallucination mitigation methods, including prompt engineering and model optimization, either hardly alter models'internal knowledge or have poor cross-domain generalization. Contrastive decoding mitigates hallucinations by using layer-wise differences in LLMs. However, prior studies only explore transformer-based models (e.g., GPT), ignoring other effective frameworks like mixture-of-experts (MoE) models. Since MoE alters the traditional transformer architecture, we conduct empirical studies to investigate whether similar layer-wise differences exist in MoEs. Our results show that they do not exist in MoE with shared experts; nevertheless, across different MoEs, higher layers exhibit distinct expert activation patterns between factual and non-factual outputs. Building on these, we propose EAACD, an expert-aware adaptive contrast decoding that uses expert differences in MoE's higher layers to mitigate hallucinations on QA tasks. EAACD splits high-layer experts into a higher-reliability group and several lower-reliability groups based on their confidence and consistency. It contrasts the higher-reliability group's prediction with each lower-reliability group's prediction to calibrate the model's original predictions. To strengthen this contrast, EAACD amplifies hallucinations from lower-reliability experts via attention and masking to provide stronger negative references. EAACD outperforms all baselines on four datasets.",
+      "url": "https://arxiv.org/abs/2607.20426",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Is MoE Routing a Huffman Code? Discovering the Frequency-Diversity Law in Chain-of-Thought",
+      "abstract": "arXiv:2607.20427v1 Announce Type: new \nAbstract: Mixture-of-Experts architectures have revolutionized scaling, yet the underlying logic of their routing remains a black box. In this paper, we uncover a fundamental governing principle: MoE routing is not merely selection, but a manifestation of Huffman Coding. We introduce the Frequency-Diversity Law, revealing that state-of-the-art models, such as Phi-3.5-MoE and Gemma-4-27B-A4B, spontaneously act as information-theoretic engines. These models allocate sparse expert resources for common tokens while invoking high-diversity expert committees for rare, complex tasks found in chain-of-thought trajectories. However, we identify a critical redundancy trap in Qwen3.5-35B-A3B: when effective sparsity (k/E_eff) is sufficiently low, load-balancing inadvertently imposes functional redundancy, masking the underlying Huffman efficiency signal. To bridge this gap, we propose Subset Difference Pruning, a surgical strategy to eliminate functional duplicates. We demonstrate that pruning does not degrade reasoning; instead, it unleashes the model's latent Huffman efficiency, forcing the logic to collapse into streamlined, high-density paths. Our findings suggest that the next generation of MoEs should move beyond forced load-balancing toward Minimum Description Length (MDL) optimality, assigning shorter expert-routing codes to high-frequency information and longer, more diverse codes to low-frequency information, thereby transforming routing from a heuristic into a principled compression engine.",
+      "url": "https://arxiv.org/abs/2607.20427",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Human-in-the-Loop Large Language Model Framework for Identification of Cutaneous Immune-Related Adverse Events",
+      "abstract": "arXiv:2607.20428v1 Announce Type: new \nAbstract: This study evaluated a retrieval-augmented, multi-agent large language model (LLM)-driven, human-in-the-loop framework for detecting cutaneous immune-related adverse events (cirAEs) from clinical notes. Compared with unassisted manual review, the LLM-assisted workflow improved accuracy (F1 = 0.88 vs 0.77), inter-rater agreement measured by Cohen's kappa (kappa = 0.82 vs 0.50), and reduced average review time by approximately half. This framework pilots how LLMs can be applied to identify immune-related toxicities across organ systems and, more broadly, enable accurate, scalable, and transparent adverse event data extraction.",
+      "url": "https://arxiv.org/abs/2607.20428",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "More Is Not More: What Matters for Diversity in LLM Opinions?",
+      "abstract": "arXiv:2607.20429v1 Announce Type: new \nAbstract: Large language models are increasingly used to simulate diverse human opinions in open-ended tasks such as synthetic surveys, focus group modeling, and public opinion prediction. However, LLM outputs exhibit systematic opinion homogenization. Practitioners have explored various interventions to increase diversity, but the landscape remains fragmented: different methods are evaluated in isolation with incomparable metrics, and in practice they are typically deployed and upgraded simultaneously, making it difficult to attribute gains to specific components. To advance a more scientific understanding of LLM output diversity, we design a factorial experiment that separates two primary intervention dimensions: input conditioning (operationalized through persona depth) and interaction architecture. We evaluate all conditions on 100 real-user open-ended questions across 7 models, measuring diversity with multiple complementary metrics. Our findings challenge several common assumptions. First, more persona detail does not monotonically increase diversity. The initial step of persona conditioning already captures the majority of the gain, while further elaboration with demographic detail does not consistently improve and can reduce diversity on some models. Second, rather than seeking a single best interaction architecture, we find that different architectures explore largely non-overlapping opinion regions. Combining multiple architectures yields broader coverage than optimizing any one. Third, commonly attempted low-cost alternatives such as raising sampling temperature and adding diversity instructions produce negligible effects compared to structured interventions. Overall, our work demonstrates that diversity is not a product of scaling along any single dimension, but is highly sensitive to the structural form and combination of interventions.",
+      "url": "https://arxiv.org/abs/2607.20429",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "LLM-INSTRUCT at UZH Shared Task 2026: Constraint-Aware Retrieval and Selective Debate for Paragraph-Level Argument Mining",
+      "abstract": "arXiv:2607.20430v1 Announce Type: new \nAbstract: We present LLM-INSTRUCT, the winning system for the UZH Shared Task at ArgMining 2026 on paragraph-level argument mining in UN and UNESCO resolutions. The task requires paragraph-type classification, prediction of a subset of 141 official tags, and directed relation prediction under a strict JSON schema setting using only open-weight models up to 8B parameters. We frame the task as constrained structured prediction. The system first narrows the candidate tag space with metadata-aware dense retrieval, then applies constrained decoding with per-dimension caps, escalates only uncertain cases to a three-agent debate branch, and finally validates the output schema. On the official leaderboard, LLM-INSTRUCT ranked 1st overall, with 1st in F1 and 5th in LLM-as-a-Judge. During development, our configuration search further improved Task 1b Micro-F1 from 35.83% to 40.08% while keeping the internal Task 2 score at 4.421. The main lesson is simple: reducing the decision space before generation improves both accuracy and submission robustness. Our code and supporting scripts are publicly available at: https://github.com/LLM-Instruct-at-UZH-Shared-Task-2026/Method",
+      "url": "https://arxiv.org/abs/2607.20430",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Skill-Contracted Agents for Evidence-Aware Materials Literature Analysis",
+      "abstract": "arXiv:2607.20431v1 Announce Type: new \nAbstract: Materials science literature analysis requires simultaneous attention to composition, processing, characterization, and property relationships, yet conventional retrieval-augmented generation pipelines struggle to reconcile heterogeneous tasks within a single retrieve-then-generate architecture. Here we present AlphaAgent, a skill-driven agent framework that decouples retrieval-based question answering from paper-level report generation through explicit skill contracts. A dedicated retrieval skill rewrites user requests into material-specific search intents, queries a curated index of more than 300,000 papers from the Journal Citation Reports Metallurgy and Metallurgical Engineering category, and reformulates queries when initial evidence is insufficient. A separate report-generation skill parses full-text PDFs to produce structured per-paper analytical reports and cross-paper summaries. In a blind evaluation on 40 materials-science questions, half of which required deep analytical reasoning, AlphaAgent substantially outperformed a baseline system matched for underlying model, document index, and retrieval scale, with the largest gains in mechanistic explanation and awareness of credibility boundaries. These results indicate that explicit task separation, refined retrieval intent, and evidence-aware generation improve large-language-model-based literature analysis for materials research.",
+      "url": "https://arxiv.org/abs/2607.20431",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Position: Natural Language Should Not Fully Replace Formal Languages",
+      "abstract": "arXiv:2607.20432v1 Announce Type: new \nAbstract: Recent advances in large language models and their widespread adoption have prompted claims that natural language could entirely replace formal languages, such as programming languages for software design. In this position paper, we argue that this perspective overlooks fundamental linguistic properties of natural language, specifically that it is optimized for underspecification in open-ended contexts. We introduce a formal framework centered on *task specificity*, defining it as the information-theoretic reduction of uncertainty in an output space -- such as all possible images -- given a user's specific requirements. We prove a *specificity crossover theorem*, showing the existence of a threshold beyond which the cost to express formal requirements into natural language exceeds the cost of direct formal specification. By analyzing case studies across modalities, such as image generation, code synthesis, and audio production, we demonstrate that natural language excels at low specificity tasks, while formal languages are advantageous on tasks with stricter requirements. We conclude that natural and formal languages are complementary tools and advocate the development of hybrid systems that allow users to move across the specificity spectrum.",
+      "url": "https://arxiv.org/abs/2607.20432",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Moir: Let the Model Direct Its Own Story for Robust Cross-Domain Knowledge Editing",
+      "abstract": "arXiv:2607.20433v1 Announce Type: new \nAbstract: While language models remain frozen at their training state, the world evolves continuously. Knowledge editing has emerged as a key alternative to full retraining, but its deployment is bottlenecked by the erosion of core capabilities: mathematical and programmatic reasoning collapse while encyclopedic recall remains intact. We trace this asymmetric degradation to a distributional mismatch. Covariance-based editors preserve only the subspaces spanned by their reference corpus, but fail to capture the operative distribution shaped by post-training such as SFT and DPO. Static external corpora, including Wikipedia and even the original pretraining mixture, cannot recover this shifted manifold. We propose Moir, which estimates the preservation covariance $C$ directly from the model itself by sampling from its own decoding distribution. Seeding generation with a single random vocabulary token bypasses the instruction-following templates that otherwise dominate sampled outputs, exposing the broader subspaces the model has internalized. Moir requires no external data and serves as a drop-in component for any covariance-based editor, a practical advantage given that the pre- and post-training corpora of most modern LLMs are not publicly accessible. Across OLMo-2, Llama-3.1, and Qwen-3 (7-8B), under both MEMIT and AlphaEdit and in batch and sequential regimes, Moir consistently extends preservation in the most vulnerable domains, most strikingly on Qwen3-8B after 20,000 AlphaEdit batch edits, it retains 79.9% GSM8K accuracy compared to 10.9% with the Wikipedia baseline. These results suggest that aligning the preservation distribution with the model's operative distribution is a key factor in non-destructive editing, and that the model itself may be the most accessible source of that distribution for deployed systems.",
+      "url": "https://arxiv.org/abs/2607.20433",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Break Through the Compression Bottleneck: From Theory to Practice",
+      "abstract": "arXiv:2607.20434v1 Announce Type: new \nAbstract: As the parameter size of language models continues to grow, effective model compression is required to reduce their computational and memory overhead. Existing compression methods suffer from bottleneck issues: when the compression ratio is increased, performance degrades significantly. Low-rank decomposition and quantization are two prominent compression methods that have been proven to significantly reduce the computational and memory requirements of Large Language Models (LLMs) while maintaining model accuracy. Evidently, combining these two methods will break through the existing compression bottleneck. However, how these two methods interact when combined remains a critical question for developers, as many assume they are orthogonal, meaning their combination would not introduce additional errors beyond those independently introduced by each method. This paper provides the first mathematical proof that low-rank decomposition and quantization are non-orthogonal. We validate these findings through a series of experiments on large language models. Our results demonstrate that these methods are non-orthogonal, and their combination leads to significant performance degradation. Importantly, we propose a novel approach Diagonal Adhesive Method (DAM), which can effectively combine the two methods and mitigate the performance loss. Our research provides deep insights into model compression and lays a solid theoretical and experimental foundation for future related studies.",
+      "url": "https://arxiv.org/abs/2607.20434",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Making Open-Source Text LLM Watermarks Durable Against Merging",
+      "abstract": "arXiv:2607.20435v1 Announce Type: new \nAbstract: Open-source LLMs (OSMs)arereaching near state-of-the-art performance, prompting prior works to trace the text they generate by embedding text watermarking algorithms directly into their weights. Yet, OSMs are subject to post-training modifications, which has been shown to remove the watermark. Model merging in particular, a prominent method used for combining expert knowledge and preventing catastrophic forgetting, strongly removes such OSM watermarks. A key question is how to enable OSM watermarks that survive subsequent merging. In this work, we show for the first time how to design an OSM watermark that is durable against model merging. We propose Merge-Adversarial Training, an adversarial training algorithm to distill text watermarks into model weights while being robust to subsequent model merging. Our approach consistently outperforms all baselines (e.g. with SLERP up to +51 percentage points (pp) TPR@1%FPR with +25 pp on average) while preserving downstream capabilities. We also for the first time evaluate OSM watermarks against realistic merge scenarios, representing common use-cases such as combining expert capabilities or preventing catastrophic forgetting, and with 3 prominent merging algorithms. More broadly, our findings suggest that adversarial training is a reliable approach for increasing OSM watermark durability against post-training modifications.",
+      "url": "https://arxiv.org/abs/2607.20435",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Routing Subspaces: Auditing Evaluation-to-Deployment Mismatch in Fine-Tuned Language Models",
+      "abstract": "arXiv:2607.20436v1 Announce Type: new \nAbstract: Safety evaluations often assume that behavior observed during testing reflects behavior in ordinary use, but fine-tuning can break this assumption. A checkpoint can appear fixed under evaluation-style prompts while the same behavior persists under ordinary-use prompts. Output scores reveal this mismatch but do not locate it. We investigate whether the distinction is encoded in a stable internal site and introduce an approach that fits a paired activation contrast at a path-patching-informed mid-depth window, then modifies the resulting coordinate on held-out prompts. The intervention closes the evaluation-to-deployment gap in ten of twelve model--behavior settings (six of the eight settings with $n{\\geq}120$ paired questions) across four full-matrix instruction-tuned model instances; a fifth model supports localization and edit-provenance checks, and deployment-framed rates change by at most $6.1$pp. The two flat cells, both sycophancy, indicate that a single-coordinate audit is not sufficient when the installed distinction is higher-rank or missed by the depth heuristic. The audit is a diagnostic for fine-tuned checkpoints, not a training-time defense or a guarantee of deployment safety.",
+      "url": "https://arxiv.org/abs/2607.20436",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "TopoGuard: Graph Theory Based Defenses Against Split-Knowledge Attacks on RAG",
+      "abstract": "arXiv:2607.20437v1 Announce Type: new \nAbstract: Production Retrieval Augmented Generation (RAG) systems rely on aggregating multiple external documents to answer complex queries. However, the retrieved documents introduce a new threat surface that can be exploited to launch split-knowledge attacks. In this attack, the adversary injects documents that are individually benign but create false associations when combined and fed to language models. This paper shows that the new attack is structurally invisible to existing per-document filters, like LlamaGuard. To address this issue in RAG, this work introduces TopoGuard, a family of graph theory-based methods specifically targeting the split-knowledge attacks by building a semantic similarity graph from retrieved documents and detecting contexts with malicious topology. Grounded on the theoretical analysis, the TopoGuard family has been proven to be effective and robust even with noisy inputs. Extensive experiments are conducted on two retrieval datasets and compared with multiple baseline methods. Specifically, the TopoGuard-$\\lambda_2$+Entity catches 21$\\times$ more attacks than LlamaGuard-2-8B at 1\\% FPR (32.6\\% vs 1.5\\% recall) on the HotpotQA dataset. Compared with production RAG detection systems using large language models, the proposed TopoGuard variants run efficiently at sub-millisecond latency and stay robust under adaptive adversaries and benign cross-domain queries.",
+      "url": "https://arxiv.org/abs/2607.20437",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "Preference Tuning as Spectral Update Reorganization",
+      "abstract": "arXiv:2607.20438v1 Announce Type: new \nAbstract: Preference-based post-training is usually understood through endpoint behavior, yet the learned update that produces this behavior remains largely opaque. We study RLHF and related preference optimization through the spectral structure of their induced parameter updates. By decomposing effective LoRA updates and reloading their spectral components as plug-in modules, we turn preference-induced updates into objects that can be isolated, recomposed, and directly intervened on. Across model families, optimization algorithms, and supervision regimes, these updates consistently develop a spectral head--tail organization. A compact head emerges early and carries the dominant endpoint shift, while a heterogeneous residual tail remains. The split is functional rather than merely descriptive. Plug-in intervention shows that the head accounts for the visible behavioral departure from the base model, while the tail is weak in isolation. Cross-run recomposition further shows that mixed adapters follow the source of the head, indicating that the head carries run-level solver bias. This endpoint dominance does not imply learning sufficiency. Head-only learning is non-vacuous but fails to recover the full solution, especially on out-of-distribution behavior. Tail-only learning yields little visible gain, yet the full solution is not recovered without the tail. These findings recast preference post-training as structured update reorganization rather than a monolithic behavioral correction, and suggest that alignment gain and coverage loss are tied to how the learned update itself is organized.",
+      "url": "https://arxiv.org/abs/2607.20438",
+      "source": "arXiv cs.CL"
+    },
+    {
+      "title": "AsymVerify at SemEval-2026 Task 6: Asymmetric Confidence-Gated Verification for Political Evasion Detection",
+      "abstract": "arXiv:2607.20439v1 Announce Type: new \nAbstract: Political evasion is difficult to detect because evasive answers often appear cooperative while avoiding concrete commitment. We present AsymVerify, a confidence-gated verification system for SemEval-2026 Task 6, a three-way classification of Clear Reply, Ambivalent, and Clear Non-Reply responses. AsymVerify scored 0.85 Macro F1 on the evaluation split (D_eval, n=237), placing 2nd out of 41 teams on the official leaderboard. The system first classifies each question-answer pair, then selectively applies downgrade verification (CR/CNR -> AMB) or upgrade verification (AMB -> CR) to low-confidence predictions. Development analysis shows that errors concentrate at the Ambivalent boundary in both directions, motivating this asymmetric two-verifier design while confidence gating keeps additional inference cost low. On D_dev (n=308), AsymVerify with GLM-4.7 gains +17.1 Macro F1 over single-pass classification at 1.48 calls/example, and the upgrade verifier alone improves every tested LLM backend on D_dev by +6.8 to +15.2 Macro F1 over its single-pass baseline. Code is available at https://github.com/kaons-research/AsymVerify-ACL.",
+      "url": "https://arxiv.org/abs/2607.20439",
+      "source": "arXiv cs.CL"
+    }
+  ],
+  "github_repos": [
+    {
+      "repo": "ComposioHQ/awesome-claude-skills",
+      "stars": "574 stars today",
+      "url": "https://github.com/ComposioHQ/awesome-claude-skills",
+      "description": "A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows"
+    },
+    {
+      "repo": "shiyu-coder/Kronos",
+      "stars": "319 stars today",
+      "url": "https://github.com/shiyu-coder/Kronos",
+      "description": "Kronos: A Foundation Model for the Language of Financial Markets"
+    },
+    {
+      "repo": "RyanCodrai/turbovec",
+      "stars": "89 stars today",
+      "url": "https://github.com/RyanCodrai/turbovec",
+      "description": "A vector index built on TurboQuant, written in Rust with Python bindings"
+    },
+    {
+      "repo": "andrewyng/aisuite",
+      "stars": "75 stars today",
+      "url": "https://github.com/andrewyng/aisuite",
+      "description": "Simple, unified interface to multiple Generative AI providers"
+    },
+    {
+      "repo": "OpenDCAI/DataFlow",
+      "stars": "139 stars today",
+      "url": "https://github.com/OpenDCAI/DataFlow",
+      "description": "Easy Data Preparation with latest LLMs-based Operators and Pipelines."
+    },
+    {
+      "repo": "VectifyAI/PageIndex",
+      "stars": "222 stars today",
+      "url": "https://github.com/VectifyAI/PageIndex",
+      "description": "📑 PageIndex: Document Index for Vectorless, Reasoning-based RAG"
+    },
+    {
+      "repo": "NVlabs/Sana",
+      "stars": "18 stars today",
+      "url": "https://github.com/NVlabs/Sana",
+      "description": "SANA: Efficient High-Resolution Image Synthesis with Linear Diffusion Transformer"
+    },
+    {
+      "repo": "usestrix/strix",
+      "stars": "231 stars today",
+      "url": "https://github.com/usestrix/strix",
+      "description": "Open-source AI penetration testing tool to find and fix your app’s vulnerabilities."
+    }
+  ],
+  "hf_models": [
+    {
+      "model_id": "baidu/Unlimited-OCR",
+      "downloads": 2564264,
+      "likes": 3099,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/baidu/Unlimited-OCR"
+    },
+    {
+      "model_id": "poolside/Laguna-S-2.1",
+      "downloads": 45260,
+      "likes": 657,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/poolside/Laguna-S-2.1"
+    },
+    {
+      "model_id": "upstage/Solar-Open2-250B",
+      "downloads": 2784,
+      "likes": 559,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/upstage/Solar-Open2-250B"
+    },
+    {
+      "model_id": "DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF",
+      "downloads": 483845,
+      "likes": 538,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/DavidAU/Qwen3.6-27B-Fable-Fusion-711-Uncensored-Heretic-NM-DAU-NEO-MAX-MTP-GGUF"
+    },
+    {
+      "model_id": "thinkingmachines/Inkling",
+      "downloads": 31575,
+      "likes": 1566,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/thinkingmachines/Inkling"
+    },
+    {
+      "model_id": "Nanbeige/Nanbeige4.2-3B",
+      "downloads": 11573,
+      "likes": 404,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/Nanbeige/Nanbeige4.2-3B"
+    },
+    {
+      "model_id": "prism-ml/Ternary-Bonsai-27B-gguf",
+      "downloads": 611685,
+      "likes": 1028,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/prism-ml/Ternary-Bonsai-27B-gguf"
+    },
+    {
+      "model_id": "microsoft/Mage-Flow",
+      "downloads": 1156,
+      "likes": 272,
+      "pipeline_tag": "text-to-image",
+      "url": "https://huggingface.co/microsoft/Mage-Flow"
+    },
+    {
+      "model_id": "zai-org/GLM-5.2",
+      "downloads": 707029,
+      "likes": 4445,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/zai-org/GLM-5.2"
+    },
+    {
+      "model_id": "Motif-Technologies/Motif-3-Beta",
+      "downloads": 2270,
+      "likes": 189,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/Motif-Technologies/Motif-3-Beta"
+    },
+    {
+      "model_id": "unsloth/Laguna-S-2.1-GGUF",
+      "downloads": 71893,
+      "likes": 184,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/unsloth/Laguna-S-2.1-GGUF"
+    },
+    {
+      "model_id": "HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive",
+      "downloads": 1988680,
+      "likes": 3088,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive"
+    },
+    {
+      "model_id": "prism-ml/Bonsai-27B-gguf",
+      "downloads": 2114963,
+      "likes": 638,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/prism-ml/Bonsai-27B-gguf"
+    },
+    {
+      "model_id": "Kwaipilot/KAT-Coder-V2.5-Dev",
+      "downloads": 841,
+      "likes": 163,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/Kwaipilot/KAT-Coder-V2.5-Dev"
+    },
+    {
+      "model_id": "openbmb/MiniCPM-RobotManip",
+      "downloads": 607,
+      "likes": 175,
+      "pipeline_tag": "robotics",
+      "url": "https://huggingface.co/openbmb/MiniCPM-RobotManip"
+    },
+    {
+      "model_id": "fdtn-ai/antares-1b",
+      "downloads": 5661,
+      "likes": 163,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/fdtn-ai/antares-1b"
+    },
+    {
+      "model_id": "conradlocke/krea2-identity-edit",
+      "downloads": 0,
+      "likes": 538,
+      "pipeline_tag": "",
+      "url": "https://huggingface.co/conradlocke/krea2-identity-edit"
+    },
+    {
+      "model_id": "poolside/Laguna-S-2.1-GGUF",
+      "downloads": 76957,
+      "likes": 141,
+      "pipeline_tag": "",
+      "url": "https://huggingface.co/poolside/Laguna-S-2.1-GGUF"
+    },
+    {
+      "model_id": "poolside/Laguna-S-2.1-NVFP4",
+      "downloads": 117106,
+      "likes": 133,
+      "pipeline_tag": "text-generation",
+      "url": "https://huggingface.co/poolside/Laguna-S-2.1-NVFP4"
+    },
+    {
+      "model_id": "empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF",
+      "downloads": 1570995,
+      "likes": 2465,
+      "pipeline_tag": "image-text-to-text",
+      "url": "https://huggingface.co/empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF"
+    }
+  ]
+}
