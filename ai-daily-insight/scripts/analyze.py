@@ -15,6 +15,7 @@ import time
 from typing import Any
 
 from llm_client import (
+    chat_completion_with_retry,
     extend_chat_completion_kwargs,
     get_client,
     get_model,
@@ -41,6 +42,11 @@ def _llm_json_parse_attempts() -> int:
         n = 2
     return max(1, min(n, 5))
 
+# 每批最多文章数，控制单次 prompt 体积
+BATCH_SIZE = 30
+MAX_SUMMARY_CHARS = 150
+# 批次间等待（秒），缓解 TPM 限流
+BATCH_DELAY_SEC = int(os.environ.get("BATCH_DELAY_SEC", "65"))
 
 def _parse_stage1_json(raw: str, response: Any) -> dict[str, Any]:
     """Parse strict JSON from Stage-1; tolerate markdown fences and leading/trailing prose."""
@@ -202,15 +208,50 @@ SYSTEM_PROMPT = """\
 }
 """
 
+MERGE_SYSTEM_PROMPT = """\
+你是AI产业结构分析师。你收到多份「分批分析」的结构化 JSON，每份来自不同文章子集。
+
+请将它们合并为**一份**统一的结构分析 JSON，要求：
+1. 合并各维度的 evidence，去重（同 URL 只保留一条），按重要性排序，每维度最多保留 10 条
+2. 各维度的分析文本：综合多份的结论，取信号更强者；若多份都无变化则保持「今日无显著变化」
+3. intensity：取多份中最强的（重大突破>渐进改善>无显著变化；强信号>中等>弱）
+4. core_insight：用一句话概括所有批次中最值得关注的结构性变化
+5. title：综合性的博客标题
+6. keywords：合并去重，保留 8-15 个核心关键词
+
+返回严格的 JSON，schema 与输入一致，不要 markdown 代码块。
+"""
+
+def _split_into_batches(articles: list[dict[str, str]]) -> list[list[dict[str, str]]]:
+    """按类别均衡拆分为多批，每批最多 BATCH_SIZE 篇，轮询保证每批都有论文/公司/开源/行业覆盖。"""
+    by_category: dict[str, list[dict[str, str]]] = {}
+    for a in articles:
+        cat = a.get("category", "other")
+        by_category.setdefault(cat, []).append(a)
+
+    cats = ["papers", "company", "opensource", "industry", "other"]
+    ordered: list[dict[str, str]] = []
+    max_len = max(len(by_category.get(c, [])) for c in cats)
+    for i in range(max_len):
+        for c in cats:
+            items = by_category.get(c, [])
+            if i < len(items):
+                ordered.append(items[i])
+
+    return [
+        ordered[i : i + BATCH_SIZE]
+        for i in range(0, len(ordered), BATCH_SIZE)
+    ]
 
 def _build_user_prompt(articles: list[dict[str, str]]) -> str:
     lines = [
         f"今日日期: {_today()}",
         f"信息条目数: {len(articles)}",
         "",
-        "以下是今日新增的AI信息列表（按来源分类）：",
-        "",
     ]
+    if batch_label:
+        lines.append(f"{batch_label}\n")
+    lines.append("以下是今日新增的AI信息列表（按来源分类）：\n")
 
     by_category: dict[str, list[dict[str, str]]] = {}
     for a in articles:
@@ -236,7 +277,7 @@ def _build_user_prompt(articles: list[dict[str, str]]) -> str:
             lines.append(f"{idx}. [{a['source']}] {a['title']}")
             lines.append(f"   URL: {a['url']}")
             if a.get("summary"):
-                lines.append(f"   摘要: {a['summary'][:400]}")
+                lines.append(f"   摘要: {a['summary'][:MAX_SUMMARY_CHARS]}")
             lines.append("")
             idx += 1
 
@@ -270,30 +311,15 @@ def _empty_analysis() -> dict[str, Any]:
     }
 
 
-def analyze_articles(
+def _analyze_batch(
     articles: list[dict[str, str]],
+    batch_idx: int,
+    total_batches: int,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """
-    Stage-1: structural change analysis → JSON.
-
-    Returns (analysis_dict, token_usage_dict).
-    """
-    empty_usage: dict[str, Any] = {
-        "model": "", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
-    }
-
-    if not articles:
-        logger.warning("No articles to analyse — returning empty analysis.")
-        return _empty_analysis(), empty_usage
-
-    client = get_client()
+    """分析单批文章，返回 (analysis, token_usage)。"""
     model = get_model()
-
-    user_prompt = _build_user_prompt(articles)
-    logger.info(
-        "Sending %d articles to LLM (%s) for structural analysis …",
-        len(articles), model,
-    )
+    label = f"第 {batch_idx + 1}/{total_batches} 批" if total_batches > 1 else ""
+    user_prompt = _build_user_prompt(articles, batch_label=label)
 
     create_kwargs: dict[str, Any] = {
         "model": model,
@@ -303,7 +329,7 @@ def analyze_articles(
             {"role": "user", "content": user_prompt},
         ],
     }
-    if _json_response_format_enabled():
+    if "compound" not in model.lower() and _json_response_format_enabled():
         create_kwargs["response_format"] = {"type": "json_object"}
 
     max_attempts = _llm_json_parse_attempts()
@@ -311,9 +337,8 @@ def analyze_articles(
     analysis = None
     last_exc: Exception | None = None
     for attempt in range(max_attempts):
-        response = client.chat.completions.create(**extend_chat_completion_kwargs(create_kwargs))
-        msg = response.choices[0].message
-        raw = normalize_assistant_message_content(msg)
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
         try:
             analysis = _parse_stage1_json(raw, response)
             break
@@ -321,14 +346,14 @@ def analyze_articles(
             last_exc = e
             if attempt < max_attempts - 1:
                 logger.warning(
-                    "Stage-1 JSON parse failed (%d/%d), retrying after 2s … — %s",
-                    attempt + 1, max_attempts, e,
+                    "Batch %d: LLM JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    batch_idx + 1, attempt + 1, max_attempts, e,
                 )
                 time.sleep(2)
     if analysis is None:
         if last_exc is not None:
             raise last_exc
-        raise RuntimeError("Stage-1 analysis missing after LLM calls")
+        raise RuntimeError("Batch analysis missing after LLM calls")
 
     usage = getattr(response, "usage", None)
     token_usage: dict[str, Any] = {
@@ -337,6 +362,121 @@ def analyze_articles(
         "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
         "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
     }
+    return analysis, token_usage
+
+
+def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """将多份分批分析合并为一份，调用 LLM。"""
+    model = get_model()
+    user_prompt = (
+        f"今日日期: {_today()}\n\n"
+        f"以下是 {len(analyses)} 份分批分析结果，请合并为一份：\n\n"
+        + json.dumps(analyses, indent=2, ensure_ascii=False)
+    )
+    create_kwargs: dict[str, Any] = {
+        "model": model,
+        "temperature": 0.2,
+        "messages": [
+            {"role": "system", "content": MERGE_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+    }
+    if "compound" not in model.lower() and _json_response_format_enabled():
+        create_kwargs["response_format"] = {"type": "json_object"}
+
+    max_attempts = _llm_json_parse_attempts()
+    response = None
+    merged = None
+    last_exc: Exception | None = None
+    for attempt in range(max_attempts):
+        response = chat_completion_with_retry(**create_kwargs)
+        raw = normalize_assistant_message_content(response.choices[0].message)
+        try:
+            merged = _parse_stage1_json(raw, response)
+            break
+        except (json.JSONDecodeError, ValueError) as e:
+            last_exc = e
+            if attempt < max_attempts - 1:
+                logger.warning(
+                    "Merge step: JSON parse failed (%d/%d), retrying after 2s … — %s",
+                    attempt + 1, max_attempts, e,
+                )
+                time.sleep(2)
+    if merged is None:
+        if last_exc is not None:
+            raise last_exc
+        raise RuntimeError("Merge result missing after LLM calls")
+
+    if "date" not in merged or not merged["date"]:
+        merged["date"] = _today()
+
+    usage = getattr(response, "usage", None)
+    token_usage: dict[str, Any] = {
+        "model": model,
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) if usage else 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) if usage else 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
+    }
+    return merged, token_usage
+
+
+def analyze_articles(
+    articles: list[dict[str, str]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """
+    Stage-1: 分批结构分析 → 合并 → JSON。
+
+    将文章拆成多批（每批≤BATCH_SIZE），每批调用一次 LLM，最后合并。
+    Returns (analysis_dict, token_usage_dict)。
+    """
+    empty_usage: dict[str, Any] = {
+        "model": "", "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
+    }
+
+    if not articles:
+        logger.warning("No articles to analyse — returning empty analysis.")
+        return _empty_analysis(), empty_usage
+
+    model = get_model()
+    batches = _split_into_batches(articles)
+    logger.info(
+        "Stage-1: %d articles → %d batch(es), %d per batch, model=%s",
+        len(articles), len(batches), BATCH_SIZE, model,
+    )
+
+    batch_analyses: list[dict[str, Any]] = []
+    total_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+    for i, batch in enumerate(batches):
+        if i > 0:
+            logger.info("Waiting %ds for TPM buffer before next batch …", BATCH_DELAY_SEC)
+            time.sleep(BATCH_DELAY_SEC)
+        logger.info("Analyzing batch %d/%d (%d articles) …", i + 1, len(batches), len(batch))
+        analysis, usage = _analyze_batch(batch, i, len(batches))
+        batch_analyses.append(analysis)
+        for k in total_usage:
+            total_usage[k] += usage.get(k, 0)
+
+    if len(batch_analyses) == 1:
+        analysis = batch_analyses[0]
+        token_usage = {
+            "model": model,
+            "prompt_tokens": total_usage["prompt_tokens"],
+            "completion_tokens": total_usage["completion_tokens"],
+            "total_tokens": total_usage["total_tokens"],
+        }
+    else:
+        logger.info("Waiting %ds before merge …", BATCH_DELAY_SEC)
+        time.sleep(BATCH_DELAY_SEC)
+        logger.info("Merging %d batch analyses …", len(batch_analyses))
+        analysis, merge_usage = _merge_analyses(batch_analyses)
+        token_usage = {
+            "model": model,
+            "prompt_tokens": total_usage["prompt_tokens"] + merge_usage.get("prompt_tokens", 0),
+            "completion_tokens": total_usage["completion_tokens"] + merge_usage.get("completion_tokens", 0),
+            "total_tokens": total_usage["total_tokens"] + merge_usage.get("total_tokens", 0),
+        }
+
     logger.info(
         "Stage-1 complete: %s  (tokens: %d prompt + %d completion = %d total)",
         analysis.get("title", ""),
@@ -346,7 +486,6 @@ def analyze_articles(
     )
     logger.info("Core insight: %s", analysis.get("core_insight", ""))
     return analysis, token_usage
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
