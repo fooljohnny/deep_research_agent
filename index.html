@@ -400,7 +400,16 @@
     return r.json();
   }
 
-  async function listMarkdown(prefix) {
+  async function fetchManifest() {
+    var url = withCacheBust(sameOriginRepoFileUrl("manifest.json"));
+    var r = await fetch(url, FETCH_OPTS);
+    if (!r.ok) throw new Error("manifest.json HTTP " + r.status);
+    var data = await r.json();
+    if (!data || typeof data !== "object") throw new Error("manifest.json invalid");
+    return data;
+  }
+
+  async function listMarkdownViaApi(prefix) {
     const api =
       "https://api.github.com/repos/" +
       CONFIG.owner +
@@ -421,6 +430,20 @@
       .sort(function (a, b) {
         return b.name.localeCompare(a.name);
       });
+  }
+
+  async function listMarkdown(bucket) {
+    try {
+      var manifest = await fetchManifest();
+      var names = manifest[bucket];
+      if (Array.isArray(names) && names.length) {
+        return names.map(function (n) { return { name: n }; });
+      }
+    } catch (e) {
+      /* manifest not deployed yet — fall back to API */
+    }
+    var prefix = PATHS[bucket];
+    return await listMarkdownViaApi(prefix);
   }
 
   function setActive(hash) {
@@ -499,8 +522,8 @@
     listCloud.innerHTML = "";
 
     try {
-      var aiFiles = await listMarkdown(PATHS.ai);
-      var cloudFiles = await listMarkdown(PATHS.cloud);
+      var aiFiles = await listMarkdown("ai");
+      var cloudFiles = await listMarkdown("cloud");
 
       aiFiles.forEach(function (f) {
         listAi.appendChild(buildLink("ai", f.name));
