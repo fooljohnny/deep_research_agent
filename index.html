@@ -309,6 +309,63 @@
       color: var(--c-text);
       max-width: 100%;
     }
+
+    .article-header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .article-header .article-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.75rem;
+      padding-bottom: 0;
+      border-bottom: none;
+      color: var(--c-text);
+    }
+    .article-header .article-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .article-header .article-date {
+      font-size: 0.8rem;
+      color: var(--c-text-tertiary);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .article-header .article-date::before {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--c-text-tertiary);
+      display: inline-block;
+    }
+    .article-header .article-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .article-header .article-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--c-accent-bg);
+      color: var(--c-accent);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .article-header .article-tag:hover {
+      background: var(--c-accent-bg-hover);
+      border-color: var(--c-accent);
+    }
     .markdown-body h1,
     .markdown-body h2,
     .markdown-body h3,
@@ -659,8 +716,89 @@
     return body.replace(/^\uFEFF/, "").trimStart();
   }
 
+  function parseFrontMatter(md) {
+    var text = (md || "").replace(/^\uFEFF/, "");
+    var fm = { title: null, date: null, tags: null };
+    var lines = text.split(/\r?\n/);
+    if (lines.length < 2 || String(lines[0]).trim() !== "---") {
+      return { meta: fm, body: md };
+    }
+    var endIdx = -1;
+    for (var i = 1; i < lines.length; i++) {
+      if (/^---\s*$/.test(lines[i])) {
+        endIdx = i;
+        break;
+      }
+    }
+    if (endIdx < 0) {
+      return { meta: fm, body: md };
+    }
+    var yamlLines = lines.slice(1, endIdx);
+    var bodyLines = lines.slice(endIdx + 1);
+    for (var j = 0; j < yamlLines.length; j++) {
+      var line = yamlLines[j];
+      var mTitle = line.match(/^title:\s*(.+)$/);
+      if (mTitle) {
+        fm.title = mTitle[1].trim().replace(/^["']|["']$/g, "");
+        continue;
+      }
+      var mDate = line.match(/^date:\s*(.+)$/);
+      if (mDate) {
+        fm.date = mDate[1].trim().replace(/^["']|["']$/g, "");
+        continue;
+      }
+      var mTags = line.match(/^tags:\s*(.+)$/);
+      if (mTags) {
+        var raw = mTags[1].trim();
+        if (raw.startsWith("[")) {
+          raw = raw.replace(/^\[|\]$/g, "");
+        }
+        fm.tags = raw.split(",").map(function (t) {
+          return t.trim().replace(/^["']|["']$/g, "");
+        }).filter(Boolean);
+        continue;
+      }
+    }
+    return { meta: fm, body: bodyLines.join("\n").replace(/^\uFEFF/, "").trimStart() };
+  }
+
   function normalizeMarkdownForRender(md) {
     return normalizeMarkdownLegacyHeadings(stripErroneousOuterCodeFences(md || ""));
+  }
+
+  function buildArticleHeaderHtml(meta) {
+    if (!meta || (!meta.title && !meta.date && !meta.tags)) {
+      return "";
+    }
+    var parts = [];
+    parts.push('<div class="article-header">');
+    if (meta.title) {
+      parts.push('<h1 class="article-title">' + escapeHtml(meta.title) + '</h1>');
+    }
+    if (meta.date || meta.tags) {
+      parts.push('<div class="article-meta">');
+      if (meta.date) {
+        parts.push('<span class="article-date">' + escapeHtml(meta.date) + '</span>');
+      }
+      if (meta.tags && meta.tags.length) {
+        parts.push('<div class="article-tags">');
+        for (var i = 0; i < meta.tags.length; i++) {
+          parts.push('<span class="article-tag">' + escapeHtml(meta.tags[i]) + '</span>');
+        }
+        parts.push('</div>');
+      }
+      parts.push('</div>');
+    }
+    parts.push('</div>');
+    return parts.join("");
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
   function markdownToHtml(src) {
@@ -819,14 +957,17 @@
     article.style.display = "none";
 
     try {
-      var md = normalizeMarkdownForRender(await fetchRepoTextWithFallback(rel));
-      var html = markdownToHtml(md);
-      article.innerHTML = sanitizeHtml(html);
+      var raw = normalizeMarkdownForRender(await fetchRepoTextWithFallback(rel));
+      var parsed = parseFrontMatter(raw);
+      var bodyMd = parsed.meta.title ? parsed.body : raw;
+      var html = markdownToHtml(bodyMd);
+      var headerHtml = buildArticleHeaderHtml(parsed.meta);
+      article.innerHTML = sanitizeHtml(headerHtml + html);
       rewriteImageSourcesInArticle(article, PATHS[bucket]);
       article.style.display = "block";
       loading.style.display = "none";
       setActive(hash);
-      document.title = file.replace(/\.md$/i, "") + " · 洞察";
+      document.title = (parsed.meta.title || file.replace(/\.md$/i, "")) + " · 洞察";
       var mainEl = document.getElementById("main-wrap");
       if (mainEl) mainEl.scrollTop = 0;
     } catch (e) {
