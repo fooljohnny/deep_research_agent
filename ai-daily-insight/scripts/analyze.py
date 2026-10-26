@@ -243,7 +243,7 @@ def _split_into_batches(articles: list[dict[str, str]]) -> list[list[dict[str, s
         for i in range(0, len(ordered), BATCH_SIZE)
     ]
 
-def _build_user_prompt(articles: list[dict[str, str]]) -> str:
+def _build_user_prompt(articles: list[dict[str, str]], batch_label: str = "") -> str:
     lines = [
         f"今日日期: {_today()}",
         f"信息条目数: {len(articles)}",
