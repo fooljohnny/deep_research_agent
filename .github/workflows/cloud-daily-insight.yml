@@ -48,12 +48,16 @@ jobs:
           BATCH_DELAY_SEC: ${{ vars.BATCH_DELAY_SEC || '65' }}
         run: python main.py
 
+      - name: Generate manifest
+        working-directory: .
+        run: python generate_manifest.py
+
       - name: Commit & push new post
         working-directory: .
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add cloud-daily-insight/content/ cloud-daily-insight/data/ cloud-daily-insight/logs/
+          git add cloud-daily-insight/content/ cloud-daily-insight/data/ cloud-daily-insight/logs/ manifest.json
           if ! git diff --cached --quiet; then
             git commit -m "cloud-insight: $(date -u +%Y-%m-%d) daily post"
             git push
