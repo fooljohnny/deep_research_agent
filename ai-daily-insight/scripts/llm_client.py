@@ -19,11 +19,14 @@ LLM_THINKING_ENABLED : If "1"/"true"/"enabled", sends thinking mode (shortcut fo
 import json
 import logging
 import os
+import time
 from typing import Any
 
 import openai
 
 logger = logging.getLogger(__name__)
+
+from openai import RateLimitError
 
 
 def _first_balanced_brace_object(s: str, start: int) -> str | None:
@@ -90,6 +93,10 @@ def parse_llm_json_object(text: str) -> dict[str, Any] | None:
                 pass
     return None
 
+
+# 429 TPM 限流时重试间隔（秒），需 ≥60 以跨过免费模型分钟窗口
+RETRY_DELAY_SEC = int(os.environ.get("RETRY_DELAY_SEC", "65"))
+MAX_RETRIES = 3
 
 PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
     "groq": {
@@ -217,3 +224,24 @@ def extend_chat_completion_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
     merged = dict(extra)
     merged.update(kwargs.get("extra_body") or {})
     return {**kwargs, "extra_body": merged}
+
+
+def chat_completion_with_retry(**kwargs) -> openai.types.chat.ChatCompletion:
+    """Call chat.completions.create, retrying on 429 rate-limit errors."""
+    client = get_client()
+    kwargs = extend_chat_completion_kwargs(dict(kwargs))
+    last_err = None
+    for attempt in range(MAX_RETRIES):
+        try:
+            return client.chat.completions.create(**kwargs)
+        except RateLimitError as e:
+            last_err = e
+            if attempt < MAX_RETRIES - 1:
+                logger.warning(
+                    "Rate limit 429, waiting %ds before retry (%d/%d) …",
+                    RETRY_DELAY_SEC, attempt + 1, MAX_RETRIES,
+                )
+                time.sleep(RETRY_DELAY_SEC)
+            else:
+                raise
+    raise last_err  # type: ignore[misc]
