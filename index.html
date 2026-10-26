@@ -7,126 +7,476 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   <title>每日洞察 · AI & Cloud</title>
-  <!-- Local CSS only — no jsdelivr. If DevTools still requests cdn.jsdelivr.net, the old index is cached: hard-refresh or wait for Pages. -->
   <link rel="stylesheet" href="css/github-markdown.min.css?v=3" />
   <style>
-    :root { color-scheme: light dark; }
+    :root {
+      --c-bg: #f8f9fb;
+      --c-surface: #ffffff;
+      --c-text: #1a1a2e;
+      --c-text-secondary: #6b7280;
+      --c-text-tertiary: #9ca3af;
+      --c-border: #e5e7eb;
+      --c-border-light: #f0f0f3;
+      --c-accent: #4f46e5;
+      --c-accent-light: #6366f1;
+      --c-accent-bg: rgba(79, 70, 229, 0.06);
+      --c-accent-bg-hover: rgba(79, 70, 229, 0.10);
+      --c-header-bg: rgba(255, 255, 255, 0.82);
+      --c-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+      --c-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+      --c-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+      --c-nav-bg: #fbfbfd;
+      --c-code-bg: #f3f4f6;
+      --c-progress: #4f46e5;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --max-content: 760px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", "Noto Sans", Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      color-scheme: light dark;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --c-bg: #0f1117;
+        --c-surface: #16181f;
+        --c-text: #e6e8ee;
+        --c-text-secondary: #9ca3af;
+        --c-text-tertiary: #6b7280;
+        --c-border: #2a2d36;
+        --c-border-light: #222529;
+        --c-accent: #818cf8;
+        --c-accent-light: #a5b4fc;
+        --c-accent-bg: rgba(129, 140, 248, 0.08);
+        --c-accent-bg-hover: rgba(129, 140, 248, 0.14);
+        --c-header-bg: rgba(22, 24, 31, 0.82);
+        --c-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        --c-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+        --c-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+        --c-nav-bg: #131520;
+        --c-code-bg: #1e2028;
+        --c-progress: #818cf8;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      display: flex;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
-      background: #f6f8fa;
-      color: #1f2328;
+      font-family: var(--font-sans);
+      background: var(--c-bg);
+      color: var(--c-text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      font-size: 16px;
+      line-height: 1.6;
     }
-    @media (prefers-color-scheme: dark) {
-      body { background: #0d1117; color: #e6edf3; }
-      .nav { border-color: #30363d !important; background: #161b22; }
-      .nav a { color: #58a6ff !important; }
-      .section h2 { color: #8b949e !important; }
-      .hint, #loading { color: #8b949e !important; }
-      .readme-surface { background: #0d1117; border-color: #30363d; }
+
+    #progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, var(--c-accent), var(--c-accent-light));
+      z-index: 1000;
+      transition: width 0.1s ease;
+      box-shadow: 0 0 8px rgba(79, 70, 229, 0.3);
     }
-    .nav {
-      width: min(300px, 38vw);
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--c-header-bg);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--c-border);
+      padding: 0 24px;
+    }
+    .site-header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .site-logo .logo-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--c-accent), var(--c-accent-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
       flex-shrink: 0;
-      border-right: 1px solid #d0d7de;
-      padding: 1rem 0.75rem;
-      overflow: auto;
-      background: #fff;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
     }
+    .site-logo .logo-text {
+      background: linear-gradient(135deg, var(--c-accent), var(--c-accent-light));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .site-header .header-meta {
+      font-size: 0.8rem;
+      color: var(--c-text-tertiary);
+    }
+    .site-header .header-meta code {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      background: var(--c-code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--c-text-secondary);
+    }
+
+    .layout {
+      display: flex;
+      min-height: calc(100vh - 57px);
+    }
+
+    .nav {
+      width: 280px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--c-border);
+      background: var(--c-nav-bg);
+      padding: 24px 16px 48px;
+      overflow-y: auto;
+      position: sticky;
+      top: 57px;
+      height: calc(100vh - 57px);
+    }
+    .nav::-webkit-scrollbar { width: 4px; }
+    .nav::-webkit-scrollbar-track { background: transparent; }
+    .nav::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+    .nav .section { margin-bottom: 1.75rem; }
+    .nav .section h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--c-text-tertiary);
+      margin: 0 0 0.6rem;
+      font-weight: 600;
+      padding: 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav .section h2::before {
+      content: "";
+      width: 3px;
+      height: 12px;
+      border-radius: 2px;
+      background: var(--c-accent);
+      opacity: 0.5;
+    }
+
+    .nav a {
+      display: block;
+      padding: 8px 12px;
+      color: var(--c-text-secondary);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border-radius: var(--radius);
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      line-height: 1.4;
+      border: 1px solid transparent;
+    }
+    .nav a:hover {
+      background: var(--c-accent-bg);
+      color: var(--c-accent);
+      border-color: var(--c-border-light);
+    }
+    .nav a.active {
+      font-weight: 600;
+      background: var(--c-accent-bg-hover);
+      color: var(--c-accent);
+      border-color: var(--c-accent);
+    }
+
+    .hint {
+      color: var(--c-text-tertiary);
+      font-size: 0.72rem;
+      line-height: 1.6;
+      margin-top: 1.5rem;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--c-code-bg);
+      border: 1px solid var(--c-border-light);
+    }
+    .hint code {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      word-break: break-all;
+      color: var(--c-accent);
+    }
+
     .main {
       flex: 1;
-      overflow: auto;
-      padding: 0;
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      min-width: 0;
     }
-    /* GitHub README-like column: avoid card chrome that fights github-markdown-css */
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
+
     .readme-surface {
       flex: 1;
-      max-width: 1012px;
+      max-width: var(--max-content);
       width: 100%;
       margin: 0 auto;
       box-sizing: border-box;
-      padding: 24px 40px 64px;
-      background: #ffffff;
-      border-left: 1px solid #d0d7de;
-      border-right: 1px solid #d0d7de;
+      padding: 48px 32px 96px;
+      background: var(--c-surface);
       min-height: 100%;
     }
     @media (max-width: 900px) {
-      .readme-surface { padding: 16px 16px 48px; border-left: none; border-right: none; }
+      .readme-surface { padding: 24px 20px 64px; }
     }
-    .markdown-body {
-      box-sizing: border-box;
-      min-width: 0;
+
+    .welcome {
+      color: var(--c-text-secondary);
+      max-width: var(--max-content);
+      margin: 0 auto;
+      text-align: center;
+      padding: 80px 20px;
     }
-    h1.app-title { font-size: 1.05rem; margin: 0 0 1rem; font-weight: 600; }
-    .section { margin-bottom: 1.25rem; }
-    .section h2 {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #656d76;
-      margin: 0 0 0.4rem;
-    }
-    .nav a {
-      display: block;
-      padding: 0.3rem 0.25rem;
-      color: #0969da;
-      text-decoration: none;
-      font-size: 0.875rem;
+    .welcome p { margin-bottom: 1rem; }
+    .welcome code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--c-code-bg);
+      padding: 3px 8px;
       border-radius: 4px;
+      color: var(--c-accent);
     }
-    .nav a:hover { background: rgba(9, 105, 218, 0.08); text-decoration: none; }
-    .nav a.active { font-weight: 600; background: rgba(9, 105, 218, 0.12); }
-    .hint { color: #656d76; font-size: 0.75rem; line-height: 1.4; margin-top: 1rem; }
-    .hint code { font-size: 0.7rem; word-break: break-all; }
-    #error { color: #cf222e; max-width: 980px; margin: 0 auto; }
+    #loading {
+      color: var(--c-text-tertiary);
+      text-align: center;
+      padding: 80px 20px;
+      font-size: 0.9rem;
+    }
+    #loading::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--c-border);
+      border-top-color: var(--c-accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 8px;
+      vertical-align: -2px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error {
+      color: #ef4444;
+      max-width: var(--max-content);
+      margin: 0 auto;
+      text-align: center;
+      padding: 80px 20px;
+      font-size: 0.9rem;
+    }
     @media (prefers-color-scheme: dark) {
-      #error { color: #f85149; }
+      #error { color: #f87171; }
     }
-    .welcome { color: #656d76; max-width: 980px; margin: 0 auto; }
-    @media (max-width: 640px) {
-      body { flex-direction: column; }
-      .nav { width: 100%; max-height: 40vh; border-right: none; border-bottom: 1px solid #d0d7de; }
+
+    .markdown-body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--c-text);
+      max-width: 100%;
+    }
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3,
+    .markdown-body h4 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-top: 2em;
+      margin-bottom: 0.6em;
+      scroll-margin-top: 80px;
+    }
+    .markdown-body h1 {
+      font-size: 1.85rem;
+      line-height: 1.3;
+      padding-bottom: 0.4em;
+      border-bottom: 2px solid var(--c-border);
+    }
+    .markdown-body h2 {
+      font-size: 1.4rem;
+      line-height: 1.35;
+      padding-bottom: 0.3em;
+      border-bottom: 1px solid var(--c-border-light);
+    }
+    .markdown-body h3 {
+      font-size: 1.15rem;
+    }
+    .markdown-body p {
+      margin: 0 0 1.1em;
+    }
+    .markdown-body a {
+      color: var(--c-accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+    .markdown-body a:hover {
+      border-bottom-color: var(--c-accent);
+    }
+    .markdown-body blockquote {
+      margin: 1.5em 0;
+      padding: 12px 20px;
+      border-left: 4px solid var(--c-accent);
+      background: var(--c-accent-bg);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      color: var(--c-text-secondary);
+    }
+    .markdown-body blockquote p { margin: 0; }
+    .markdown-body code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      background: var(--c-code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--c-accent);
+    }
+    .markdown-body pre {
+      border-radius: var(--radius-lg);
+      box-shadow: var(--c-shadow-md);
+      margin: 1.5em 0;
+    }
+    .markdown-body pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+    .markdown-body table {
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--c-shadow);
+      margin: 1.5em 0;
+    }
+    .markdown-body img {
+      border-radius: var(--radius-lg);
+      box-shadow: var(--c-shadow-md);
+      max-width: 100%;
+    }
+    .markdown-body hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--c-border), transparent);
+      margin: 2.5em 0;
+    }
+    .markdown-body ul,
+    .markdown-body ol {
+      padding-left: 1.5em;
+      margin: 0 0 1.1em;
+    }
+    .markdown-body li { margin-bottom: 0.35em; }
+
+    @media (prefers-color-scheme: dark) {
+      .markdown-body { color: var(--c-text); }
+      .markdown-body h1 { border-bottom-color: var(--c-border); }
+      .markdown-body h2 { border-bottom-color: var(--c-border-light); }
+      .markdown-body pre {
+        background: var(--c-code-bg) !important;
+      }
+      .markdown-body table {
+        background: var(--c-surface);
+      }
+      .markdown-body img {
+        opacity: 0.92;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .layout { flex-direction: column; }
+      .nav {
+        width: 100%;
+        height: auto;
+        max-height: 38vh;
+        position: relative;
+        top: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--c-border);
+        padding: 16px 12px;
+      }
+      .site-header { padding: 0 16px; }
+      .site-header .header-meta { display: none; }
+      .readme-surface { padding: 24px 16px 64px; }
     }
   </style>
 </head>
 <body>
-  <nav class="nav" id="nav">
-    <h1 class="app-title">每日洞察</h1>
-    <div class="section">
-      <h2>AI Daily Insight</h2>
-      <div id="list-ai"></div>
-    </div>
-    <div class="section">
-      <h2>Cloud Daily Insight</h2>
-      <div id="list-cloud"></div>
-    </div>
-    <p class="hint">
-      目录由 GitHub API 读取仓库
-      <code id="repo-label"></code>。<br />
-      每次打开页面都会重新请求列表与正文（禁用缓存）。<br />
-      匿名访问有速率限制；若失败可在 URL 加参数
-      <code>?owner=fooljohnny&repo=deep_research_agent&branch=main</code>
-    </p>
-  </nav>
-  <main class="main" id="main-wrap">
-    <div class="readme-surface">
-      <p id="loading" class="welcome">正在加载文件列表…</p>
-      <p id="error" style="display: none;"></p>
-      <article id="article" class="markdown-body" style="display: none;"></article>
-      <div id="welcome" class="welcome markdown-body" style="display: none;">
-        <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
-        <p>链接可分享：<code id="sample-hash"></code></p>
+  <div id="progress-bar"></div>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="#">
+        <span class="logo-icon">D</span>
+        <span class="logo-text">每日洞察</span>
+      </a>
+      <div class="header-meta">
+        <code id="repo-label"></code>
       </div>
     </div>
-  </main>
+  </header>
 
-  <!-- Bundled locally: GitHub Pages / some regions may block or fail CDN; avoids marked.parse undefined -->
+  <div class="layout">
+    <nav class="nav" id="nav">
+      <div class="section">
+        <h2>AI Daily Insight</h2>
+        <div id="list-ai"></div>
+      </div>
+      <div class="section">
+        <h2>Cloud Daily Insight</h2>
+        <div id="list-cloud"></div>
+      </div>
+      <p class="hint">
+        目录由 GitHub API 读取仓库
+        <br />
+        每次打开页面都会重新请求列表与正文（禁用缓存）。<br />
+        匿名访问有速率限制；若失败可在 URL 加参数
+        <code>?owner=fooljohnny&repo=deep_research_agent&branch=main</code>
+      </p>
+    </nav>
+
+    <main class="main" id="main-wrap">
+      <div class="readme-surface">
+        <p id="loading" class="welcome">正在加载文件列表…</p>
+        <p id="error" style="display: none;"></p>
+        <article id="article" class="markdown-body" style="display: none;"></article>
+        <div id="welcome" class="welcome markdown-body" style="display: none;">
+          <p>请从左侧选择一篇 <code>.md</code> 报告。</p>
+          <p>链接可分享：<code id="sample-hash"></code></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
   <script src="js/marked.min.js?v=3"></script>
   <script src="js/purify.min.js?v=3"></script>
   <script>
@@ -138,7 +488,6 @@
     branch: params.get("branch") || "main",
   };
 
-  /** Pages site root path, e.g. /deep_research_agent/ — same-origin files when branch is deployed to Pages */
   function pagesRepoRootPath() {
     var p = window.location.pathname || "/";
     if (p.endsWith("/")) {
@@ -205,7 +554,6 @@
           return await r.text();
         }
       } catch (err) {
-        /* tunnel / blocked */
       }
     }
     return await fetchRepoTextViaApi(relPath);
@@ -248,10 +596,6 @@
     );
   }
 
-  /**
-   * Markdown uses paths relative to the .md file (e.g. charts/foo.png).
-   * On github.io those become wrong absolute URLs; point at raw.githubusercontent.com instead.
-   */
   function resolveMarkdownAssetToRepoPath(contentDir, src) {
     if (!src || /^https?:\/\//i.test(src) || src.trim().toLowerCase().startsWith("data:")) {
       return null;
@@ -279,15 +623,10 @@
     return base.join("/");
   }
 
-  /** Fix legacy posts that used "## # Section" (renders as h2 + literal "#"). */
   function normalizeMarkdownLegacyHeadings(md) {
     return (md || "").replace(/^##\s+#\s+/gm, "## ");
   }
 
-  /**
-   * LLM sometimes wraps YAML in ``` fences or opens ``` before front-matter and only closes at EOF,
-   * so the whole post renders as one <pre> (looks like a notepad vs normal markdown).
-   */
   function stripErroneousOuterCodeFences(md) {
     var text = (md || "").replace(/^\uFEFF/, "");
     var lines = text.split(/\r?\n/);
@@ -440,7 +779,6 @@
         return names.map(function (n) { return { name: n }; });
       }
     } catch (e) {
-      /* manifest not deployed yet — fall back to API */
     }
     var prefix = PATHS[bucket];
     return await listMarkdownViaApi(prefix);
@@ -489,6 +827,8 @@
       loading.style.display = "none";
       setActive(hash);
       document.title = file.replace(/\.md$/i, "") + " · 洞察";
+      var mainEl = document.getElementById("main-wrap");
+      if (mainEl) mainEl.scrollTop = 0;
     } catch (e) {
       loading.style.display = "none";
       article.style.display = "none";
@@ -554,6 +894,17 @@
         loadArticle(window.location.hash || "");
       });
     }
+
+    var mainEl = document.getElementById("main-wrap");
+    var progressBar = document.getElementById("progress-bar");
+    if (mainEl && progressBar) {
+      mainEl.addEventListener("scroll", function () {
+        var max = mainEl.scrollHeight - mainEl.clientHeight;
+        var pct = max > 0 ? (mainEl.scrollTop / max) * 100 : 0;
+        progressBar.style.width = pct + "%";
+      });
+    }
+
     refreshListsAndArticle();
   }
 
