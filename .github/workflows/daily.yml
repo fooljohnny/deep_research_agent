@@ -45,6 +45,9 @@ jobs:
           # Huawei MaaS: LLM_THINKING_ENABLED=true or LLM_EXTRA_BODY={"thinking":{"type":"enabled"}}
           LLM_THINKING_ENABLED: ${{ vars.LLM_THINKING_ENABLED }}
           LLM_EXTRA_BODY: ${{ vars.LLM_EXTRA_BODY }}
+          # Rate-limit resilience: retry delay (≥60s to cross free-tier TPM window) and batch delay
+          RETRY_DELAY_SEC: ${{ vars.RETRY_DELAY_SEC || '65' }}
+          BATCH_DELAY_SEC: ${{ vars.BATCH_DELAY_SEC || '65' }}
         run: python main.py
 
       - name: Commit & push new post
