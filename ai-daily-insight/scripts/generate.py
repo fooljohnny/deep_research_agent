@@ -14,6 +14,7 @@ from typing import Any
 import json
 
 from llm_client import (
+    chat_completion_with_retry,
     extend_chat_completion_kwargs,
     get_client,
     get_model,
@@ -151,21 +152,18 @@ def generate_post(
 
     Returns (markdown_string, token_usage_dict).
     """
-    client = get_client()
     model = get_model()
 
     def _call_stage2(user_content: str):
-        return client.chat.completions.create(
-            **extend_chat_completion_kwargs(
-                {
-                    "model": model,
-                    "temperature": 0.5,
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": user_content},
-                    ],
-                }
-            )
+        return chat_completion_with_retry(
+            **{
+                "model": model,
+                "temperature": 0.5,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": user_content},
+                ],
+            }
         )
 
     user_prompt = _build_user_prompt(
