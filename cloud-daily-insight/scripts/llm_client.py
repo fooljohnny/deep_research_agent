@@ -24,7 +24,7 @@ import openai
 
 logger = logging.getLogger(__name__)
 
-from openai import RateLimitError
+from openai import RateLimitError, BadRequestError
 
 
 def _first_balanced_brace_object(s: str, start: int) -> str | None:
@@ -193,8 +193,18 @@ def extend_chat_completion_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
     return {**kwargs, "extra_body": merged}
 
 
+def _is_json_validate_failed(err: BadRequestError) -> bool:
+    """Check if a BadRequestError is a Groq/OpenAI json_validate_failed error."""
+    body = getattr(err, "body", None)
+    if isinstance(body, dict):
+        code = body.get("error", {}).get("code")
+        if code == "json_validate_failed":
+            return True
+    return "json_validate_failed" in str(err)
+
+
 def chat_completion_with_retry(**kwargs) -> openai.types.chat.ChatCompletion:
-    """调用 chat.completions.create，遇 429 时等待后重试。"""
+    """调用 chat.completions.create，遇 429 或 JSON 验证失败时重试。"""
     client = get_client()
     kwargs = extend_chat_completion_kwargs(dict(kwargs))
     last_err = None
@@ -211,4 +221,13 @@ def chat_completion_with_retry(**kwargs) -> openai.types.chat.ChatCompletion:
                 time.sleep(RETRY_DELAY_SEC)
             else:
                 raise
+        except BadRequestError as e:
+            if _is_json_validate_failed(e) and "response_format" in kwargs:
+                logger.warning(
+                    "JSON validation failed (attempt %d/%d), retrying without response_format …",
+                    attempt + 1, MAX_RETRIES,
+                )
+                kwargs.pop("response_format", None)
+                continue
+            raise
     raise last_err  # type: ignore[misc]
