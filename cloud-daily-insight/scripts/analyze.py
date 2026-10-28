@@ -379,13 +379,48 @@ def _analyze_batch(
     return analysis, token_usage
 
 
-def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
-    """将多份分批分析合并为一份，调用 LLM。"""
+def _compress_for_merge(
+    analysis: dict[str, Any],
+    max_evidence: int = 3,
+    max_text_len: int = 300,
+) -> dict[str, Any]:
+    """Truncate a batch analysis to reduce merge payload size.
+
+    Keeps core_insight, keywords, dimension intensity/has_change, and
+    truncated text + evidence.  This is lossy but sufficient for merging.
+    """
+    out: dict[str, Any] = {
+        "core_insight": analysis.get("core_insight", ""),
+        "keywords": analysis.get("keywords", [])[:15],
+    }
+    dims_out: dict[str, Any] = {}
+    for dim_key, dim_val in (analysis.get("dimensions") or {}).items():
+        if not isinstance(dim_val, dict):
+            dims_out[dim_key] = dim_val
+            continue
+        d: dict[str, Any] = {}
+        for k, v in dim_val.items():
+            if k == "evidence":
+                d[k] = v[:max_evidence] if isinstance(v, list) else v
+            elif isinstance(v, str) and len(v) > max_text_len:
+                d[k] = v[:max_text_len] + "…"
+            else:
+                d[k] = v
+        dims_out[dim_key] = d
+    out["dimensions"] = dims_out
+    return out
+
+
+def _merge_two(
+    a1: dict[str, Any],
+    a2: dict[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Merge two analyses via LLM, return (merged, token_usage)."""
     model = get_model()
     user_prompt = (
         f"今日日期: {_today()}\n\n"
-        f"以下是 {len(analyses)} 份分批分析结果，请合并为一份：\n\n"
-        + json.dumps(analyses, indent=2, ensure_ascii=False)
+        f"以下是 2 份分批分析结果，请合并为一份：\n\n"
+        + json.dumps([a1, a2], indent=2, ensure_ascii=False)
     )
     create_kwargs: dict[str, Any] = {
         "model": model,
@@ -432,6 +467,42 @@ def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dic
         "total_tokens": getattr(usage, "total_tokens", 0) if usage else 0,
     }
     return merged, token_usage
+
+
+def _merge_analyses(analyses: list[dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """将多份分批分析合并为一份，调用 LLM。
+
+    当批次较多时，先压缩每份分析（截断 evidence / 文本字段），再采用
+    两两合并（hierarchical pairwise merge）以避免单次请求超过模型 TPM 限制。
+    """
+    compressed = [_compress_for_merge(a) for a in analyses]
+
+    total_usage: dict[str, Any] = {
+        "model": get_model(),
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+    }
+
+    step = 0
+    while len(compressed) > 2:
+        step += 1
+        logger.info("Pairwise merge step %d: merging 2 of %d remaining …", step, len(compressed))
+        merged, usage = _merge_two(compressed[0], compressed[1])
+        compressed = [merged] + compressed[2:]
+        for k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+            total_usage[k] += usage.get(k, 0)
+        if len(compressed) > 2:
+            time.sleep(BATCH_DELAY_SEC)
+
+    if len(compressed) == 1:
+        return compressed[0], total_usage
+
+    logger.info("Final pairwise merge of 2 analyses …")
+    merged, usage = _merge_two(compressed[0], compressed[1])
+    for k in ("prompt_tokens", "completion_tokens", "total_tokens"):
+        total_usage[k] += usage.get(k, 0)
+    return merged, total_usage
 
 
 def analyze_articles(
