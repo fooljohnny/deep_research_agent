@@ -1,0 +1,166 @@
+02:02:03  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-11-05.log
+02:02:03  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-11-05 ===
+02:02:03  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+02:02:03  INFO      fetch  Fetching RSS: arXiv cs.AI …
+02:02:03  INFO      fetch    → arXiv cs.AI: 10 new item(s)
+02:02:03  INFO      fetch  Fetching RSS: arXiv cs.LG …
+02:02:03  INFO      fetch    → arXiv cs.LG: 10 new item(s)
+02:02:03  INFO      fetch  Fetching RSS: arXiv cs.CL …
+02:02:03  INFO      fetch    → arXiv cs.CL: 10 new item(s)
+02:02:03  INFO      fetch  Fetching RSS: OpenAI Blog …
+02:02:04  INFO      fetch    → OpenAI Blog: 5 new item(s)
+02:02:04  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+02:02:04  INFO      fetch    → Google DeepMind Blog: 0 new item(s)
+02:02:04  INFO      fetch  Fetching RSS: Google AI Blog …
+02:02:05  INFO      fetch    → Google AI Blog: 1 new item(s)
+02:02:05  INFO      fetch  Fetching RSS: TechCrunch AI …
+02:02:05  INFO      fetch    → TechCrunch AI: 10 new item(s)
+02:02:05  INFO      fetch  Fetching RSS: VentureBeat AI …
+02:02:05  INFO      fetch    → VentureBeat AI: 0 new item(s)
+02:02:05  INFO      fetch  Fetching RSS: Crunchbase News …
+02:02:05  INFO      fetch    → Crunchbase News: 2 new item(s)
+02:02:05  INFO      fetch  Fetching Anthropic Blog …
+02:02:05  INFO      fetch    → Anthropic Blog: 0 new item(s)
+02:02:05  INFO      fetch  Fetching Meta AI Blog …
+02:02:07  WARNING   fetch  Failed to fetch Meta AI Blog
+Traceback (most recent call last):
+  File "/home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/scripts/fetch.py", line 232, in _fetch_meta_ai_blog
+    resp.raise_for_status()
+  File "/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/requests/models.py", line 1167, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: https://ai.meta.com/blog/
+02:02:07  INFO      fetch    → Meta AI Blog: 0 new item(s)
+02:02:07  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+02:02:09  INFO      fetch    → GitHub Trending: 3 new item(s)
+02:02:09  INFO      fetch  Fetching HuggingFace Trending Models …
+02:02:09  INFO      fetch    → HuggingFace Trending: 2 new item(s)
+02:02:09  INFO      fetch  Total fresh items: 53
+02:02:09  INFO      ai-daily-insight  Collected 53 fresh article(s).
+02:02:09  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+02:02:10  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-11-05.json
+02:02:11  INFO      metrics  Metrics report: arXiv=延续, GitHub=14, HF=20
+02:02:11  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+02:02:11  INFO      analyze  Stage-1: 53 articles → 2 batch(es), 30 per batch, model=openai/gpt-oss-120b
+02:02:11  INFO      analyze  Analyzing batch 1/2 (30 articles) …
+02:02:11  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:02:17  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:02:17  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+02:03:22  INFO      analyze  Analyzing batch 2/2 (23 articles) …
+02:03:22  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:03:27  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:03:27  INFO      analyze  Waiting 65s before merge …
+02:04:32  INFO      analyze  Merging 2 batch analyses …
+02:04:32  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:04:39  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:04:39  INFO      analyze  Stage-1 complete: 2026年11月AI结构性信号全景：递归自改、低位KV缓存与资本地理再分配  (tokens: 10788 prompt + 7733 completion = 18521 total)
+02:04:39  INFO      analyze  Core insight: 递归自改与低位 KV 缓存双驱动模型效率提升，资本正从传统预算转向少数亿万富翁主导的地理再分配。
+02:04:39  INFO      ai-daily-insight  Title: 2026年11月AI结构性信号全景：递归自改、低位KV缓存与资本地理再分配
+02:04:39  INFO      ai-daily-insight  Keywords: LLM, RSI, KV cache, low-bit quantization, recursive self-improvement, AI agents, GovCloud, cybersecurity, GPT-6.1, Meta acquisition, venture funding, billionaire founders, medical QA, e-commerce automation, alignment
+02:04:39  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+02:04:39  INFO      trend  Loaded 11 historical record(s) (up to 30 days back)
+02:04:39  INFO      trend  Trend report: 6 signal(s) — 应用层(continuous_trend), 资本信号(continuous_trend), 风险信号(continuous_trend), 应用层(emerging_topic), 资本信号(emerging_topic)
+02:04:39  INFO      trend  Overall novelty: 0.672
+02:04:39  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-11-05.json
+02:04:39  INFO      ai-daily-insight  [4/5] Generating trend charts …
+02:04:39  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+02:04:39  INFO      matplotlib.font_manager  generated new fontManager
+02:04:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-05_arxiv_capability.png
+02:04:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-05_github_stars.png
+02:04:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-05_hf_downloads.png
+02:04:41  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+02:04:41  INFO      generate  Sending analysis + trends to LLM (openai/gpt-oss-120b) for Stage-2 generation …
+02:04:41  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:04:41  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+02:04:41  INFO      openai._base_client  Retrying request to /chat/completions in 19.000000 seconds
+02:05:00  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+02:05:00  INFO      openai._base_client  Retrying request to /chat/completions in 11.000000 seconds
+02:05:11  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+02:05:11  WARNING   llm_client  Rate limit 429, waiting 65s before retry (1/3) …
+02:06:23  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:06:23  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-11-05.md (4616 chars)  (tokens: 4565 prompt + 2934 completion = 7499 total)
+02:06:23  INFO      ai-daily-insight  === Pipeline complete (260.3s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-11-05
+========================================================================
+
+  Total elapsed:       260.3s
+  Blog post:           content/2026-11-05.md (4,616 chars)
+  Log file:            logs/2026-11-05.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (11 ok, 2 fail)
+  Articles fetched:    159
+  New (after dedup):   53
+  Fetch time:          6.5s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     ok         15    10   0.4s
+  arXiv cs.LG                  RSS     ok         15    10   0.3s
+  arXiv cs.CL                  RSS     ok         15    10   0.2s
+  OpenAI Blog                  RSS     ok         15     5   0.7s
+  Google DeepMind Blog         RSS     ok         15     0   0.2s
+  Google AI Blog               RSS     ok         15     1   0.4s
+  TechCrunch AI                RSS     ok         15    10   0.1s
+  VentureBeat AI               RSS     fail        0     0   0.1s
+  Crunchbase News              RSS     ok         10     2   0.2s
+  Anthropic Blog               scrape  ok         15     0   0.3s
+  Meta AI Blog                 scrape  fail        0     0   1.7s
+  GitHub Trending              scrape  ok         14     3   1.8s
+  HuggingFace Trending         API     ok         15     2   0.1s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               openai/gpt-oss-120b
+  Stage-1 (analyze):   10,788 prompt +  7,733 completion =  18,521 total
+  Stage-2 (generate):   4,565 prompt +  2,934 completion =   7,499 total
+  Grand total tokens:   26,020
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        11
+  Has enough history:  True
+  Trend signals:       6
+  Overall novelty:     0.672
+  New keywords:        GovCloud, KV cache, Meta acquisition, RSI, alignment, billionaire founders, cybersecurity, e-commerce automation, low-bit quantization, medical QA
+  Rising keywords:     LLM
+
+========================================================================
+02:06:23  INFO      ai-daily-insight  ========================================================================
+02:06:23  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-11-05
+02:06:23  INFO      ai-daily-insight  ========================================================================
+02:06:23  INFO      ai-daily-insight  Total elapsed:       260.3s
+02:06:23  INFO      ai-daily-insight  Blog post:           content/2026-11-05.md (4,616 chars)
+02:06:23  INFO      ai-daily-insight  Log file:            logs/2026-11-05.log
+02:06:23  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+02:06:23  INFO      ai-daily-insight  Sources:             13 (11 ok, 2 fail)
+02:06:23  INFO      ai-daily-insight  Articles fetched:    159
+02:06:23  INFO      ai-daily-insight  New (after dedup):   53
+02:06:23  INFO      ai-daily-insight  Fetch time:          6.5s
+02:06:23  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+02:06:23  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+02:06:23  INFO      ai-daily-insight  arXiv cs.AI                  RSS     ok         15    10   0.4s
+02:06:23  INFO      ai-daily-insight  arXiv cs.LG                  RSS     ok         15    10   0.3s
+02:06:23  INFO      ai-daily-insight  arXiv cs.CL                  RSS     ok         15    10   0.2s
+02:06:23  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15     5   0.7s
+02:06:23  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     0   0.2s
+02:06:23  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     1   0.4s
+02:06:23  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15    10   0.1s
+02:06:23  INFO      ai-daily-insight  VentureBeat AI               RSS     fail        0     0   0.1s
+02:06:23  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     2   0.2s
+02:06:23  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         15     0   0.3s
+02:06:23  INFO      ai-daily-insight  Meta AI Blog                 scrape  fail        0     0   1.7s
+02:06:23  INFO      ai-daily-insight  GitHub Trending              scrape  ok         14     3   1.8s
+02:06:23  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     2   0.1s
+02:06:23  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+02:06:23  INFO      ai-daily-insight  Model:               openai/gpt-oss-120b
+02:06:23  INFO      ai-daily-insight  Stage-1 (analyze):   10,788 prompt +  7,733 completion =  18,521 total
+02:06:23  INFO      ai-daily-insight  Stage-2 (generate):   4,565 prompt +  2,934 completion =   7,499 total
+02:06:23  INFO      ai-daily-insight  Grand total tokens:   26,020
+02:06:23  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+02:06:23  INFO      ai-daily-insight  History days:        11
+02:06:23  INFO      ai-daily-insight  Has enough history:  True
+02:06:23  INFO      ai-daily-insight  Trend signals:       6
+02:06:23  INFO      ai-daily-insight  Overall novelty:     0.672
+02:06:23  INFO      ai-daily-insight  New keywords:        GovCloud, KV cache, Meta acquisition, RSI, alignment, billionaire founders, cybersecurity, e-commerce automation, low-bit quantization, medical QA
+02:06:23  INFO      ai-daily-insight  Rising keywords:     LLM
+02:06:23  INFO      ai-daily-insight  ========================================================================
