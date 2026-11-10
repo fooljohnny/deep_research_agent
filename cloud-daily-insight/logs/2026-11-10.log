@@ -1,0 +1,191 @@
+03:15:44  INFO      cloud-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/logs/2026-11-10.log
+03:15:44  INFO      cloud-daily-insight  === Cloud Daily Insight Pipeline — 2026-11-10 ===
+03:15:44  INFO      cloud-daily-insight  [1/5] Fetching content from all sources …
+03:15:44  INFO      fetch  Fetching RSS: AWS Blog …
+03:15:44  INFO      fetch    → AWS Blog: 10 new item(s)
+03:15:44  INFO      fetch  Fetching RSS: Google Cloud Blog …
+03:15:46  INFO      fetch    → Google Cloud Blog: 10 new item(s)
+03:15:46  INFO      fetch  Fetching RSS: Microsoft Azure Blog …
+03:15:46  INFO      fetch    → Microsoft Azure Blog: 10 new item(s)
+03:15:46  INFO      fetch  Fetching RSS: Alibaba Cloud Blog …
+03:15:50  INFO      fetch    → Alibaba Cloud Blog: 0 new item(s)
+03:15:50  INFO      fetch  Fetching RSS: 火山引擎博客 …
+03:15:52  INFO      fetch    → 火山引擎博客: 6 new item(s)
+03:15:52  INFO      fetch  Fetching RSS: Salesforce Blog …
+03:15:53  INFO      fetch    → Salesforce Blog: 10 new item(s)
+03:15:53  INFO      fetch  Fetching RSS: ServiceNow Blog …
+03:15:53  INFO      fetch    → ServiceNow Blog: 0 new item(s)
+03:15:53  INFO      fetch  Fetching RSS: Adobe Blog …
+03:15:53  INFO      fetch    → Adobe Blog: 0 new item(s)
+03:15:53  INFO      fetch  Fetching RSS: Workday Blog …
+03:15:54  INFO      fetch    → Workday Blog: 0 new item(s)
+03:15:54  INFO      fetch  Fetching RSS: Zoom Blog …
+03:16:52  INFO      fetch    → Zoom Blog: 0 new item(s)
+03:16:52  INFO      fetch  Fetching RSS: Slack Blog …
+03:16:53  INFO      fetch    → Slack Blog: 0 new item(s)
+03:16:53  INFO      fetch  Fetching RSS: HubSpot Blog …
+03:16:54  INFO      fetch    → HubSpot Blog: 10 new item(s)
+03:16:54  INFO      fetch  Fetching RSS: Zendesk Blog …
+03:16:55  INFO      fetch    → Zendesk Blog: 0 new item(s)
+03:16:55  INFO      fetch  Fetching RSS: TechCrunch …
+03:16:55  INFO      fetch    → TechCrunch: 10 new item(s)
+03:16:55  INFO      fetch  Fetching RSS: VentureBeat Enterprise …
+03:16:56  INFO      fetch    → VentureBeat Enterprise: 0 new item(s)
+03:16:56  INFO      fetch  Fetching RSS: The Register …
+03:16:56  INFO      fetch    → The Register: 10 new item(s)
+03:16:56  INFO      fetch  Fetching RSS: Cloudflare Blog …
+03:16:57  INFO      fetch    → Cloudflare Blog: 10 new item(s)
+03:16:57  INFO      fetch  Fetching Tencent Cloud Blog (scrape) …
+03:16:58  INFO      fetch    → Tencent Cloud Blog: 1 new item(s)
+03:16:58  INFO      fetch  Fetching 火山引擎 Blog (scrape) …
+03:17:01  INFO      fetch    → 火山引擎 Blog: 0 new item(s)
+03:17:01  INFO      fetch  Total fresh items: 87
+03:17:01  INFO      cloud-daily-insight  Collected 87 fresh article(s).
+03:17:01  INFO      cloud-daily-insight  Fetching metrics snapshot for insight …
+03:17:31  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/metrics/2026-11-10.json
+03:17:32  INFO      metrics  Metrics report: Cloud=延续, SaaS=延续
+03:17:32  INFO      cloud-daily-insight  [2/5] Running structural change analysis …
+03:17:32  INFO      analyze  Stage-1: 87 articles → 3 batch(es), 30 per batch, model=openai/gpt-oss-120b
+03:17:32  INFO      analyze  Analyzing batch 1/3 (30 articles) …
+03:17:32  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:17:37  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:17:37  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+03:18:42  INFO      analyze  Analyzing batch 2/3 (30 articles) …
+03:18:42  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:18:48  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:18:48  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+03:19:53  INFO      analyze  Analyzing batch 3/3 (27 articles) …
+03:19:53  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:19:59  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:19:59  INFO      analyze  Waiting 65s before merge …
+03:21:04  INFO      analyze  Merging 3 batch analyses …
+03:21:04  INFO      analyze  Pairwise merge step 1: merging 2 of 3 remaining …
+03:21:04  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:21:11  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:21:11  INFO      analyze  Final pairwise merge of 2 analyses …
+03:21:11  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:21:11  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+03:21:11  INFO      openai._base_client  Retrying request to /chat/completions in 13.000000 seconds
+03:21:24  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+03:21:24  INFO      openai._base_client  Retrying request to /chat/completions in 17.000000 seconds
+03:21:48  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+03:21:48  WARNING   llm_client  JSON validation failed (attempt 1/3), retrying without response_format …
+03:21:48  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+03:21:48  INFO      openai._base_client  Retrying request to /chat/completions in 2.000000 seconds
+03:21:50  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+03:21:50  INFO      openai._base_client  Retrying request to /chat/completions in 19.000000 seconds
+03:22:16  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:22:16  INFO      analyze  Stage-1 complete:   (tokens: 19253 prompt + 13691 completion = 32944 total)
+03:22:16  INFO      analyze  Core insight: 
+03:22:16  INFO      cloud-daily-insight  Title: 
+03:22:16  INFO      cloud-daily-insight  Keywords: 
+03:22:16  INFO      cloud-daily-insight  [3/5] Comparing against historical trends …
+03:22:16  INFO      trend  Loaded 15 historical record(s) (up to 30 days back)
+03:22:16  INFO      trend  Trend report: 6 signal(s) — 技术层(continuous_trend), 基础设施(continuous_trend), 应用层(continuous_trend), 技术层(emerging_topic), 基础设施(emerging_topic)
+03:22:16  INFO      trend  Overall novelty: 1.000
+03:22:16  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/data/history/2026-11-10.json
+03:22:16  INFO      cloud-daily-insight  [4/5] Generating trend charts …
+03:22:16  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+03:22:16  INFO      matplotlib.font_manager  generated new fontManager
+03:22:17  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-11-10_cloud_novelty.png
+03:22:17  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/charts/2026-11-10_saas_novelty.png
+03:22:17  INFO      cloud-daily-insight  Waiting 65s for TPM buffer before Stage-2 …
+03:23:22  INFO      cloud-daily-insight  [5/5] Generating Markdown insight post …
+03:23:22  INFO      generate  Sending analysis + trends to LLM (openai/gpt-oss-120b) for Stage-2 generation …
+03:23:22  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:23:29  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:23:29  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/cloud-daily-insight/content/2026-11-10.md (6562 chars)  (tokens: 3232 prompt + 3042 completion = 6274 total)
+03:23:29  INFO      cloud-daily-insight  === Pipeline complete (464.9s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-11-10
+========================================================================
+
+  Total elapsed:       464.9s
+  Blog post:           content/2026-11-10.md (6,562 chars)
+  Log file:            logs/2026-11-10.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             19 (10 ok, 9 fail)
+  Articles fetched:    117
+  New (after dedup):   87
+  Fetch time:          76.9s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  AWS Blog                     RSS     ok         15    10   0.2s
+  Google Cloud Blog            RSS     ok         15    10   1.7s
+  Microsoft Azure Blog         RSS     ok         10    10   0.2s
+  Alibaba Cloud Blog           RSS     fail        0     0   3.5s
+  火山引擎博客                       RSS     ok          6     6   2.6s
+  Salesforce Blog              RSS     ok         10    10   0.7s
+  ServiceNow Blog              RSS     fail        0     0   0.1s
+  Adobe Blog                   RSS     fail        0     0   0.4s
+  Workday Blog                 RSS     fail        0     0   0.3s
+  Zoom Blog                    RSS     fail        0     0  58.6s
+  Slack Blog                   RSS     fail        0     0   0.3s
+  HubSpot Blog                 RSS     ok         15    10   1.2s
+  Zendesk Blog                 RSS     fail        0     0   1.6s
+  TechCrunch                   RSS     ok         15    10   0.1s
+  VentureBeat Enterprise       RSS     fail        0     0   0.1s
+  The Register                 RSS     ok         15    10   0.7s
+  Cloudflare Blog              RSS     ok         15    10   0.2s
+  Tencent Cloud Blog           scrape  ok          1     1   1.6s
+  火山引擎 Blog                    scrape  fail        0     0   2.7s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               openai/gpt-oss-120b
+  Stage-1 (analyze):   19,253 prompt + 13,691 completion =  32,944 total
+  Stage-2 (generate):   3,232 prompt +  3,042 completion =   6,274 total
+  Grand total tokens:   39,218
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        15
+  Has enough history:  True
+  Trend signals:       6
+  Overall novelty:     1.0
+
+========================================================================
+03:23:29  INFO      cloud-daily-insight  ========================================================================
+03:23:29  INFO      cloud-daily-insight  PIPELINE SUMMARY — 2026-11-10
+03:23:29  INFO      cloud-daily-insight  ========================================================================
+03:23:29  INFO      cloud-daily-insight  Total elapsed:       464.9s
+03:23:29  INFO      cloud-daily-insight  Blog post:           content/2026-11-10.md (6,562 chars)
+03:23:29  INFO      cloud-daily-insight  Log file:            logs/2026-11-10.log
+03:23:29  INFO      cloud-daily-insight  ── Fetch ─────────────────────────────────────────────────
+03:23:29  INFO      cloud-daily-insight  Sources:             19 (10 ok, 9 fail)
+03:23:29  INFO      cloud-daily-insight  Articles fetched:    117
+03:23:29  INFO      cloud-daily-insight  New (after dedup):   87
+03:23:29  INFO      cloud-daily-insight  Fetch time:          76.9s
+03:23:29  INFO      cloud-daily-insight  Source                       Method  Status Fetched   New   Time
+03:23:29  INFO      cloud-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+03:23:29  INFO      cloud-daily-insight  AWS Blog                     RSS     ok         15    10   0.2s
+03:23:29  INFO      cloud-daily-insight  Google Cloud Blog            RSS     ok         15    10   1.7s
+03:23:29  INFO      cloud-daily-insight  Microsoft Azure Blog         RSS     ok         10    10   0.2s
+03:23:29  INFO      cloud-daily-insight  Alibaba Cloud Blog           RSS     fail        0     0   3.5s
+03:23:29  INFO      cloud-daily-insight  火山引擎博客                       RSS     ok          6     6   2.6s
+03:23:29  INFO      cloud-daily-insight  Salesforce Blog              RSS     ok         10    10   0.7s
+03:23:29  INFO      cloud-daily-insight  ServiceNow Blog              RSS     fail        0     0   0.1s
+03:23:29  INFO      cloud-daily-insight  Adobe Blog                   RSS     fail        0     0   0.4s
+03:23:29  INFO      cloud-daily-insight  Workday Blog                 RSS     fail        0     0   0.3s
+03:23:29  INFO      cloud-daily-insight  Zoom Blog                    RSS     fail        0     0  58.6s
+03:23:29  INFO      cloud-daily-insight  Slack Blog                   RSS     fail        0     0   0.3s
+03:23:29  INFO      cloud-daily-insight  HubSpot Blog                 RSS     ok         15    10   1.2s
+03:23:29  INFO      cloud-daily-insight  Zendesk Blog                 RSS     fail        0     0   1.6s
+03:23:29  INFO      cloud-daily-insight  TechCrunch                   RSS     ok         15    10   0.1s
+03:23:29  INFO      cloud-daily-insight  VentureBeat Enterprise       RSS     fail        0     0   0.1s
+03:23:29  INFO      cloud-daily-insight  The Register                 RSS     ok         15    10   0.7s
+03:23:29  INFO      cloud-daily-insight  Cloudflare Blog              RSS     ok         15    10   0.2s
+03:23:29  INFO      cloud-daily-insight  Tencent Cloud Blog           scrape  ok          1     1   1.6s
+03:23:29  INFO      cloud-daily-insight  火山引擎 Blog                    scrape  fail        0     0   2.7s
+03:23:29  INFO      cloud-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+03:23:29  INFO      cloud-daily-insight  Model:               openai/gpt-oss-120b
+03:23:29  INFO      cloud-daily-insight  Stage-1 (analyze):   19,253 prompt + 13,691 completion =  32,944 total
+03:23:29  INFO      cloud-daily-insight  Stage-2 (generate):   3,232 prompt +  3,042 completion =   6,274 total
+03:23:29  INFO      cloud-daily-insight  Grand total tokens:   39,218
+03:23:29  INFO      cloud-daily-insight  ── Trend Analysis ────────────────────────────────────────
+03:23:29  INFO      cloud-daily-insight  History days:        15
+03:23:29  INFO      cloud-daily-insight  Has enough history:  True
+03:23:29  INFO      cloud-daily-insight  Trend signals:       6
+03:23:29  INFO      cloud-daily-insight  Overall novelty:     1.0
+03:23:29  INFO      cloud-daily-insight  ========================================================================
