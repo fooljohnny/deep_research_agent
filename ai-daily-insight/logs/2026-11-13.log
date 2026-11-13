@@ -1,0 +1,145 @@
+02:28:13  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-11-13.log
+02:28:13  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-11-13 ===
+02:28:13  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+02:28:13  INFO      fetch  Fetching RSS: arXiv cs.AI …
+02:28:13  INFO      fetch    → arXiv cs.AI: 0 new item(s)
+02:28:13  INFO      fetch  Fetching RSS: arXiv cs.LG …
+02:28:13  INFO      fetch    → arXiv cs.LG: 0 new item(s)
+02:28:13  INFO      fetch  Fetching RSS: arXiv cs.CL …
+02:28:14  INFO      fetch    → arXiv cs.CL: 0 new item(s)
+02:28:14  INFO      fetch  Fetching RSS: OpenAI Blog …
+02:28:14  INFO      fetch    → OpenAI Blog: 4 new item(s)
+02:28:14  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+02:28:14  INFO      fetch    → Google DeepMind Blog: 1 new item(s)
+02:28:14  INFO      fetch  Fetching RSS: Google AI Blog …
+02:28:15  INFO      fetch    → Google AI Blog: 0 new item(s)
+02:28:15  INFO      fetch  Fetching RSS: TechCrunch AI …
+02:28:15  INFO      fetch    → TechCrunch AI: 10 new item(s)
+02:28:15  INFO      fetch  Fetching RSS: VentureBeat AI …
+02:28:15  INFO      fetch    → VentureBeat AI: 0 new item(s)
+02:28:15  INFO      fetch  Fetching RSS: Crunchbase News …
+02:28:15  INFO      fetch    → Crunchbase News: 2 new item(s)
+02:28:15  INFO      fetch  Fetching Anthropic Blog …
+02:28:15  INFO      fetch    → Anthropic Blog: 0 new item(s)
+02:28:15  INFO      fetch  Fetching Meta AI Blog …
+02:28:17  INFO      fetch    → Meta AI Blog: 0 new item(s)
+02:28:17  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+02:28:19  INFO      fetch    → GitHub Trending: 2 new item(s)
+02:28:19  INFO      fetch  Fetching HuggingFace Trending Models …
+02:28:19  INFO      fetch    → HuggingFace Trending: 1 new item(s)
+02:28:19  INFO      fetch  Total fresh items: 20
+02:28:19  INFO      ai-daily-insight  Collected 20 fresh article(s).
+02:28:19  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+02:28:19  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-11-13.json
+02:28:19  INFO      metrics  Metrics report: arXiv=unknown, GitHub=10, HF=20
+02:28:19  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+02:28:19  INFO      analyze  Stage-1: 20 articles → 1 batch(es), 30 per batch, model=openai/gpt-oss-120b
+02:28:19  INFO      analyze  Analyzing batch 1/1 (20 articles) …
+02:28:19  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:28:26  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:28:26  INFO      analyze  Stage-1 complete: Gemini 4 Hydrogen and AI Agent Surge Redefine Applications Amid Nvidia Turmoil  (tokens: 2958 prompt + 3072 completion = 6030 total)
+02:28:26  INFO      analyze  Core insight: Google's Gemini 4 Hydrogen rollout and the rapid adoption of AI agents across product, sales and creator workflows signal a structural expansion of AI-native applications, while Nvidia's political and leadership crises introduce heightened regulatory and supply‑chain risk.
+02:28:26  INFO      ai-daily-insight  Title: Gemini 4 Hydrogen and AI Agent Surge Redefine Applications Amid Nvidia Turmoil
+02:28:26  INFO      ai-daily-insight  Keywords: Gemini 4 Hydrogen, Codex, Claude Code Templates, SkillEvaluator, Hyperflow-H3-Flash, Nebius, Nvidia investigation, AI agents, outbound calling, influencer marketing, AI safety children, United Airlines AI ban, OpenAI, Google Search AI Mode
+02:28:26  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+02:28:26  INFO      trend  Loaded 18 historical record(s) (up to 30 days back)
+02:28:26  INFO      trend  Trend report: 4 signal(s) — 资本信号(continuous_trend), 风险信号(continuous_trend), 资本信号(emerging_topic), 风险信号(emerging_topic)
+02:28:26  INFO      trend  Overall novelty: 0.543
+02:28:26  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-11-13.json
+02:28:26  INFO      ai-daily-insight  [4/5] Generating trend charts …
+02:28:27  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+02:28:27  INFO      matplotlib.font_manager  generated new fontManager
+02:28:28  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-13_arxiv_capability.png
+02:28:28  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-13_github_stars.png
+02:28:28  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-13_hf_downloads.png
+02:28:28  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+02:28:28  INFO      generate  Sending analysis + trends to LLM (openai/gpt-oss-120b) for Stage-2 generation …
+02:28:28  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:28:28  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+02:28:28  INFO      openai._base_client  Retrying request to /chat/completions in 13.000000 seconds
+02:28:46  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:28:46  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-11-13.md (4331 chars)  (tokens: 4402 prompt + 2172 completion = 6574 total)
+02:28:46  INFO      ai-daily-insight  === Pipeline complete (33.0s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-11-13
+========================================================================
+
+  Total elapsed:       33.0s
+  Blog post:           content/2026-11-13.md (4,331 chars)
+  Log file:            logs/2026-11-13.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (9 ok, 4 fail)
+  Articles fetched:    120
+  New (after dedup):   20
+  Fetch time:          5.5s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     fail        0     0   0.1s
+  arXiv cs.LG                  RSS     fail        0     0   0.0s
+  arXiv cs.CL                  RSS     fail        0     0   0.1s
+  OpenAI Blog                  RSS     ok         15     4   0.5s
+  Google DeepMind Blog         RSS     ok         15     1   0.2s
+  Google AI Blog               RSS     ok         15     0   0.5s
+  TechCrunch AI                RSS     ok         15    10   0.1s
+  VentureBeat AI               RSS     fail        0     0   0.1s
+  Crunchbase News              RSS     ok         10     2   0.2s
+  Anthropic Blog               scrape  ok         15     0   0.1s
+  Meta AI Blog                 scrape  ok         10     0   1.8s
+  GitHub Trending              scrape  ok         10     2   1.7s
+  HuggingFace Trending         API     ok         15     1   0.1s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               openai/gpt-oss-120b
+  Stage-1 (analyze):    2,958 prompt +  3,072 completion =   6,030 total
+  Stage-2 (generate):   4,402 prompt +  2,172 completion =   6,574 total
+  Grand total tokens:   12,604
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        18
+  Has enough history:  True
+  Trend signals:       4
+  Overall novelty:     0.543
+  New keywords:        AI safety children, Claude Code Templates, Codex, Gemini 4 Hydrogen, Google Search AI Mode, Hyperflow-H3-Flash, Nebius, Nvidia investigation, SkillEvaluator, United Airlines AI ban
+
+========================================================================
+02:28:46  INFO      ai-daily-insight  ========================================================================
+02:28:46  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-11-13
+02:28:46  INFO      ai-daily-insight  ========================================================================
+02:28:46  INFO      ai-daily-insight  Total elapsed:       33.0s
+02:28:46  INFO      ai-daily-insight  Blog post:           content/2026-11-13.md (4,331 chars)
+02:28:46  INFO      ai-daily-insight  Log file:            logs/2026-11-13.log
+02:28:46  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+02:28:46  INFO      ai-daily-insight  Sources:             13 (9 ok, 4 fail)
+02:28:46  INFO      ai-daily-insight  Articles fetched:    120
+02:28:46  INFO      ai-daily-insight  New (after dedup):   20
+02:28:46  INFO      ai-daily-insight  Fetch time:          5.5s
+02:28:46  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+02:28:46  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+02:28:46  INFO      ai-daily-insight  arXiv cs.AI                  RSS     fail        0     0   0.1s
+02:28:46  INFO      ai-daily-insight  arXiv cs.LG                  RSS     fail        0     0   0.0s
+02:28:46  INFO      ai-daily-insight  arXiv cs.CL                  RSS     fail        0     0   0.1s
+02:28:46  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15     4   0.5s
+02:28:46  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     1   0.2s
+02:28:46  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     0   0.5s
+02:28:46  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15    10   0.1s
+02:28:46  INFO      ai-daily-insight  VentureBeat AI               RSS     fail        0     0   0.1s
+02:28:46  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     2   0.2s
+02:28:46  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         15     0   0.1s
+02:28:46  INFO      ai-daily-insight  Meta AI Blog                 scrape  ok         10     0   1.8s
+02:28:46  INFO      ai-daily-insight  GitHub Trending              scrape  ok         10     2   1.7s
+02:28:46  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     1   0.1s
+02:28:46  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+02:28:46  INFO      ai-daily-insight  Model:               openai/gpt-oss-120b
+02:28:46  INFO      ai-daily-insight  Stage-1 (analyze):    2,958 prompt +  3,072 completion =   6,030 total
+02:28:46  INFO      ai-daily-insight  Stage-2 (generate):   4,402 prompt +  2,172 completion =   6,574 total
+02:28:46  INFO      ai-daily-insight  Grand total tokens:   12,604
+02:28:46  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+02:28:46  INFO      ai-daily-insight  History days:        18
+02:28:46  INFO      ai-daily-insight  Has enough history:  True
+02:28:46  INFO      ai-daily-insight  Trend signals:       4
+02:28:46  INFO      ai-daily-insight  Overall novelty:     0.543
+02:28:46  INFO      ai-daily-insight  New keywords:        AI safety children, Claude Code Templates, Codex, Gemini 4 Hydrogen, Google Search AI Mode, Hyperflow-H3-Flash, Nebius, Nvidia investigation, SkillEvaluator, United Airlines AI ban
+02:28:46  INFO      ai-daily-insight  ========================================================================
