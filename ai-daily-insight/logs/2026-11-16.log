@@ -1,0 +1,149 @@
+01:38:48  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-11-16.log
+01:38:48  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-11-16 ===
+01:38:48  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+01:38:48  INFO      fetch  Fetching RSS: arXiv cs.AI …
+01:38:48  INFO      fetch    → arXiv cs.AI: 0 new item(s)
+01:38:48  INFO      fetch  Fetching RSS: arXiv cs.LG …
+01:38:48  INFO      fetch    → arXiv cs.LG: 0 new item(s)
+01:38:48  INFO      fetch  Fetching RSS: arXiv cs.CL …
+01:38:48  INFO      fetch    → arXiv cs.CL: 0 new item(s)
+01:38:48  INFO      fetch  Fetching RSS: OpenAI Blog …
+01:38:49  INFO      fetch    → OpenAI Blog: 2 new item(s)
+01:38:49  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+01:38:49  INFO      fetch    → Google DeepMind Blog: 0 new item(s)
+01:38:49  INFO      fetch  Fetching RSS: Google AI Blog …
+01:38:50  INFO      fetch    → Google AI Blog: 0 new item(s)
+01:38:50  INFO      fetch  Fetching RSS: TechCrunch AI …
+01:38:50  INFO      fetch    → TechCrunch AI: 4 new item(s)
+01:38:50  INFO      fetch  Fetching RSS: VentureBeat AI …
+01:38:50  INFO      fetch    → VentureBeat AI: 0 new item(s)
+01:38:50  INFO      fetch  Fetching RSS: Crunchbase News …
+01:38:50  INFO      fetch    → Crunchbase News: 0 new item(s)
+01:38:50  INFO      fetch  Fetching Anthropic Blog …
+01:38:50  INFO      fetch    → Anthropic Blog: 0 new item(s)
+01:38:50  INFO      fetch  Fetching Meta AI Blog …
+01:38:52  INFO      fetch    → Meta AI Blog: 0 new item(s)
+01:38:52  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+01:38:54  INFO      fetch    → GitHub Trending: 2 new item(s)
+01:38:54  INFO      fetch  Fetching HuggingFace Trending Models …
+01:38:54  INFO      fetch    → HuggingFace Trending: 1 new item(s)
+01:38:54  INFO      fetch  Total fresh items: 9
+01:38:54  INFO      ai-daily-insight  Collected 9 fresh article(s).
+01:38:54  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+01:38:54  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-11-16.json
+01:38:54  INFO      metrics  Metrics report: arXiv=unknown, GitHub=9, HF=20
+01:38:54  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+01:38:54  INFO      analyze  Stage-1: 9 articles → 1 batch(es), 30 per batch, model=openai/gpt-oss-120b
+01:38:54  INFO      analyze  Analyzing batch 1/1 (9 articles) …
+01:38:54  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+01:39:00  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+01:39:00  INFO      analyze  Stage-1 complete: AI结构性变化速览：GPT-6突破、AI传感器芯片融资与健康应用扩张  (tokens: 2122 prompt + 2700 completion = 4822 total)
+01:39:00  INFO      analyze  Core insight: GPT-6在物理学证明中的应用标志着大模型向科学发现的关键跃迁，同时AI芯片与健康领域的资本与应用活跃预示产业多元化加速。
+01:39:00  INFO      ai-daily-insight  Title: AI结构性变化速览：GPT-6突破、AI传感器芯片融资与健康应用扩张
+01:39:00  INFO      ai-daily-insight  Keywords: GPT-6, Astra, Standard Model, AI sensor, Bharat Semi, Apple Health AI, COG-second-brain, audio-to-audio, Haru-4B, ai-infra-book, quantization, Nvidia, supply chain risk, LLM, multimodal
+01:39:00  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+01:39:00  INFO      trend  Loaded 21 historical record(s) (up to 30 days back)
+01:39:01  INFO      trend  Trend report: 7 signal(s) — 资本信号(continuous_trend), 风险信号(continuous_trend), 技术层(emerging_topic), 基础设施(emerging_topic), 应用层(emerging_topic)
+01:39:01  INFO      trend  Overall novelty: 0.731
+01:39:01  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-11-16.json
+01:39:01  INFO      ai-daily-insight  [4/5] Generating trend charts …
+01:39:01  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+01:39:01  INFO      matplotlib.font_manager  generated new fontManager
+01:39:03  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-16_arxiv_capability.png
+01:39:03  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-16_github_stars.png
+01:39:03  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-16_hf_downloads.png
+01:39:03  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+01:39:03  INFO      generate  Sending analysis + trends to LLM (openai/gpt-oss-120b) for Stage-2 generation …
+01:39:03  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+01:39:03  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+01:39:03  INFO      openai._base_client  Retrying request to /chat/completions in 7.000000 seconds
+01:39:10  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+01:39:10  INFO      openai._base_client  Retrying request to /chat/completions in 17.000000 seconds
+01:39:33  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+01:39:33  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-11-16.md (3862 chars)  (tokens: 4774 prompt + 2449 completion = 7223 total)
+01:39:33  INFO      ai-daily-insight  === Pipeline complete (44.8s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-11-16
+========================================================================
+
+  Total elapsed:       44.8s
+  Blog post:           content/2026-11-16.md (3,862 chars)
+  Log file:            logs/2026-11-16.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (9 ok, 4 fail)
+  Articles fetched:    119
+  New (after dedup):   9
+  Fetch time:          5.8s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     fail        0     0   0.1s
+  arXiv cs.LG                  RSS     fail        0     0   0.0s
+  arXiv cs.CL                  RSS     fail        0     0   0.0s
+  OpenAI Blog                  RSS     ok         15     2   0.7s
+  Google DeepMind Blog         RSS     ok         15     0   0.3s
+  Google AI Blog               RSS     ok         15     0   0.6s
+  TechCrunch AI                RSS     ok         15     4   0.1s
+  VentureBeat AI               RSS     fail        0     0   0.1s
+  Crunchbase News              RSS     ok         10     0   0.2s
+  Anthropic Blog               scrape  ok         15     0   0.2s
+  Meta AI Blog                 scrape  ok         10     0   2.1s
+  GitHub Trending              scrape  ok          9     2   1.4s
+  HuggingFace Trending         API     ok         15     1   0.1s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               openai/gpt-oss-120b
+  Stage-1 (analyze):    2,122 prompt +  2,700 completion =   4,822 total
+  Stage-2 (generate):   4,774 prompt +  2,449 completion =   7,223 total
+  Grand total tokens:   12,045
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        21
+  Has enough history:  True
+  Trend signals:       7
+  Overall novelty:     0.731
+  New keywords:        AI sensor, Apple Health AI, Bharat Semi, COG-second-brain, Haru-4B, Standard Model, ai-infra-book, audio-to-audio
+  Rising keywords:     Nvidia
+
+========================================================================
+01:39:33  INFO      ai-daily-insight  ========================================================================
+01:39:33  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-11-16
+01:39:33  INFO      ai-daily-insight  ========================================================================
+01:39:33  INFO      ai-daily-insight  Total elapsed:       44.8s
+01:39:33  INFO      ai-daily-insight  Blog post:           content/2026-11-16.md (3,862 chars)
+01:39:33  INFO      ai-daily-insight  Log file:            logs/2026-11-16.log
+01:39:33  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+01:39:33  INFO      ai-daily-insight  Sources:             13 (9 ok, 4 fail)
+01:39:33  INFO      ai-daily-insight  Articles fetched:    119
+01:39:33  INFO      ai-daily-insight  New (after dedup):   9
+01:39:33  INFO      ai-daily-insight  Fetch time:          5.8s
+01:39:33  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+01:39:33  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+01:39:33  INFO      ai-daily-insight  arXiv cs.AI                  RSS     fail        0     0   0.1s
+01:39:33  INFO      ai-daily-insight  arXiv cs.LG                  RSS     fail        0     0   0.0s
+01:39:33  INFO      ai-daily-insight  arXiv cs.CL                  RSS     fail        0     0   0.0s
+01:39:33  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15     2   0.7s
+01:39:33  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     0   0.3s
+01:39:33  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     0   0.6s
+01:39:33  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15     4   0.1s
+01:39:33  INFO      ai-daily-insight  VentureBeat AI               RSS     fail        0     0   0.1s
+01:39:33  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     0   0.2s
+01:39:33  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         15     0   0.2s
+01:39:33  INFO      ai-daily-insight  Meta AI Blog                 scrape  ok         10     0   2.1s
+01:39:33  INFO      ai-daily-insight  GitHub Trending              scrape  ok          9     2   1.4s
+01:39:33  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     1   0.1s
+01:39:33  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+01:39:33  INFO      ai-daily-insight  Model:               openai/gpt-oss-120b
+01:39:33  INFO      ai-daily-insight  Stage-1 (analyze):    2,122 prompt +  2,700 completion =   4,822 total
+01:39:33  INFO      ai-daily-insight  Stage-2 (generate):   4,774 prompt +  2,449 completion =   7,223 total
+01:39:33  INFO      ai-daily-insight  Grand total tokens:   12,045
+01:39:33  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+01:39:33  INFO      ai-daily-insight  History days:        21
+01:39:33  INFO      ai-daily-insight  Has enough history:  True
+01:39:33  INFO      ai-daily-insight  Trend signals:       7
+01:39:33  INFO      ai-daily-insight  Overall novelty:     0.731
+01:39:33  INFO      ai-daily-insight  New keywords:        AI sensor, Apple Health AI, Bharat Semi, COG-second-brain, Haru-4B, Standard Model, ai-infra-book, audio-to-audio
+01:39:33  INFO      ai-daily-insight  Rising keywords:     Nvidia
+01:39:33  INFO      ai-daily-insight  ========================================================================
