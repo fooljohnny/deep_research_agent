@@ -1,0 +1,159 @@
+02:58:52  INFO      ai-daily-insight  Log file: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/logs/2026-11-19.log
+02:58:52  INFO      ai-daily-insight  === AI Daily Insight Pipeline — 2026-11-19 ===
+02:58:52  INFO      ai-daily-insight  [1/5] Fetching content from all sources …
+02:58:52  INFO      fetch  Fetching RSS: arXiv cs.AI …
+02:58:53  INFO      fetch    → arXiv cs.AI: 10 new item(s)
+02:58:53  INFO      fetch  Fetching RSS: arXiv cs.LG …
+02:58:53  INFO      fetch    → arXiv cs.LG: 10 new item(s)
+02:58:53  INFO      fetch  Fetching RSS: arXiv cs.CL …
+02:58:53  INFO      fetch    → arXiv cs.CL: 10 new item(s)
+02:58:53  INFO      fetch  Fetching RSS: OpenAI Blog …
+02:58:54  INFO      fetch    → OpenAI Blog: 10 new item(s)
+02:58:54  INFO      fetch  Fetching RSS: Google DeepMind Blog …
+02:58:54  INFO      fetch    → Google DeepMind Blog: 2 new item(s)
+02:58:54  INFO      fetch  Fetching RSS: Google AI Blog …
+02:58:55  INFO      fetch    → Google AI Blog: 0 new item(s)
+02:58:55  INFO      fetch  Fetching RSS: TechCrunch AI …
+02:58:55  INFO      fetch    → TechCrunch AI: 10 new item(s)
+02:58:55  INFO      fetch  Fetching RSS: VentureBeat AI …
+02:58:55  INFO      fetch    → VentureBeat AI: 0 new item(s)
+02:58:55  INFO      fetch  Fetching RSS: Crunchbase News …
+02:58:55  INFO      fetch    → Crunchbase News: 7 new item(s)
+02:58:55  INFO      fetch  Fetching Anthropic Blog …
+02:58:56  INFO      fetch    → Anthropic Blog: 1 new item(s)
+02:58:56  INFO      fetch  Fetching Meta AI Blog …
+02:58:57  INFO      fetch    → Meta AI Blog: 0 new item(s)
+02:58:57  INFO      fetch  Fetching GitHub Trending (AI/ML) …
+02:58:59  INFO      fetch    → GitHub Trending: 2 new item(s)
+02:58:59  INFO      fetch  Fetching HuggingFace Trending Models …
+02:58:59  INFO      fetch    → HuggingFace Trending: 8 new item(s)
+02:58:59  INFO      fetch  Total fresh items: 70
+02:58:59  INFO      ai-daily-insight  Collected 70 fresh article(s).
+02:58:59  INFO      ai-daily-insight  Fetching metrics snapshot for insight …
+02:59:00  INFO      metrics  Metrics saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/metrics/2026-11-19.json
+02:59:01  INFO      metrics  Metrics report: arXiv=延续, GitHub=15, HF=20
+02:59:01  INFO      ai-daily-insight  [2/5] Running structural change analysis …
+02:59:01  INFO      analyze  Stage-1: 70 articles → 3 batch(es), 30 per batch, model=openai/gpt-oss-120b
+02:59:01  INFO      analyze  Analyzing batch 1/3 (30 articles) …
+02:59:01  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+02:59:07  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+02:59:07  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+03:00:12  INFO      analyze  Analyzing batch 2/3 (30 articles) …
+03:00:12  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:00:18  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:00:18  INFO      analyze  Waiting 65s for TPM buffer before next batch …
+03:01:23  INFO      analyze  Analyzing batch 3/3 (10 articles) …
+03:01:23  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:01:28  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:01:28  INFO      analyze  Waiting 65s before merge …
+03:02:33  INFO      analyze  Merging 3 batch analyses …
+03:02:33  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:02:39  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:02:39  INFO      analyze  Stage-1 complete: AI结构性变革速览：GPT-6.2、Gemini 4 Neon与新基准驱动技术、资本与风险同步升级  (tokens: 15254 prompt + 10427 completion = 25681 total)
+03:02:39  INFO      analyze  Core insight: 自研自改模型、量子辅助训练与高效推理框架的突破，加上Anthropic千亿美元IPO等资本热潮，标志着AI正向更强大、成本更低且商业化深度更高的结构性跃迁。
+03:02:39  INFO      ai-daily-insight  Title: AI结构性变革速览：GPT-6.2、Gemini 4 Neon与新基准驱动技术、资本与风险同步升级
+03:02:39  INFO      ai-daily-insight  Keywords: GPT-6.2, Gemini 4 Neon, Anthropic IPO, AI agents, Self-modifying LLMs, Speculative-diffusion, Quantum-assisted training, Token-efficient agents, ChatGPT Enterprise, ChatGPT for Sales, Voice AI, CrisisBench, Sleep2Word, AI safety, Edge inference
+03:02:39  INFO      ai-daily-insight  [3/5] Comparing against historical trends …
+03:02:39  INFO      trend  Loaded 23 historical record(s) (up to 30 days back)
+03:02:40  INFO      trend  Trend report: 8 signal(s) — 应用层(continuous_trend), 资本信号(continuous_trend), 风险信号(continuous_trend), 技术层(continuous_trend), 基础设施(emerging_topic)
+03:02:40  INFO      trend  Overall novelty: 0.620
+03:02:40  INFO      trend  History saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/data/history/2026-11-19.json
+03:02:40  INFO      ai-daily-insight  [4/5] Generating trend charts …
+03:02:40  INFO      matplotlib.font_manager  Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Non-scalable fonts are not supported
+03:02:40  INFO      matplotlib.font_manager  generated new fontManager
+03:02:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-19_arxiv_capability.png
+03:02:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-19_github_stars.png
+03:02:41  INFO      charts  Chart saved: /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/charts/2026-11-19_hf_downloads.png
+03:02:41  INFO      ai-daily-insight  [5/5] Generating Markdown insight post …
+03:02:41  INFO      generate  Sending analysis + trends to LLM (openai/gpt-oss-120b) for Stage-2 generation …
+03:02:41  INFO      llm_client  LLM provider: groq  base_url: https://api.groq.com/openai/v1
+03:02:41  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+03:02:41  INFO      openai._base_client  Retrying request to /chat/completions in 54.000000 seconds
+03:03:41  INFO      httpx  HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+03:03:41  INFO      generate  Blog post written to /home/runner/work/deep_research_agent/deep_research_agent/ai-daily-insight/content/2026-11-19.md (4290 chars)  (tokens: 4854 prompt + 2400 completion = 7254 total)
+03:03:41  INFO      ai-daily-insight  === Pipeline complete (288.5s) ===
+
+========================================================================
+  PIPELINE SUMMARY — 2026-11-19
+========================================================================
+
+  Total elapsed:       288.5s
+  Blog post:           content/2026-11-19.md (4,290 chars)
+  Log file:            logs/2026-11-19.log
+
+  ── Fetch ─────────────────────────────────────────────────
+  Sources:             13 (12 ok, 1 fail)
+  Articles fetched:    170
+  New (after dedup):   70
+  Fetch time:          6.7s
+
+  Source                       Method  Status Fetched   New   Time
+  ──────────────────────────── ─────── ───── ─────── ───── ──────
+  arXiv cs.AI                  RSS     ok         15    10   0.4s
+  arXiv cs.LG                  RSS     ok         15    10   0.2s
+  arXiv cs.CL                  RSS     ok         15    10   0.2s
+  OpenAI Blog                  RSS     ok         15    10   0.5s
+  Google DeepMind Blog         RSS     ok         15     2   0.3s
+  Google AI Blog               RSS     ok         15     0   0.8s
+  TechCrunch AI                RSS     ok         15    10   0.1s
+  VentureBeat AI               RSS     fail        0     0   0.2s
+  Crunchbase News              RSS     ok         10     7   0.3s
+  Anthropic Blog               scrape  ok         15     1   0.2s
+  Meta AI Blog                 scrape  ok         10     0   1.6s
+  GitHub Trending              scrape  ok         15     2   1.6s
+  HuggingFace Trending         API     ok         15     8   0.1s
+
+  ── LLM Token Usage ───────────────────────────────────────
+  Model:               openai/gpt-oss-120b
+  Stage-1 (analyze):   15,254 prompt + 10,427 completion =  25,681 total
+  Stage-2 (generate):   4,854 prompt +  2,400 completion =   7,254 total
+  Grand total tokens:   32,935
+
+  ── Trend Analysis ────────────────────────────────────────
+  History days:        23
+  Has enough history:  True
+  Trend signals:       8
+  Overall novelty:     0.62
+  New keywords:        ChatGPT for Sales, CrisisBench, Edge inference, GPT-6.2, Gemini 4 Neon, Quantum-assisted training, Self-modifying LLMs, Sleep2Word, Speculative-diffusion, Token-efficient agents
+  Rising keywords:     AI agents
+
+========================================================================
+03:03:41  INFO      ai-daily-insight  ========================================================================
+03:03:41  INFO      ai-daily-insight  PIPELINE SUMMARY — 2026-11-19
+03:03:41  INFO      ai-daily-insight  ========================================================================
+03:03:41  INFO      ai-daily-insight  Total elapsed:       288.5s
+03:03:41  INFO      ai-daily-insight  Blog post:           content/2026-11-19.md (4,290 chars)
+03:03:41  INFO      ai-daily-insight  Log file:            logs/2026-11-19.log
+03:03:41  INFO      ai-daily-insight  ── Fetch ─────────────────────────────────────────────────
+03:03:41  INFO      ai-daily-insight  Sources:             13 (12 ok, 1 fail)
+03:03:41  INFO      ai-daily-insight  Articles fetched:    170
+03:03:41  INFO      ai-daily-insight  New (after dedup):   70
+03:03:41  INFO      ai-daily-insight  Fetch time:          6.7s
+03:03:41  INFO      ai-daily-insight  Source                       Method  Status Fetched   New   Time
+03:03:41  INFO      ai-daily-insight  ──────────────────────────── ─────── ───── ─────── ───── ──────
+03:03:41  INFO      ai-daily-insight  arXiv cs.AI                  RSS     ok         15    10   0.4s
+03:03:41  INFO      ai-daily-insight  arXiv cs.LG                  RSS     ok         15    10   0.2s
+03:03:41  INFO      ai-daily-insight  arXiv cs.CL                  RSS     ok         15    10   0.2s
+03:03:41  INFO      ai-daily-insight  OpenAI Blog                  RSS     ok         15    10   0.5s
+03:03:41  INFO      ai-daily-insight  Google DeepMind Blog         RSS     ok         15     2   0.3s
+03:03:41  INFO      ai-daily-insight  Google AI Blog               RSS     ok         15     0   0.8s
+03:03:41  INFO      ai-daily-insight  TechCrunch AI                RSS     ok         15    10   0.1s
+03:03:41  INFO      ai-daily-insight  VentureBeat AI               RSS     fail        0     0   0.2s
+03:03:41  INFO      ai-daily-insight  Crunchbase News              RSS     ok         10     7   0.3s
+03:03:41  INFO      ai-daily-insight  Anthropic Blog               scrape  ok         15     1   0.2s
+03:03:41  INFO      ai-daily-insight  Meta AI Blog                 scrape  ok         10     0   1.6s
+03:03:41  INFO      ai-daily-insight  GitHub Trending              scrape  ok         15     2   1.6s
+03:03:41  INFO      ai-daily-insight  HuggingFace Trending         API     ok         15     8   0.1s
+03:03:41  INFO      ai-daily-insight  ── LLM Token Usage ───────────────────────────────────────
+03:03:41  INFO      ai-daily-insight  Model:               openai/gpt-oss-120b
+03:03:41  INFO      ai-daily-insight  Stage-1 (analyze):   15,254 prompt + 10,427 completion =  25,681 total
+03:03:41  INFO      ai-daily-insight  Stage-2 (generate):   4,854 prompt +  2,400 completion =   7,254 total
+03:03:41  INFO      ai-daily-insight  Grand total tokens:   32,935
+03:03:41  INFO      ai-daily-insight  ── Trend Analysis ────────────────────────────────────────
+03:03:41  INFO      ai-daily-insight  History days:        23
+03:03:41  INFO      ai-daily-insight  Has enough history:  True
+03:03:41  INFO      ai-daily-insight  Trend signals:       8
+03:03:41  INFO      ai-daily-insight  Overall novelty:     0.62
+03:03:41  INFO      ai-daily-insight  New keywords:        ChatGPT for Sales, CrisisBench, Edge inference, GPT-6.2, Gemini 4 Neon, Quantum-assisted training, Self-modifying LLMs, Sleep2Word, Speculative-diffusion, Token-efficient agents
+03:03:41  INFO      ai-daily-insight  Rising keywords:     AI agents
+03:03:41  INFO      ai-daily-insight  ========================================================================
